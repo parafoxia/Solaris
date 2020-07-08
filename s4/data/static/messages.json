@@ -1,0 +1,15 @@
+{
+    "standard": {
+
+    },
+    "success": {
+
+    },
+    "info": {
+        "online": "S4 is now online! (Version {version})",
+        "shutting down": "S4 is shutting down. (Version {version})"
+    },
+    "error": {
+        "not ready": "S4 is not ready to receive commands right now. Please wait a few seconds."
+    }
+}
