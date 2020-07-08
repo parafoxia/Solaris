@@ -3,6 +3,8 @@ from collections import deque
 from apscheduler.triggers.cron import CronTrigger
 from discord import Activity, ActivityType
 
+ACTIVITY_TYPES = ("playing", "watching", "listening", "streaming")
+
 
 class PresenceSetter:
     def __init__(self, bot):
@@ -33,6 +35,13 @@ class PresenceSetter:
     @property
     def type(self):
         return getattr(ActivityType, self._type, ActivityType.playing)
+
+    @type.setter
+    def type(self, value):
+        if value not in ACTIVITY_TYPES:
+            raise ValueError("The activity should be one of the following: {}".format(", ".join(ACTIVITY_TYPES)))
+
+        self._type = value
 
     async def set(self):
         await self.bot.change_presence(activity=Activity(name=self.name, type=self.type))

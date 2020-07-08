@@ -61,8 +61,9 @@ class Bot(commands.Bot):
         await self.db.close()
         print("done.")
 
-        # hub = self.get_cog("Hub")
-        # await hub.stdout.send(self.message.load("shutting down", version=self.version))
+        hub = self.get_cog("Hub")
+        if (sc := getattr(hub, "stdout_channel", None)) is not None:
+            await sc.send(self.message.load("shutting down", version=self.version))
 
         print(" Closing connection to Discord...")
         await super().close()
