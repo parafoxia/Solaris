@@ -1,0 +1,17 @@
+{
+    "standard": {
+
+    },
+    "success": {
+
+    },
+    "info": {
+        "online": "S4 is now online! (Version {version})",
+        "shutting down": "S4 is shutting down. (Version {version})",
+        "joined guild": "Joined guild! Nº: {bot.guild_count:,} • Name: {guild.name} • Members: {guild.member_count:,} • ID: {guild.id}",
+        "left guild": "Left guild. Name: {guild.name} • Members: {guild.member_count} • ID: {guild.id}"
+    },
+    "error": {
+        "not ready": "S4 is not ready to receive commands right now. Please wait a few seconds."
+    }
+}

@@ -1,0 +1,19 @@
+{
+    "test": {
+        "header": "Test Embed",
+        "title": "A test!",
+        "description": "This is a test embed.",
+        "fields": [
+            [
+                "Name",
+                "Value",
+                true
+            ],
+            [
+                "Test",
+                "Field",
+                false
+            ]
+        ]
+    }
+}
