@@ -36,6 +36,16 @@ class Database:
         await self.cxn.close()
 
     async def sync(self):
+        # Insert.
+        await self.executemany("INSERT OR IGNORE INTO system (GuildID) VALUES (?)", [(g.id,) for g in self.bot.guilds])
+
+        # Remove.
+        stored = await self.column("SELECT GuildID FROM system")
+        member_of = [g.id for g in self.bot.guilds]
+        removals = [(g_id,) for g_id in set(stored) - set(member_of)]
+        await self.executemany("DELETE FROM system WHERE GuildID = ?", removals)
+
+        # Commit.
         await self.commit()
 
     async def field(self, sql, *values):
@@ -68,7 +78,7 @@ class Database:
         self._calls += 1
 
     async def executemany(self, sql, valueset):
-        await self.cxn.executemany(command, valueset)
+        await self.cxn.executemany(sql, valueset)
         self._calls += 1  # NOTE: Should this be `len(valueset)`?
 
     async def executescript(self, path):

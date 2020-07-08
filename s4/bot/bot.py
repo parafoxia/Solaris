@@ -38,9 +38,8 @@ class Bot(commands.Bot):
         print("Running setup...")
 
         for cog in self._cogs:
-            print(f" Loading `{cog}` cog...", end="")
             self.load_extension(f"s4.bot.cogs.{cog}")
-            print(f"done.")
+            print(f" Loaded `{cog}` cog.")
 
         print("Setup complete.")
 
@@ -48,18 +47,15 @@ class Bot(commands.Bot):
         self.setup()
 
         print("Running bot...")
-        print(" Connectiong to Discord...", end="")
         super().run(Config.TOKEN, reconnect=True)
 
     async def shutdown(self):
         print("Shutting down...")
-        print(" Shutting down scheduler...", end="")
         self.scheduler.shutdown()
-        print("done.")
+        print(" Shut down scheduler.")
 
-        print(" Closing database connection...", end="")
         await self.db.close()
-        print("done.")
+        print(" Closed database connection.")
 
         hub = self.get_cog("Hub")
         if (sc := getattr(hub, "stdout_channel", None)) is not None:
@@ -74,33 +70,30 @@ class Bot(commands.Bot):
 
     async def on_connect(self):
         if not self.ready.booted:
-            print("done.")
-            print(" Connecting to database...", end="")
+            print(f" Connected to Discord (latency: {self.latency*1000:,.0f} ms).")
             await self.db.connect()
-            print("done.")
-            print(" Readying...", end="")
-        else:
-            print(f"> Bot connected (DWSP latency: {self.latency*1000:,.0f} ms).")
+            print(" Connected to database.")
+
+    async def on_resumed(self):
+        print("Bot resumed.")
 
     async def on_disconnect(self):
-        print("> Bot disconnected.")
+        print("Bot disconnected.")
 
     async def on_ready(self):
         if not self.ready.booted:
-            print("done.")
-            print(" Starting scheduler...", end="")
+            print(" Readied.")
             self.scheduler.start()
-            print(f"done ({len(self.scheduler.get_jobs()):,} job(s)).")
+            print(f" Scheduler started ({len(self.scheduler.get_jobs()):,} job(s)).")
 
-            print(" Syncing database...", end="")
             await self.db.sync()
-            print("done.")
+            print(" Synchronised database.")
 
-            print(" Bot ready.")
             self.ready.booted = True
+            print(" Bot booted.")
 
         else:
-            print(f"> Bot reconnected (DWSP latency: {self.latency*1000:,.0f} ms).")
+            print("Bot reconnected.")
 
         await self.presence.set()
 
@@ -110,9 +103,12 @@ class Bot(commands.Bot):
     # async def on_command_error(self, ctx, exc):
     #     pass
 
+    async def prefix(self, guild):
+        return await self.db.field("SELECT Prefix FROM system WHERE GuildID = ?", guild.id)
+
     async def command_prefix(self, bot, msg):
-        # TODO: Re-add support for custom prefixes.
-        return commands.when_mentioned_or(Config.DEFAULT_PREFIX)(bot, msg)
+        prefix = await self.prefix(msg.guild)
+        return commands.when_mentioned_or(prefix or Config.DEFAULT_PREFIX)(bot, msg)
 
     async def process_commands(self, msg):
         ctx = await self.get_context(msg, cls=commands.Context)
