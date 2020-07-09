@@ -18,8 +18,8 @@ class Bot(commands.Bot):
 
         self.scheduler = AsyncIOScheduler()
         self.db = Database(self)
-        self.emoji = EmojiGetter(self)
         self.embed = EmbedConstructor(self)
+        self.emoji = EmojiGetter(self)
         self.message = MessageConstructor(self)
         self.presence = PresenceSetter(self)
         self.ready = Ready(self)
@@ -97,11 +97,13 @@ class Bot(commands.Bot):
 
         await self.presence.set()
 
-    # async def on_error(self, err, *args, **kwargs):
-    #     pass
+    async def on_error(self, err, *args, **kwargs):
+        error = self.get_cog("Error")
+        await error.error(err, *args, **kwargs)
 
-    # async def on_command_error(self, ctx, exc):
-    #     pass
+    async def on_command_error(self, ctx, exc):
+        error = self.get_cog("Error")
+        await error.command_error(ctx, exc)
 
     async def prefix(self, guild):
         return await self.db.field("SELECT Prefix FROM system WHERE GuildID = ?", guild.id)
@@ -118,7 +120,7 @@ class Bot(commands.Bot):
                 await self.invoke(ctx)
             else:
                 # TODO: Change this to JSON message implementation.
-                await ctx.send(self.message.load("not ready"))
+                await ctx.send(self.message.load("bot is not ready"))
 
     async def on_message(self, msg):
         if not msg.author.bot:

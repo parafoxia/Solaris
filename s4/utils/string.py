@@ -26,11 +26,11 @@ def text_is_formattible(text):
         return False
 
 
-def list_of(items):
+def list_of(items, sep="and"):
     if len(items) > 2:
-        return "{}, and {}".format(", ".join(items[:-1]), items[-1])
+        return "{}, {} {}".format(", ".join(items[:-1]), sep, items[-1])
     else:
-        return " and ".join(items)
+        return f" {sep} ".join(items)
 
 
 def ordinal(number):

@@ -12,6 +12,25 @@
         "left guild": "Left guild. Name: {guild.name} • Members: {guild.member_count} • ID: {guild.id}"
     },
     "error": {
-        "not ready": "S4 is not ready to receive commands right now. Please wait a few seconds."
+        "something went wrong": "Something went wrong (ref: {ref}).",
+        "command went wrong": "Something went wrong (ref: {ref}). Quote this reference in the support server, which you can get a link for by using `@S4 support`.",
+        "missing required argument": "No `{exc.param}` argument was passed, despite being required. Use `@S4 help {cmd}` for more information.",
+        "bad argument": "One or more arguments are invalid. Use `@S4 help {cmd}` for more information.",
+        "too many arguments": "Too many arguments have been passed. Use `@S4 help {cmd}` for more information.",
+        "missing permissions": "You do not have the {missing_perms} permission(s), which are required to use this command.",
+        "bot missing permissions": "S4 does not have the {missing_perms} permission(s), which are required to use this command.",
+        "not owner": "That command can only be used by S4's owner.",
+        "command on user cooldown": "You can not use that commands for another {length}.",
+        "command on guild cooldown": "That command can not be used in this server for another {length}.",
+        "command on channel cooldown": "That command can not be used in this channel for another {length}.",
+        "command on member cooldown": "You can not use that command in this server for another {length}.",
+        "command on category cooldown": "That command can not be used in this category for another {length}.",
+        "invalid end of quoted string error": "S4 expected a space after the closing quote, but found a(n) `{exc.char}` instead.",
+        "expected closing quote error": "S4 expected a closing quote character, but did not find one.",
+        "user input error": "There was an unhandled user input problem (probably argument passing error). Use `@S4 help {cmd}` for more information.",
+        "check failure": "There was an unhandled command check error (probably missing privileges). Use `@S4 help {cmd}` for more information.",
+        "http exception": "A HTTP exception occurred ({status})\n```{text}```",
+        "bot is not ready": "S4 is still booting and is not ready to receive commands. Please try again later.",
+        "module is not ready": "The {module} module is still initialising and is not ready to receive commands. Please try again later."
     }
 }
