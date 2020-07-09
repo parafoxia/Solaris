@@ -1,4 +1,4 @@
-from os.path import isdir
+from os import path
 
 from aiosqlite import connect
 from apscheduler.triggers.cron import CronTrigger
@@ -14,7 +14,7 @@ class Database:
         self.bot.scheduler.add_job(self.commit, CronTrigger(second=0))
 
     async def connect(self):
-        if not isdir(self.bot._dynamic):
+        if not path.isdir(self.bot._dynamic):
             # If this directory does not exist, we need to create it.
             from os import makedirs
 
