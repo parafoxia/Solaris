@@ -19,11 +19,10 @@ class Menu:
         else:
             await self.message.delete()
 
-    async def timeout(self):
+    async def timeout(self, length):
         if self.timeout_pagemap:
-            length = kwargs.get("length", None)
             await self.message.clear_reactions()
-            await self.message.edit(embed=self.bot.embed.build(ctx=self.ctx, length=length, **self.timeout_pagemap))
+            await self.message.edit(embed=self.bot.embed.build(ctx=self.ctx, **self.timeout_pagemap))
         else:
             await self.stop()
 
@@ -31,10 +30,7 @@ class Menu:
         await self.message.edit(embed=self.bot.embed.build(ctx=self.ctx, **(pagemap or self.start_pagemap)))
 
     def __repr__(self):
-        return (
-            f"<Menu"
-            f" message={self.message!r}>"
-        )
+        return f"<Menu message={self.message!r}>"
 
 
 class SelectionMenu(Menu):

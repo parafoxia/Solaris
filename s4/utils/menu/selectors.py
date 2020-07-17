@@ -40,7 +40,7 @@ class Selector:
         try:
             reaction, user = await self.menu.bot.wait_for("reaction_add", timeout=self.timeout, check=self.check)
         except TimeoutError:
-            await self.menu.timeout(length=chron.long_delta(timedelta(seconds=self.timeout)))
+            await self.menu.timeout(chron.long_delta(timedelta(seconds=self.timeout)))
         else:
             if (r := reaction.emoji.name) == "exit" and self.auto_exit:
                 await self.menu.stop()
@@ -129,7 +129,7 @@ class NumericalSelector(Selector):
         try:
             reaction, user = await self.menu.bot.wait_for("reaction_add", timeout=self.timeout, check=self.check)
         except TimeoutError:
-            await self.menu.timeout(length=chron.long_delta(timedelta(seconds=self.timeout)))
+            await self.menu.timeout(chron.long_delta(timedelta(seconds=self.timeout)))
         else:
             if (r := reaction.emoji.name) == "exit":
                 if self.auto_exit:
@@ -222,7 +222,7 @@ class PageControls(Selector):
         try:
             reaction, user = await self.menu.bot.wait_for("reaction_add", timeout=self.timeout, check=self.check)
         except TimeoutError:
-            await self.menu.timeout(length=chron.long_delta(timedelta(seconds=self.timeout)))
+            await self.menu.timeout(chron.long_delta(timedelta(seconds=self.timeout)))
         else:
             if (r := reaction.emoji.name) == "exit":
                 if self.auto_exit:

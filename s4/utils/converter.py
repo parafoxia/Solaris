@@ -25,4 +25,5 @@ class GottenGuild(Converter):
 
 class Command(Converter):
     async def convert(self, ctx, arg):
-        return ctx.bot.get_command(arg)
+        # False indicates command doesn't exist.
+        return ctx.bot.get_command(arg) or False
