@@ -10,8 +10,11 @@ class EmbedConstructor:
         self.bot = bot
 
     @staticmethod
-    def get_pagemap(key):
-        return EMBEDS.get(key, {})
+    def get_pagemap(key, **kwargs):
+        pm = EMBEDS.get(key, {})
+        if kwargs:
+            pm.update(kwargs)
+        return pm
 
     def build(self, **kwargs):
         ctx = kwargs.get("ctx")

@@ -32,6 +32,7 @@
         "http exception": "A HTTP exception occurred ({status})\n```{text}```",
         "bot is not ready": "S4 is still booting and is not ready to receive commands. Please try again later.",
         "module is not ready": "The {module} module is still initialising and is not ready to receive commands. Please try again later.",
+        "command does not exist": "S4 has no commands or aliases with that name.",
         "no help available": "No help is available for that command."
     }
 }
