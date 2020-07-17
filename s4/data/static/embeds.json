@@ -1,0 +1,19 @@
+{
+    "help menu closed": {
+        "header": "Help",
+        "description": "The help menu was closed by the user."
+    },
+    "help menu timed out": {
+        "header": "Help",
+        "description": "The help menu timed out."
+    },
+    "help command": {
+        "header": "Help",
+        "description": "{description}",
+        "fields": [
+            ["Syntax (<required> • [optional])", "{syntax}", false],
+            ["User requirements", "{user_reqs}", false],
+            ["S4 requirements", "Read Messages\nSend Messages\n{bot_reqs}", false]
+        ]
+    }
+}
