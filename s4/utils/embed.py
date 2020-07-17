@@ -9,6 +9,10 @@ class EmbedConstructor:
     def __init__(self, bot):
         self.bot = bot
 
+    @staticmethod
+    def get_pagemap(key):
+        return EMBEDS.get(key, {})
+
     def build(self, **kwargs):
         ctx = kwargs.get("ctx")
 
@@ -45,26 +49,26 @@ class EmbedConstructor:
         return embed
 
     def load(self, key, **kwargs):
-        stored = EMBEDS[key]
+        pagemap = self.get_pagemap(key)
         ctx = kwargs.get("ctx")
 
         embed = Embed(
-            title=stored.get("title"),
-            description=stored.get("description"),
+            title=kwargs.get("title", pagemap.get("title", "")).format(**kwargs),
+            description=kwargs.get("description", pagemap.get("description", "")).format(**kwargs),
             colour=(
-                # The stored colour must be an integer, not hex.
-                stored.get("colour") or ctx.author.colour
+                # The pagemap colour must be an integer, not hex.
+                pagemap.get("colour") or ctx.author.colour
                 if ctx and ctx.author.colour.value
                 else None or DEFAULT_EMBED_COLOUR
             ),
             timestamp=datetime.utcnow(),
         )
 
-        embed.set_author(name=stored.get("header", "S4"))
+        embed.set_author(name=pagemap.get("header", "S4"))
         embed.set_footer(
-            text=stored.get(
-                "footer", f"Requested by {ctx.author.display_name}" if ctx else "Server Safety and Security Systems"
-            ),
+            text=pagemap.get(
+                "footer", f"Invoked by {ctx.author.display_name}" if ctx else "Server Safety and Security Systems"
+            ).format(**kwargs),
             icon_url=ctx.author.avatar_url if ctx else Embed.Empty,
         )
 
@@ -77,7 +81,7 @@ class EmbedConstructor:
         if image := kwargs.get("image"):
             embed.set_image(url=image)
 
-        for name, value, inline in stored.get("fields", kwargs.get("fields", [])):
-            embed.add_field(name=name, value=value, inline=inline)
+        for name, value, inline in pagemap.get("fields", kwargs.get("fields", [])):
+            embed.add_field(name=name.format(**kwargs), value=value.format(**kwargs), inline=inline)
 
         return embed
