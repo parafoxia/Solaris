@@ -1,8 +1,0 @@
-{
-    "__modules__": {
-        "help": "This module is aimed at assisting you with using S4."
-    },
-    "help": {
-        "description": "Help with anything S4. Passing a command name or alias through will show help with that specific command, while passing no arguments will bring up a general command overview."
-    }
-}

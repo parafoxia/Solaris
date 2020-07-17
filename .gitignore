@@ -252,10 +252,3 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-
-### Custom ###
-secrets/
-*.db3
-*.db3-journal
-*.db3-shm
-*.db3-wal
