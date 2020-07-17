@@ -1,19 +1,23 @@
 {
-    "test": {
-        "header": "Test Embed",
-        "title": "A test!",
-        "description": "This is a test embed.",
+    "help menu": {
+        "header": "Help",
+        "description": "This is a test."
+    },
+    "help menu closed": {
+        "header": "Help",
+        "description": "The help menu was closed by the user."
+    },
+    "help menu timed out": {
+        "header": "Help",
+        "desciption": "The help menu timed out after {timeout} of activity."
+    },
+    "help command": {
+        "header": "Help",
+        "description": "{description}",
         "fields": [
-            [
-                "Name",
-                "Value",
-                true
-            ],
-            [
-                "Test",
-                "Field",
-                false
-            ]
+            ["Syntax • <required> • [optional]", "{syntax}", false],
+            ["User requirements", "{user_reqs}", false],
+            ["S4 requirements", "Read Messages\nSend Messages\n{bot_reqs}", false]
         ]
     }
 }

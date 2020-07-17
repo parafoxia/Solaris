@@ -31,6 +31,7 @@
         "check failure": "There was an unhandled command check error (probably missing privileges). Use `@S4 help {cmd}` for more information.",
         "http exception": "A HTTP exception occurred ({status})\n```{text}```",
         "bot is not ready": "S4 is still booting and is not ready to receive commands. Please try again later.",
-        "module is not ready": "The {module} module is still initialising and is not ready to receive commands. Please try again later."
+        "module is not ready": "The {module} module is still initialising and is not ready to receive commands. Please try again later.",
+        "no help available": "No help is available for that command."
     }
 }
