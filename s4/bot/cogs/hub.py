@@ -38,14 +38,15 @@ class Hub(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, msg):
-        if msg.guild == self.guild and not msg.author.bot and self.bot.user in msg.mentions:
-            if msg.channel == self.commands_channel:
-                if msg.content.startswith("shutdown"):
-                    await self.bot.shutdown()
+        if self.bot.ready.hub:
+            if msg.guild == self.guild and not msg.author.bot and self.bot.user in msg.mentions:
+                if msg.channel == self.commands_channel:
+                    if msg.content.startswith("shutdown"):
+                        await self.bot.shutdown()
 
-            elif msg.channel == self.relay_channel:
-                # TODO: Add relay system.
-                pass
+                elif msg.channel == self.relay_channel:
+                    # TODO: Add relay system.
+                    pass
 
 
 def setup(bot):

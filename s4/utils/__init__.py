@@ -1,4 +1,13 @@
-__all__ = ["DEFAULT_EMBED_COLOUR", "EMBEDS", "ERROR_ICON", "INFO_ICON", "LOADING_ICON", "MESSAGES", "ROOT_DIR"]
+__all__ = [
+    "DEFAULT_EMBED_COLOUR",
+    "EMBEDS",
+    "ERROR_ICON",
+    "HELPS",
+    "INFO_ICON",
+    "LOADING_ICON",
+    "MESSAGES",
+    "ROOT_DIR",
+]
 
 from json import load
 from pathlib import Path
@@ -15,9 +24,13 @@ with open("./s4/data/static/messages.json", "r", encoding="utf-8") as f:
 with open("./s4/data/static/embeds.json", "r", encoding="utf-8") as f:
     EMBEDS = load(f)
 
+with open("./s4/data/static/help.json", "r", encoding="utf-8") as f:
+    HELPS = load(f)
+
 # Dependant on constants above.
 from .embed import EmbedConstructor
 from .emoji import EmojiGetter
 from .message import MessageConstructor
 from .presence import PresenceSetter
 from .ready import Ready
+from .search import Search
