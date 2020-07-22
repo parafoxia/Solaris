@@ -16,6 +16,11 @@ class Error(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    @commands.Cog.listener()
+    async def on_ready(self):
+        if not self.bot.ready.booted:
+            self.bot.ready.up(self)
+
     async def error(self, err, *args, **kwargs):
         ref = await self.record_error(args[0] if len(args) > 0 else None)
         hub = self.bot.get_cog("Hub")
@@ -120,7 +125,7 @@ class Error(commands.Cog):
     @commands.command(name="recallerror", aliases=["err"])
     @commands.is_owner()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
-    async def recall_error(self, ctx, ref: str):
+    async def recallerror_command(self, ctx, ref: str):
         content, error_time, traceback = await self.bot.db.record(
             "SELECT Content, ErrorTime, Traceback FROM errors WHERE Ref = ?", ref
         )

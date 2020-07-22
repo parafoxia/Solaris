@@ -1,9 +1,8 @@
-from typing import Optional
+import typing as t
 
 from discord.ext import commands
 
-from s4.utils import HELPS, menu
-from s4.utils.converter import Command
+from s4.utils import HELPS, converters, menu
 
 
 class HelpMenu(menu.MultiPageMenu):
@@ -15,7 +14,6 @@ class HelpMenu(menu.MultiPageMenu):
 
     async def start(self):
         r = await super().start()
-        print(r)
 
 
 class Help(commands.Cog):
@@ -23,6 +21,11 @@ class Help(commands.Cog):
         self.bot = bot
 
         self.bot.remove_command("help")
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        if not self.bot.ready.booted:
+            self.bot.ready.up(self)
 
     @staticmethod
     def syntax(cmd):
@@ -69,7 +72,7 @@ class Help(commands.Cog):
         return mapping
 
     @commands.command(name="help")
-    async def show_help(self, ctx, cmd: Optional[Command]):
+    async def help_command(self, ctx, cmd: t.Optional[converters.Command]):
         if cmd is None:
             pagemaps = []
 

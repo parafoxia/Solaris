@@ -1,12 +1,11 @@
 from pathlib import Path
 
+import discord
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from discord import Status
 from discord.ext import commands
 
-from s4 import Config
+from s4 import Config, utils
 from s4.db import Database
-from s4.utils import EmbedConstructor, EmojiGetter, MessageConstructor, PresenceSetter, Ready
 
 
 class Bot(commands.Bot):
@@ -18,21 +17,13 @@ class Bot(commands.Bot):
 
         self.scheduler = AsyncIOScheduler()
         self.db = Database(self)
-        self.embed = EmbedConstructor(self)
-        self.emoji = EmojiGetter(self)
-        self.message = MessageConstructor(self)
-        self.presence = PresenceSetter(self)
-        self.ready = Ready(self)
+        self.embed = utils.EmbedConstructor(self)
+        self.emoji = utils.EmojiGetter(self)
+        self.message = utils.MessageConstructor(self)
+        self.presence = utils.PresenceSetter(self)
+        self.ready = utils.Ready(self)
 
-        super().__init__(command_prefix=self.command_prefix, case_insensitive=True, status=Status.dnd)
-
-    @property
-    def guild_count(self):
-        return len(self.guilds)
-
-    @property
-    def user_count(self):
-        return len(self.users)
+        super().__init__(command_prefix=self.command_prefix, case_insensitive=True, status=discord.Status.dnd)
 
     def setup(self):
         print("Running setup...")
@@ -125,3 +116,32 @@ class Bot(commands.Bot):
     async def on_message(self, msg):
         if not msg.author.bot:
             await self.process_commands(msg)
+
+    @property
+    def guild_count(self):
+        return len(self.guilds)
+
+    @property
+    def user_count(self):
+        return len(self.users)
+
+    async def grab_user(self, arg):
+        # A convenience method that initially calls get, and falls back to fetch.
+        try:
+            return self.get_user(arg) or await self.fetch_user(arg)
+        except (ValueError, discord.NotFound):
+            return None
+
+    async def grab_channel(self, arg):
+        # A convenience method that initially calls get, and falls back to fetch.
+        try:
+            return self.get_channel(arg) or await self.fetch_channel(arg)
+        except (ValueError, discord.NotFound):
+            return None
+
+    async def grab_guild(self, arg):
+        # A convenience method that initially calls get, and falls back to fetch.
+        try:
+            return self.get_guild(arg) or await self.fetch_guild(arg)
+        except (ValueError, discord.NotFound):
+            return None
