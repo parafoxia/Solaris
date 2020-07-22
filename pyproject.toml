@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "S4-Server-Safety-Security-Systems"
-version = "0.0.1"
+version = "1.0.0-alpha"
 description = "Server Safety and Security Systems designed to make your server a safer and better place."
 
 license = "MPL-2.0"
