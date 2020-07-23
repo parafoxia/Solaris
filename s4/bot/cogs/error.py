@@ -1,5 +1,5 @@
+import datetime as dt
 import json
-from datetime import datetime, timedelta
 from os import path
 from time import time
 from traceback import format_exc
@@ -82,7 +82,7 @@ class Error(commands.Cog):
             await ctx.send(
                 self.bot.message.load(
                     f"command on {str(exc.cooldown.type).split('.')[-1]} cooldown",
-                    length=chron.long_delta(timedelta(seconds=exc.retry_after)),
+                    length=chron.long_delta(dt.timedelta(seconds=exc.retry_after)),
                 )
             )
 
