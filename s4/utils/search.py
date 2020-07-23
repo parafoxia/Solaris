@@ -1,4 +1,4 @@
-class Match(object):
+class Match:
     def __init__(self, term, comparison, case_sensitive=False):
         self.term = term
         self.comparison = comparison
@@ -48,7 +48,7 @@ class Match(object):
         return self.comparison != value.comparison
 
 
-class Search(object):
+class Search:
     def __init__(self, term, comparisons, case_sensitive=False):
         self.term = term
         self.comparisons = comparisons

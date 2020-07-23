@@ -2,6 +2,7 @@ class Ready:
     def __init__(self, bot):
         self.bot = bot
         self.booted = False
+        self.synced = False
 
         for cog in self.bot._cogs:
             setattr(self, cog, False)

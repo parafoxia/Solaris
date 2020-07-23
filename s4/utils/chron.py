@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+import datetime as dt
 from time import strftime
 
 from s4.utils import string
@@ -9,7 +9,7 @@ def sys_time():
 
 
 def utc_time():
-    return datetime.utcnow().strftime("%H:%M:%S")
+    return dt.datetime.utcnow().strftime("%H:%M:%S")
 
 
 def short_date(dt):
@@ -70,13 +70,13 @@ def long_delta(td):
     return string.list_of(parts)
 
 
-def from_iso(stamp, dt=True):
+def from_iso(stamp):
     try:
-        return datetime.fromisoformat(stamp) if dt else date.fromisoformat(stamp)
+        return dt.datetime.fromisoformat(stamp)
     except TypeError:
         # In case there's no records:
-        return datetime.min if dt else date.min
+        return dt.datetime.min
 
 
-def to_iso(obj, dt=True):
-    return obj.isoformat(" ") if dt else obj.isoformat()
+def to_iso(obj):
+    return obj.isoformat(" ")

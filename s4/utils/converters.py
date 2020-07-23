@@ -27,6 +27,7 @@ class Command(commands.Converter):
 
 class SearchedMember(commands.Converter):
     async def convert(self, ctx, arg):
-        return ctx.guild.get_member_named(
-            Search(arg, [m.display_name for m in ctx.guild.members()].best(min_accuracy=0.75))
+        return discord.utils.get(
+            ctx.guild.members,
+            name=str(Search(arg, [m.display_name for m in ctx.guild.members]).best(min_accuracy=0.75)),
         )
