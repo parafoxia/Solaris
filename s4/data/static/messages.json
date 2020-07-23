@@ -9,7 +9,10 @@
         "online": "S4 is now online! (Version {version})",
         "shutting down": "S4 is shutting down. (Version {version})",
         "joined guild": "Joined guild! Nº: {bot.guild_count:,} • Name: {guild.name} • Members: {guild.member_count:,} • ID: {guild.id}",
-        "left guild": "Left guild. Name: {guild.name} • Members: {guild.member_count} • ID: {guild.id}"
+        "left guild": "Left guild. Name: {guild.name} • Members: {guild.member_count} • ID: {guild.id}",
+        "ping": "Pong! DWSP latency: {dwspl:,.0f} ms. Response time: - ms.",
+        "pong": "Pong! DWSP latency: {dwspl:,.0f} ms. Response time: {rt:,.0f} ms.",
+        "server prefix": "S4's prefix in this server is {pfx}. To change it, use `@S4 config system prefix <new prefix>`."
     },
     "error": {
         "something went wrong": "Something went wrong (ref: {ref}).",
@@ -33,6 +36,8 @@
         "bot is not ready": "S4 is still booting and is not ready to receive commands. Please try again later.",
         "module is not ready": "The {module} module is still initialising and is not ready to receive commands. Please try again later.",
         "command does not exist": "S4 has no commands or aliases with that name.",
-        "no help available": "No help is available for that command."
+        "no help available": "No help is available for that command.",
+        "invalid user": "S4 was unable to identify a user with the information provided.",
+        "invalid guild": "S4 was unable to identify a server with the information provided."
     }
 }

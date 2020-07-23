@@ -12,9 +12,6 @@ class HelpMenu(menu.MultiPageMenu):
 
         super().__init__(ctx, pagemaps, spm, tpm, timeout=120.0)
 
-    async def start(self):
-        r = await super().start()
-
 
 class Help(commands.Cog):
     def __init__(self, bot):
@@ -34,12 +31,15 @@ class Help(commands.Cog):
 
     @staticmethod
     def module_description(cog):
-        return HELPS["__modules__"].get(cog.qualified_name.lower(), "No module description available.")
+        return HELPS[cog.qualified_name.lower()].get("_", "No module description available.")
 
     @staticmethod
-    def brief(cmd):
-        # This goes on the basis the cmd is definitely in HELPS (which should be guaranteed).
-        return HELPS[cmd.name].get("description", "No description available.").split(".", maxsplit=1)[0]
+    def brief(cog, cmd):
+        return (
+            HELPS[cog.qualified_name.lower()][cmd.name]
+            .get("description", "No description available.")
+            .split(".", maxsplit=1)[0]
+        )
 
     @staticmethod
     def full_help(help_entry):
@@ -57,17 +57,19 @@ class Help(commands.Cog):
         mapping = {}
 
         for cog in self.bot.cogs.values():
-            cog_cmds = []
+            cog_help = HELPS.get(cog.qualified_name.lower(), None)
 
-            for cmd in filter(lambda c: c.name in HELPS.keys(), cog.get_commands()):
-                try:
-                    await cmd.can_run(ctx)
-                    cog_cmds.append(cmd)
-                except commands.CommandError:
-                    pass
+            if cog_help is not None:
+                cog_cmds = []
+                for cmd in filter(lambda c: c.name in cog_help.keys(), cog.get_commands()):
+                    try:
+                        await cmd.can_run(ctx)
+                        cog_cmds.append(cmd)
+                    except commands.CommandError:
+                        pass
 
-            if cog_cmds:
-                mapping.update({cog: cog_cmds})
+                if cog_cmds:
+                    mapping.update({cog: cog_cmds})
 
         return mapping
 
@@ -83,7 +85,7 @@ class Help(commands.Cog):
                         "title": f"The `{cog.qualified_name.lower()}` module",
                         "description": self.module_description(cog),
                         "thumbnail": self.bot.user.avatar_url,
-                        "fields": [(self.brief(cmd), self.syntax(cmd), False) for cmd in cmds],
+                        "fields": [(self.brief(cog, cmd), self.syntax(cmd), False) for cmd in cmds],
                     }
                 )
 
@@ -95,7 +97,7 @@ class Help(commands.Cog):
             elif cmd.name == "config":
                 pass
             else:
-                if (help_entry := HELPS.get(cmd.name, None)) is None:
+                if (help_entry := HELPS.get(cmd.cog.qualified_name.lower(), {}).get(cmd.name)) is None:
                     await ctx.send(self.bot.message.load("no help available"))
                 else:
                     await ctx.send(

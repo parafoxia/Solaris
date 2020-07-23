@@ -1,8 +1,44 @@
 {
-    "__modules__": {
-        "help": "This module is aimed at assisting you with using S4."
-    },
     "help": {
-        "description": "Help with anything S4. Passing a command name or alias through will show help with that specific command, while passing no arguments will bring up a general command overview."
+        "_": "This module is aimed at assisting you with using S4.",
+        "help": {
+            "description": "Help with anything S4. Passing a command name or alias through will show help with that specific command, while passing no arguments will bring up a general command overview."
+        }
+    },
+    "meta": {
+        "_": "This module enables you to retrieve information regarding S4, from invitation links to detailed bot statistics.",
+        "about": {
+            "description": "View information regarding those behind S4's development. This includes the developer and the testers, and also shows copyright information."
+        },
+        "support": {
+            "description": "Provides an invite link to S4's support server."
+        },
+        "invite": {
+            "description": "Provides the links necessary to invite S4 to other servers."
+        },
+        "ping": {
+            "description": "Pings S4."
+        },
+        "prefix": {
+            "description": "Displays S4's prefix in your server. Note that mentioning S4 will always work."
+        },
+        "botinfo": {
+            "description": "Displays statistical information on S4. This includes process and composition information, and also includes information about S4's reach."
+        },
+        "userinfo": {
+            "description": "Displays information on a given user. If no user is provided, S4 will display your information. Note that although S4 can display information about any user on Discord, the amount of information available is significantly lower for users not in the server the command was invoked in."
+        },
+        "avatar": {
+            "description": "Displays the avatar (or profile picture) of a given user. This is not limited to server members."
+        },
+        "serverinfo": {
+            "description": "Displays information on your server."
+        },
+        "detailedserverinfo": {
+            "description": "Displays more detailed information on your server. This command does not display well on mobile."
+        },
+        "icon": {
+            "description": "Displays the icon of your server."
+        }
     }
 }
