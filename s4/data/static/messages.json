@@ -3,9 +3,12 @@
 
     },
     "success": {
-        "kick success": "{kicks:,} member(s) were kicked in {kick_time}.",
-        "ban success": "{bans:,} member(s) were banned in {ban_time}.",
-        "clear success": "{cleared:,} message(s) were deleted in {clear_time}."
+        "kick success": "{kicks:,} member(s) were kicked.",
+        "ban success": "{bans:,} member(s) were banned.",
+        "clear success": "{cleared:,} message(s) were deleted.",
+        "nickname change success": "Nickname changed.",
+        "nickname clear success": "Cleared {clears:,} member(s)' nicknames.",
+        "nickname unhoist complete": "Unhoisted {unhoists:,} nicknames."
     },
     "info": {
         "online": "S4 is now online! (Version {version})",
@@ -16,7 +19,8 @@
         "pong": "Pong! DWSP latency: {dwspl:,.0f} ms. Response time: {rt:,.0f} ms.",
         "server prefix": "S4's prefix in this server is {pfx}. To change it, use `@S4 config system prefix <new prefix>`.",
         "unable to kick": "Failed to kick {member.display_name} as their permission set is superior to S4's.",
-        "unable to ban": "Failed to ban {member.display_name} as their permission set is superior to S4's."
+        "unable to ban": "Failed to ban {member.display_name} as their permission set is superior to S4's.",
+        "unable to clear nick": "Failed to clear the nickname of {member.display_name} as their permission set is superior to S4's."
     },
     "error": {
         "something went wrong": "Something went wrong (ref: {ref}).",
@@ -43,10 +47,15 @@
         "no help available": "No help is available for that command.",
         "invalid user": "S4 was unable to identify a user with the information provided.",
         "invalid guild": "S4 was unable to identify a server with the information provided.",
+        "invalid member": "S4 was unable to identify a server member with the information provided.",
         "no targets": "No valid targets were passed.",
         "delete message days outside bounds": "The number of days to delete is outside valid bounds - it should be between 0 and 7 inclusive.",
         "kick failed": "No members were kicked.",
         "ban failed": "No members were banned.",
-        "scan outside bounds": "The number of messages to clear is outside valid bounds - it should be between 1 and 100 inclusive."
+        "scan outside bounds": "The number of messages to clear is outside valid bounds - it should be between 1 and 100 inclusive.",
+        "nickname too long": "Nicknames can not be more than 32 characters in length.",
+        "nickname change failed": "S4 could not set that member's nickname due to a permissions problem.",
+        "nickname clear failed": "No members' nicknames were changed.",
+        "nickname unhoist failed": "None of members specficied has hoisted nicknames, or S4 failed to changed any hoisted nicknames."
     }
 }
