@@ -6,7 +6,7 @@
         }
     },
     "meta": {
-        "_": "This module enables you to retrieve information regarding S4, from invitation links to detailed bot statistics.",
+        "_": "Commands for retrieving information regarding S4, from invitation links to detailed bot statistics.",
         "about": {
             "description": "View information regarding those behind S4's development. This includes the developer and the testers, and also shows copyright information."
         },
@@ -39,6 +39,34 @@
         },
         "icon": {
             "description": "Displays the icon of your server."
+        }
+    },
+    "mod": {
+        "_": "Basic moderation actions designed to help you keep your server clean and safe.",
+        "kick": {
+            "description": "Kicks one or more members from your server.",
+            "user requirements": ["Kick Members"],
+            "bot requirements": ["Kick Members"]
+        },
+        "ban": {
+            "description": "Bans one or more members from your server.",
+            "user requirements": ["Ban Members"],
+            "bot requirements": ["Ban Members"]
+        },
+        "clear": {
+            "description": "Clears up to 100 messages from a channel.",
+            "user requirements": ["Manage Messages"],
+            "bot requirements": ["Manage Messages"]
+        },
+        "clearchannel": {
+            "description": "Clears an entire channel of messages.",
+            "user requirements": ["Manage Messages", "Manage Channels"],
+            "bot requirements": ["Manage Channels"]
+        },
+        "mute": {
+            "description": "Mutes one or more members of your server.",
+            "user requirements": ["Manage Roles"],
+            "bot requirements": ["Manage Roles"]
         }
     }
 }
