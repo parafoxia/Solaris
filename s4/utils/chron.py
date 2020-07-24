@@ -28,7 +28,7 @@ def long_date_and_time(dt):
     return dt.strftime("%d %b %Y at %H:%M:%S")
 
 
-def short_delta(td):
+def short_delta(td, milliseconds=False):
     parts = []
 
     if td.days != 0:
@@ -40,16 +40,17 @@ def short_delta(td):
     if (m := td.seconds // 60 - (60 * h)) != 0:
         parts.append(f"{m}m")
 
-    if (s := td.seconds - (60 * m) - (3600 * h)) != 0:
-        parts.append(f"{s}s")
-
-    if len(parts) == 0:
-        return "None"
+    if (s := td.seconds - (60 * m) - (3600 * h)) != 0 or not parts:
+        if milliseconds:
+            ms = round(td.microseconds / 1000)
+            parts.append(f"{s}.{ms}s")
+        else:
+            parts.append(f"{s}s")
 
     return ", ".join(parts)
 
 
-def long_delta(td):
+def long_delta(td, milliseconds=False):
     parts = []
 
     if (d := td.days) != 0:
@@ -61,11 +62,12 @@ def long_delta(td):
     if (m := td.seconds // 60 - (60 * h)) != 0:
         parts.append(f"{m} minute{'s' if m > 1 else ''}")
 
-    if (s := td.seconds - (60 * m) - (3600 * h)) != 0:
-        parts.append(f"{s} second{'s' if s > 1 else ''}")
-
-    if len(parts) == 0:
-        return "None"
+    if (s := td.seconds - (60 * m) - (3600 * h)) != 0 or not parts:
+        if milliseconds:
+            ms = round(td.microseconds / 1000)
+            parts.append(f"{s}.{ms} seconds")
+        else:
+            parts.append(f"{s} second{'s' if s > 1 else ''}")
 
     return string.list_of(parts)
 
