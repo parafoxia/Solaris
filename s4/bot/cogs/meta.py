@@ -217,7 +217,7 @@ class Meta(commands.Cog):
         )
 
     @commands.command(name="detailedserverinfo", aliases=["dsi", "detailedguildinfo", "dgi"])
-    # @commands.cooldown(1, 300, commands.BucketType.guild)
+    @commands.cooldown(1, 300, commands.BucketType.guild)
     async def detailedserverinfo_command(self, ctx):
         table_info = {
             "overview": [
@@ -237,7 +237,7 @@ class Meta(commands.Cog):
             "moderation": [
                 ("Verficiation level", str(ctx.guild.verification_level).title()),
                 ("Explicit media content filter", str(ctx.guild.explicit_content_filter).replace("_", " ").title()),
-                ("2FA requirement for moderation", ctx.guild.mfa_level)
+                ("2FA requirement for moderation", ctx.guild.mfa_level),
             ],
             "numerical": [
                 ("Members", f"{ctx.guild.member_count:,}"),
@@ -247,10 +247,19 @@ class Meta(commands.Cog):
                 ("Est. prune (7d)", f"{await ctx.guild.estimate_pruned_members(days=7):,}"),
                 ("Est. prune (30d)", f"{await ctx.guild.estimate_pruned_members(days=30):,}"),
                 ("Roles", f"{len(ctx.guild.roles):,}"),
-                ("Members with top role", f"{len([m for m in ctx.guild.members if ctx.guild.roles[-1] in m.roles]):,}"),
+                (
+                    "Members with top role",
+                    f"{len([m for m in ctx.guild.members if ctx.guild.roles[-1] in m.roles]):,}",
+                ),
                 ("Bans", f"{len(await ctx.guild.bans()) if ctx.guild.me.guild_permissions.ban_members else None:,}"),
-                ("Invites", f"{len(await ctx.guild.invites()) if ctx.guild.me.guild_permissions.manage_guild else None:,}"),
-                ("Webhooks", f"{len(await ctx.guild.webhooks()) if ctx.guild.me.guild_permissions.manage_webhooks else None:,}"),
+                (
+                    "Invites",
+                    f"{len(await ctx.guild.invites()) if ctx.guild.me.guild_permissions.manage_guild else None:,}",
+                ),
+                (
+                    "Webhooks",
+                    f"{len(await ctx.guild.webhooks()) if ctx.guild.me.guild_permissions.manage_webhooks else None:,}",
+                ),
                 ("Emojis", f"{len(ctx.guild.emojis):,}"),
                 ("Bitrate limit", f"{ctx.guild.bitrate_limit//1000:,.0f} kbps"),
                 ("Filesize limit", f"{ctx.guild.filesize_limit//(1024**2):,.0f} MB"),
