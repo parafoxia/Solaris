@@ -18,7 +18,7 @@ class Hub(commands.Cog):
                 self.stdout_channel = self.guild.get_channel(Config.HUB_STDOUT_CHANNEL_ID)
 
                 if self.stdout_channel is not None:
-                    await self.stdout_channel.send(self.bot.message.load("online", version=self.bot.version))
+                    await self.stdout_channel.send(f"{self.bot.info} S4 is now online! (Version {self.bot.version})")
 
             self.bot.ready.up(self)
 
@@ -27,14 +27,18 @@ class Hub(commands.Cog):
         await self.bot.db.execute("INSERT OR IGNORE INTO system (GuildID) VALUES (?)", guild.id)
 
         if self.stdout_channel is not None:
-            await self.stdout_channel.send(self.bot.message.load("joined guild", bot=self.bot, guild=guild))
+            await self.stdout_channel.send(
+                f"{self.bot.info} Joined guild! Nº: {self.bot.guild_count:,} • Name: {guild.name} • Members: {guild.member_count:,} • ID: {guild.id}"
+            )
 
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
         await self.bot.db.execute("DELETE FROM system WHERE GuildID = ?", guild.id)
 
         if self.stdout_channel is not None:
-            await self.stdout_channel.send(self.bot.message.load("left guild", guild=guild))
+            await self.stdout_channel.send(
+                f"{self.bot.info} Left guild. Name: {guild.name} • Members: {guild.member_count:,} • ID: {guild.id}"
+            )
 
     @commands.Cog.listener()
     async def on_message(self, msg):

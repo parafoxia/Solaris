@@ -44,12 +44,6 @@ class Meta(commands.Cog):
         if not self.bot.ready.booted:
             self.bot.ready.up(self)
 
-    @commands.command(name="shutdown")
-    @commands.is_owner()
-    async def shutdown_command(self, ctx):
-        # Use hub shutdown instead where possible.
-        await self.bot.shutdown()
-
     @commands.command(name="about", aliases=["credits"])
     async def about_command(self, ctx):
         self.developer = (await self.bot.application_info()).owner.mention
@@ -92,14 +86,20 @@ class Meta(commands.Cog):
 
     @commands.command(name="ping")
     async def ping_command(self, ctx):
+        lat = self.bot.latency * 1000
         s = time()
-        pm = await ctx.send(self.bot.message.load("ping", dwspl=(l := self.bot.latency * 1000)))
+        pm = await ctx.send(f"{self.bot.info} Pong! DWSP latency: {lat:,.0f} ms. Response time: - ms.")
         e = time()
-        await pm.edit(content=self.bot.message.load("pong", dwspl=l, rt=(e - s) * 1000))
+        await pm.edit(
+            content=f"{self.bot.info} Pong! DWSP latency: {lat:,.0f} ms. Response time: {(e-s)*1000:,.0f} ms."
+        )
 
     @commands.command(name="prefix")
     async def prefix_command(self, ctx):
-        await ctx.send(self.bot.message.load("server prefix", pfx=await self.bot.prefix(ctx.guild)))
+        prefix = await self.bot.prefix(ctx.guild)
+        await ctx.send(
+            f"{self.bot.info} S4's prefix in this server is {prefix}. To change it, use `{prefix}config system prefix <new prefix>`."
+        )
 
     @commands.command(name="botinfo", aliases=["bi", "botstats", "stats", "bs"])
     @commands.cooldown(1, 300, commands.BucketType.user)
@@ -172,7 +172,7 @@ class Meta(commands.Cog):
             )
 
         else:
-            await ctx.send(self.bot.message.load("invalid user"))
+            await ctx.send(f"{self.bot.cross} S4 was unable to identify a user with the information provided.")
 
     @commands.command(name="avatar", aliases=["profile", "pfp"])
     async def avatar_command(
@@ -184,7 +184,7 @@ class Meta(commands.Cog):
             name = getattr(target, "display_name", target.name)
             await ctx.send(embed=self.bot.embed.load("user avatar", ctx=ctx, image=target.avatar_url, name=name))
         else:
-            await ctx.send(self.bot.message.load("invalid user"))
+            await ctx.send(f"{self.bot.cross} S4 was unable to identify a user with the information provided.")
 
     @commands.command(name="serverinfo", aliases=["si", "guildinfo", "gi"])
     async def serverinfo_command(self, ctx):
@@ -275,6 +275,16 @@ class Meta(commands.Cog):
     @commands.command(name="icon")
     async def icon_command(self, ctx):
         await ctx.send(embed=self.bot.embed.load("guild icon", ctx=ctx, image=ctx.guild.icon_url, target=ctx.guild))
+
+    @commands.command(name="leave")
+    async def leave_command(self, ctx):
+        pass
+
+    @commands.command(name="shutdown")
+    @commands.is_owner()
+    async def shutdown_command(self, ctx):
+        # Use hub shutdown instead where possible.
+        await self.bot.shutdown()
 
 
 def setup(bot):
