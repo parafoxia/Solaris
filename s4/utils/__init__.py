@@ -18,9 +18,6 @@ INFO_ICON = "https://cdn.discordapp.com/attachments/710177462989881415/711348122
 LOADING_ICON = "https://cdn.discordapp.com/attachments/710177462989881415/710178153200353360/loading500.gif"
 ROOT_DIR = Path(__file__).parent.parent.parent
 
-with open("./s4/data/static/messages.json", "r", encoding="utf-8") as f:
-    MESSAGES = load(f)
-
 with open("./s4/data/static/embeds.json", "r", encoding="utf-8") as f:
     EMBEDS = load(f)
 
@@ -30,7 +27,6 @@ with open("./s4/data/static/help.json", "r", encoding="utf-8") as f:
 # Dependant on constants above.
 from .embed import EmbedConstructor
 from .emoji import EmojiGetter
-from .message import MessageConstructor
 from .presence import PresenceSetter
 from .ready import Ready
 from .search import Search

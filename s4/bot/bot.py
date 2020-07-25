@@ -25,7 +25,6 @@ class Bot(commands.Bot):
         self.db = Database(self)
         self.embed = utils.EmbedConstructor(self)
         self.emoji = utils.EmojiGetter(self)
-        self.message = utils.MessageConstructor(self)
         self.presence = utils.PresenceSetter(self)
         self.ready = utils.Ready(self)
 
@@ -121,7 +120,9 @@ class Bot(commands.Bot):
             if self.ready.booted:
                 await self.invoke(ctx)
             else:
-                await ctx.send(f"{self.cross} S4 is still booting and is not ready to receive commands. Please try again later.")
+                await ctx.send(
+                    f"{self.cross} S4 is still booting and is not ready to receive commands. Please try again later."
+                )
 
     async def on_message(self, msg):
         if not msg.author.bot:

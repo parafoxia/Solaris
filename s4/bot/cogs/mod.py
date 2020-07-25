@@ -145,13 +145,17 @@ class Mod(commands.Cog):
         if len(nickname) > 32:
             await ctx.send(f"{self.bot.cross} Nicknames can not be more than 32 characters in length.")
         elif not isinstance(target, discord.Member):
-            await ctx.send(f"{self.bot.cross} S4 was unable to identify a server member with the information provided.")
+            await ctx.send(
+                f"{self.bot.cross} S4 was unable to identify a server member with the information provided."
+            )
         else:
             try:
                 await target.edit(nick=nickname)
                 await ctx.send(f"{self.bot.tick} Nickname changed.")
             except discord.Forbidden:
-                await ctx.send(f"{self.bot.cross} Failed to change {target.display_name}'s nickname as their permission set is superior to S4's.")
+                await ctx.send(
+                    f"{self.bot.cross} Failed to change {target.display_name}'s nickname as their permission set is superior to S4's."
+                )
 
     @commands.command(name="clearnickname", aliases=["clrnick"])
     @commands.has_permissions(manage_nicknames=True)
@@ -165,7 +169,9 @@ class Mod(commands.Cog):
                     await target.edit(nick=None)
                     count += 1
                 except discord.Forbidden:
-                    await ctx.send(f"Failed to clear {target.display_name}'s nickname as their permission set is superior to S4's.")
+                    await ctx.send(
+                        f"Failed to clear {target.display_name}'s nickname as their permission set is superior to S4's."
+                    )
 
             if count > 0:
                 await ctx.send(f"{self.bot.tick} Cleared {count:,} member(s)' nicknames.")
@@ -187,7 +193,7 @@ class Mod(commands.Cog):
                 except discord.Forbidden:
                     pass
 
-            await ctx.send("{self.bot.info} Unhoisted {count:,} nicknames.")
+            await ctx.send(f"{self.bot.info} Unhoisted {count:,} nicknames.")
 
 
 def setup(bot):

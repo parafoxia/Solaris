@@ -42,8 +42,8 @@ class Error(commands.Cog):
             pass
 
         # Custom check failure handling.
-        elif hasattr(exc, "key"):
-            await ctx.send(self.bot.message.load(exc.key, **exc.kwargs))
+        elif hasattr(exc, "msg"):
+            await ctx.send(f"{self.bot.cross} {exc.msg}")
 
         elif isinstance(exc, commands.MissingRequiredArgument):
             await ctx.send(
