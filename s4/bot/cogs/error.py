@@ -26,49 +26,51 @@ class Error(commands.Cog):
         hub = self.bot.get_cog("Hub")
 
         if (sc := getattr(hub, "stdout_channel", None)) is not None:
-            await sc.send(self.bot.message.load("something went wrong", ref=ref))
+            await sc.send(f"{self.bot.cross} Something went wrong (ref: {ref}).")
 
         if err == "on_command_error":
-            await args[0].send(self.bot.message.load("command went wrong", ref=ref))
+            await args[0].send(
+                f"{self.bot.cross} Something went wrong (ref: {ref}). Quote this reference in the support server, which you can get a link for by using `@S4 support`."
+            )
 
         raise  # Re-raises the last known exception.
 
     async def command_error(self, ctx, exc):
+        prefix = await self.bot.prefix(ctx, guild)
+
         if isinstance(exc, commands.CommandNotFound):
             pass
 
         # Custom check failure handling.
-        elif hasattr(exc, "key"):
-            await ctx.send(self.bot.message.load(exc.key, **exc.kwargs))
+        elif hasattr(exc, "msg"):
+            await ctx.send(f"{self.bot.cross} {exc.msg}")
 
         elif isinstance(exc, commands.MissingRequiredArgument):
-            await ctx.send(self.bot.message.load("missing required argument", exc=exc, cmd=ctx.command))
+            await ctx.send(
+                f"{self.bot.cross} No `{exc.param.name}` argument was passed, despite being required. Use `{prefix}help {ctx.comamnd}` for more information."
+            )
 
         elif isinstance(exc, commands.BadArgument):
-            await ctx.send(self.bot.message.load("bad argument", cmd=ctx.command))
+            await ctx.send(
+                f"{self.bot.cross} One or more arguments are invalid. Use `{prefix}help {ctx.command}` for more information."
+            )
 
         elif isinstance(exc, commands.TooManyArguments):
-            await ctx.send(self.bot.message.load("too many arguments", cmd=ctx.command))
+            await ctx.send(
+                f"{self.bot.cross} Too many arguments have been passed. Use `{prefix}help {ctx.command}` for more information.",
+            )
 
         elif isinstance(exc, commands.MissingPermissions):
+            mp = string.list_of([str(perm.replace("_", " ")).title() for perm in exc.missing_perms], sep="or")
             await ctx.send(
-                self.bot.message.load(
-                    "missing permissions",
-                    missing_perms=string.list_of(
-                        [str(perm.replace("_", " ")).title() for perm in exc.missing_perms], sep="or"
-                    ),
-                )
+                f"{self.bot.cross} You do not have the {mp} permission(s), which are required to use this command."
             )
 
         elif isinstance(exc, commands.BotMissingPermissions):
             try:
+                mp = string.list_of([str(perm.replace("_", " ")).title() for perm in exc.missing_perms], sep="or")
                 await ctx.send(
-                    self.bot.message.load(
-                        "bot missing permissions",
-                        missing_perms=string.list_of(
-                            [str(perm.replace("_", " ")).title() for perm in exc.missing_perms], sep="or"
-                        ),
-                    )
+                    f"{self.bot.cross} S4 does not have the {mp} permission(s), which are required to use this command."
                 )
             except Forbidden:
                 # If S4 does not have the Send Messages permission
@@ -76,34 +78,47 @@ class Error(commands.Cog):
                 pass
 
         elif isinstance(exc, commands.NotOwner):
-            await ctx.send(self.bot.message.load("not owner"))
+            await ctx.send(f"{self.bot.cross} That command can only be used by S4's owner.")
 
         elif isinstance(exc, commands.CommandOnCooldown):
+            cooldown_texts = {
+                "user": "{} You can not use that commands for another {}.",
+                "guild": "{} That command can not be used in this server for another {}.",
+                "channel": "{} That command can not be used in this channel for another {}.",
+                "member": "{} You can not use that command in this server for another {}.",
+                "category": "{} That command can not be used in this category for another {}.",
+            }
             await ctx.send(
-                self.bot.message.load(
-                    f"command on {str(exc.cooldown.type).split('.')[-1]} cooldown",
-                    length=chron.long_delta(dt.timedelta(seconds=exc.retry_after)),
+                cooldown_texts[str(exc.cooldown.type)].format(
+                    self.bot.cross, chron.long_delta(dt.timedelta(seconds=exc.retry_after))
                 )
             )
 
         elif isinstance(exc, commands.InvalidEndOfQuotedStringError):
-            await ctx.send(self.bot.message.load("invalid end of quoted string error", exc=exc))
+            await ctx.send(
+                f"{self.bot.cross} S4 expected a space after the closing quote, but found a(n) `{exc.char}` instead."
+            )
 
         elif isinstance(exc, commands.ExpectedClosingQuoteError):
-            await ctx.send(self.bot.message.load("expected closing quote error"))
+            await ctx.send(f"{self.bot.cross} S4 expected a closing quote character, but did not find one.")
 
         # Base errors.
         elif isinstance(exc, commands.UserInputError):
-            await ctx.send(self.bot.message.load("user input error"))
+            await ctx.send(
+                f"{self.bot.cross} There was an unhandled user input problem (probably argument passing error). Use `{prefix}help {ctx.command}` for more information."
+            )
 
         elif isinstance(exc, commands.CheckFailure):
-            await ctx.send(self.bot.message.load("check failure"))
+            await ctx.send(
+                f"{self.bot.cross} There was an unhandled command check error (probably missing privileges). Use `{prefix}help {ctx.command}` for more information."
+            )
 
         # Non-command errors.
         elif (original := getattr(exc, "original", None)) is not None:
             if isinstance(original, HTTPException):
-                await ctx.send(self.bot.message.load("http exception", status=original.status, text=original.text))
-
+                await ctx.send(
+                    f"{self.bot.cross} A HTTP exception occurred ({original.status})\n```{original.text}```"
+                )
             else:
                 raise original
 

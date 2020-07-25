@@ -25,7 +25,6 @@ class Bot(commands.Bot):
         self.db = Database(self)
         self.embed = utils.EmbedConstructor(self)
         self.emoji = utils.EmojiGetter(self)
-        self.message = utils.MessageConstructor(self)
         self.presence = utils.PresenceSetter(self)
         self.ready = utils.Ready(self)
 
@@ -57,7 +56,7 @@ class Bot(commands.Bot):
 
         hub = self.get_cog("Hub")
         if (sc := getattr(hub, "stdout_channel", None)) is not None:
-            await sc.send(self.message.load("shutting down", version=self.version))
+            await sc.send(f"{self.info} S4 is shutting down. (Version {self.version})")
 
         print(" Closing connection to Discord...")
         await super().close()
@@ -121,7 +120,9 @@ class Bot(commands.Bot):
             if self.ready.booted:
                 await self.invoke(ctx)
             else:
-                await ctx.send(self.message.load("bot is not ready"))
+                await ctx.send(
+                    f"{self.cross} S4 is still booting and is not ready to receive commands. Please try again later."
+                )
 
     async def on_message(self, msg):
         if not msg.author.bot:
@@ -161,6 +162,18 @@ class Bot(commands.Bot):
                 add_reactions=True,
             ),
         )
+
+    @property
+    def tick(self):
+        return self.emoji.mention("confirm")
+
+    @property
+    def cross(self):
+        return self.emoji.mention("cancel")
+
+    @property
+    def info(self):
+        return self.emoji.mention("info")
 
     async def grab_user(self, arg):
         # A convenience method that initially calls get, and falls back to fetch.

@@ -93,12 +93,12 @@ class Help(commands.Cog):
 
         else:
             if not cmd:
-                await ctx.send(self.bot.message.load("command does not exist"))
+                await ctx.send(f"{self.bot.cross} S4 has no commands or aliases with that name.")
             elif cmd.name == "config":
                 pass
             else:
                 if (help_entry := HELPS.get(cmd.cog.qualified_name.lower(), {}).get(cmd.name)) is None:
-                    await ctx.send(self.bot.message.load("no help available"))
+                    await ctx.send(f"{self.bot.cross} No help is available for that command.")
                 else:
                     await ctx.send(
                         embed=self.bot.embed.load(

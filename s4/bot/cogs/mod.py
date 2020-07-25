@@ -23,22 +23,24 @@ class Mod(commands.Cog):
         self, ctx, targets: commands.Greedy[discord.Member], *, reason: t.Optional[str] = "No reason provided."
     ):
         if not targets:
-            await ctx.send(self.bot.message.load("no targets"))
+            await ctx.send(f"{self.bot.cross} No valid targets were passed.")
         else:
-            kicks = 0
+            count = 0
 
             async with ctx.channel.typing():
                 for target in targets:
                     try:
                         await target.kick(reason=f"{reason} - Actioned by {ctx.author.name}")
-                        kicks += 1
+                        count += 1
                     except discord.Forbidden:
-                        await ctx.send(self.bot.message.load("unable to kick", member=target))
+                        await ctx.send(
+                            f"Failed to kick {target.display_name} as their permission set is superior to S4's."
+                        )
 
-                if kicks > 0:
-                    await ctx.send(self.bot.message.load("kick success", kicks=kicks))
+                if count > 0:
+                    await ctx.send(f"{self.bot.tick} {count:,} member(s) were kicked.")
                 else:
-                    await ctx.send(self.bot.message.load("kick failed"))
+                    await ctx.send(f"{self.bot.cross} No members were kicked.")
 
     @commands.command(name="ban")
     @commands.has_permissions(ban_members=True)
@@ -55,24 +57,30 @@ class Mod(commands.Cog):
         delete_message_days = delete_message_days or 1
 
         if not targets:
-            await ctx.send(self.bot.message.load("no targets"))
+            await ctx.send(f"{self.bot.cross} No valid targets were passed.")
         elif not 0 <= delete_message_days <= 7:
-            await ctx.send(self.bot.message.load("delete message days outside bounds"))
+            await ctx.send(
+                f"{self.bot.cross} The number of days to delete is outside valid bounds - it should be between 0 and 7 inclusive."
+            )
         else:
-            bans = 0
+            count = 0
 
             async with ctx.channel.typing():
                 for target in targets:
                     try:
-                        await target.ban(delete_message_days=delete_message_days, reason=f"{reason} - Actioned by {ctx.author.name}")
-                        bans += 1
+                        await target.ban(
+                            delete_message_days=delete_message_days, reason=f"{reason} - Actioned by {ctx.author.name}"
+                        )
+                        count += 1
                     except discord.Forbidden:
-                        await ctx.send(self.bot.message.load("unable to ban", member=target))
+                        await ctx.send(
+                            f"Failed to ban {target.display_name} as their permission set is superior to S4's."
+                        )
 
-                if bans > 0:
-                    await ctx.send(self.bot.message.load("ban success", bans=bans))
+                if count > 0:
+                    await ctx.send(f"{self.bot.tick} {count:,} member(s) were banned.")
                 else:
-                    await ctx.send(self.bot.message.load("ban failed"))
+                    await ctx.send(f"{self.bot.cross} No members were banned.")
 
     @commands.command(name="unban")
     @commands.has_permissions(ban_members=True)
@@ -91,13 +99,15 @@ class Mod(commands.Cog):
             return not targets or m.author in targets
 
         if not 0 < scan <= 100:
-            await ctx.send(self.bot.message.load("scan outside bounds"))
+            await ctx.send(
+                f"{self.bot.cross} The number of messages to clear is outside valid bounds - it should be between 1 and 100 inclusive."
+            )
         else:
             async with ctx.channel.typing():
                 await ctx.message.delete()
                 cleared = await ctx.channel.purge(limit=scan, check=_check)
                 await ctx.send(
-                    self.bot.message.load("clear success", cleared=len(cleared)), delete_after=5,
+                    f"{self.bot.tick} {len(cleared):,} message(s) were deleted.", delete_after=5,
                 )
 
     @commands.command(name="clearchannel", aliases=["clrch"])
@@ -113,7 +123,7 @@ class Mod(commands.Cog):
             await target.delete(reason=f"Channel cleared. - Actioned by {ctx.author.name}")
 
             if not ctx_is_target:
-                await ctx.send(self.bot.message.load("clear channel success"))
+                await ctx.send(f"{self.bot.tick} Channel cleared.")
 
     @commands.command(name="mute")
     @commands.has_permissions(manage_roles=True)
@@ -133,51 +143,57 @@ class Mod(commands.Cog):
         target = target or ctx.author
 
         if len(nickname) > 32:
-            await ctx.send(self.bot.message.load("nickname too long"))
+            await ctx.send(f"{self.bot.cross} Nicknames can not be more than 32 characters in length.")
         elif not isinstance(target, discord.Member):
-            await ctx.send(self.bot.message.load("invalid member"))
+            await ctx.send(
+                f"{self.bot.cross} S4 was unable to identify a server member with the information provided."
+            )
         else:
             try:
                 await target.edit(nick=nickname)
-                await ctx.send(self.bot.message.load("nickname change success"))
+                await ctx.send(f"{self.bot.tick} Nickname changed.")
             except discord.Forbidden:
-                await ctx.send(self.bot.message.load("nickname change failed"))
+                await ctx.send(
+                    f"{self.bot.cross} Failed to change {target.display_name}'s nickname as their permission set is superior to S4's."
+                )
 
     @commands.command(name="clearnickname", aliases=["clrnick"])
     @commands.has_permissions(manage_nicknames=True)
     @commands.bot_has_permissions(send_messages=True, manage_nicknames=True)
     async def clearnickname_command(self, ctx, targets: commands.Greedy[discord.Member]):
-        clears = 0
+        count = 0
 
         async with ctx.channel.typing():
             for target in targets:
                 try:
                     await target.edit(nick=None)
-                    clears += 1
+                    count += 1
                 except discord.Forbidden:
-                    await ctx.send(self.bot.message.load("unable to clear nickname"))
+                    await ctx.send(
+                        f"Failed to clear {target.display_name}'s nickname as their permission set is superior to S4's."
+                    )
 
-            if clears > 0:
-                await ctx.send(self.bot.message.load("nickname clear success", clears=clears))
+            if count > 0:
+                await ctx.send(f"{self.bot.tick} Cleared {count:,} member(s)' nicknames.")
             else:
-                await ctx.send(self.bot.message.load("nickname clear failed"))
+                await ctx.send(f"{self.bot.cross} No members' nicknames were changed.")
 
     @commands.command(name="unhoistnicknames")
     @commands.has_permissions(manage_nicknames=True)
     @commands.bot_has_permissions(send_messages=True, manage_nicknames=True)
     async def unhoistnicknames_command(self, ctx):
-        unhoists = 0
+        count = 0
 
         async with ctx.channel.typing():
             for member in ctx.guild.members:
                 try:
                     if (match := re.match("[^A-Za-z]+", member.display_name)) is not None:
                         await member.edit(nick=member.display_name.replace(match.group(), "", 1))
-                        unhoists += 1
+                        count += 1
                 except discord.Forbidden:
                     pass
 
-            await ctx.send(self.bot.message.load("nickname unhoist complete", unhoists=unhoists))
+            await ctx.send(f"{self.bot.info} Unhoisted {count:,} nicknames.")
 
 
 def setup(bot):
