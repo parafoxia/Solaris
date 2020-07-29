@@ -2,35 +2,52 @@ from s4.utils.menu import selectors
 
 
 class Menu:
-    def __init__(self, ctx, start_pagemap, stop_pagemap={}, timeout_pagemap={}):
+    def __init__(self, ctx, pagemap, *, delete_after=False, delete_invoke_after=None):
         self.ctx = ctx
         self.bot = ctx.bot
-        self.start_pagemap = start_pagemap
-        self.stop_pagemap = stop_pagemap
-        self.timeout_pagemap = timeout_pagemap
+        self.pagemap = pagemap
+        self.delete_after = delete_after
+        self.delete_invoke_after = delete_invoke_after or delete_after
 
     async def start(self):
-        self.message = await self.ctx.send(embed=self.bot.embed.build(ctx=self.ctx, **self.start_pagemap))
+        self.message = await self.ctx.send(embed=self.bot.embed.build(ctx=self.ctx, **self.pagemap))
 
     async def stop(self):
-        if self.stop_pagemap:
-            await self.message.clear_reactions()
-            await self.message.edit(embed=self.bot.embed.build(ctx=self.ctx, **self.stop_pagemap))
-        else:
+        if self.delete_after:
             await self.message.delete()
+        else:
+            await self.message.clear_reactions()
+            await self.message.edit(content=f"{self.bot.info} The interactive menu was closed.", embed=None)
+
+        if self.delete_invoke_after:
+            await self.ctx.message.delete()
 
     async def timeout(self, length):
-        if self.timeout_pagemap:
-            await self.message.clear_reactions()
-            await self.message.edit(embed=self.bot.embed.build(ctx=self.ctx, **self.timeout_pagemap))
+        if self.delete_after:
+            await self.message.delete()
         else:
-            await self.stop()
+            await self.message.clear_reactions()
+            await self.message.edit(
+                content=f"{self.bot.info} The interactive menu timed out as there was no user interation for {length}.",
+                embed=None,
+            )
 
-    async def switch(self, pagemap=None):
-        await self.message.edit(embed=self.bot.embed.build(ctx=self.ctx, **(pagemap or self.start_pagemap)))
+        if self.delete_invoke_after:
+            await self.ctx.message.delete()
+
+    async def switch(self, pagemap=None, clear_reactions=False):
+        if clear_reactions:
+            await self.message.clear_reactions()
+
+        await self.message.edit(embed=self.bot.embed.build(ctx=self.ctx, **(pagemap or self.pagemap)))
 
     def __repr__(self):
-        return f"<Menu message={self.message!r}>"
+        return (
+            f"<Menu"
+            f" delete_after={self.delete_after!r}"
+            f" delete_invoke_after={self.delete_invoke_after!r}"
+            f" message={self.message!r}>"
+        )
 
 
 class SelectionMenu(Menu):
@@ -38,15 +55,15 @@ class SelectionMenu(Menu):
         self,
         ctx,
         selection,
-        start_pagemap,
-        stop_pagemap={},
-        timeout_pagemap={},
+        pagemap,
         *,
+        delete_after=False,
+        delete_invoke_after=None,
         timeout=300.0,
         auto_exit=True,
         check=None,
     ):
-        super().__init__(ctx, start_pagemap, stop_pagemap, timeout_pagemap)
+        super().__init__(ctx, pagemap, delete_after=delete_after, delete_invoke_after=delete_invoke_after)
         self.selector = selectors.Selector(self, selection, timeout=timeout, auto_exit=auto_exit, check=check)
 
     async def start(self):
@@ -59,31 +76,8 @@ class SelectionMenu(Menu):
             f" timeout={self.timeout!r}"
             f" auto_exit={self.auto_exit!r}"
             f" check={self.check!r}"
-            f" message={self.message!r}>"
-        )
-
-
-class KeySelectionMenu(SelectionMenu):
-    def __init__(
-        self, ctx, selection, start_key, stop_key=None, timeout_key=None, *, timeout=300.0, auto_exit=True, check=None
-    ):
-        super().__init__(
-            ctx,
-            selection,
-            ctx.bot.embed.get_pagemap(start_key),
-            ctx.bot.embed.get_pagemap(stop_key),
-            ctx.bot.embed.get_pagemap(timeout_key),
-            timeout=timeout,
-            auto_exit=auto_exit,
-            check=check,
-        )
-
-    def __repr__(self):
-        return (
-            f"<KeySelectionMenu"
-            f" timeout={self.timeout!r}"
-            f" auto_exit={self.auto_exit!r}"
-            f" check={self.check!r}"
+            f" delete_after={self.delete_after!r}"
+            f" delete_invoke_after={self.delete_invoke_after!r}"
             f" message={self.message!r}>"
         )
 
@@ -93,15 +87,15 @@ class NumberedSelectionMenu(Menu):
         self,
         ctx,
         iterable,
-        start_pagemap,
-        stop_pagemap={},
-        timeout_pagemap={},
+        pagemap,
         *,
+        delete_after=False,
+        delete_invoke_after=None,
         timeout=300.0,
         auto_exit=True,
         check=None,
     ):
-        super().__init__(ctx, start_pagemap, stop_pagemap, timeout_pagemap)
+        super().__init__(ctx, pagemap, delete_after=delete_after, delete_invoke_after=delete_invoke_after)
         self.selector = selectors.NumericalSelector(self, iterable, timeout=timeout, auto_exit=auto_exit, check=check)
 
     @property
@@ -109,12 +103,12 @@ class NumberedSelectionMenu(Menu):
         return (f"{self.selector.page_info}", f"{self.selector.table}", False)
 
     async def start(self):
-        self.start_pagemap.update({"fields": [self.page_field]})
+        self.pagemap.update({"fields": [self.page_field]})
         await super().start()
         return await self.selector.response()
 
     async def switch(self, reaction):
-        self.start_pagemap.update({"fields": [self.page_field]})
+        self.pagemap.update({"fields": [self.page_field]})
         await super().switch()
         await self.message.remove_reaction(reaction, self.ctx.author)
 
@@ -124,40 +118,17 @@ class NumberedSelectionMenu(Menu):
             f" timeout={self.timeout!r}"
             f" auto_exit={self.auto_exit!r}"
             f" check={self.check!r}"
-            f" message={self.message!r}>"
-        )
-
-
-class NumberedKeySelectionMenu(NumberedSelectionMenu):
-    def __init__(
-        self, ctx, iterable, start_key, stop_key=None, timeout_key=None, *, timeout=300.0, auto_exit=True, check=None
-    ):
-        super().__init__(
-            ctx,
-            iterable,
-            ctx.bot.embed.get_pagemap(start_key),
-            ctx.bot.embed.get_pagemap(stop_key),
-            ctx.bot.embed.get_pagemap(timeout_key),
-            timeout=timeout,
-            auto_exit=auto_exit,
-            check=check,
-        )
-
-    def __repr__(self):
-        return (
-            f"<NumberedKeySelectionMenu"
-            f" timeout={self.timeout!r}"
-            f" auto_exit={self.auto_exit!r}"
-            f" check={self.check!r}"
+            f" delete_after={self.delete_after!r}"
+            f" delete_invoke_after={self.delete_invoke_after!r}"
             f" message={self.message!r}>"
         )
 
 
 class MultiPageMenu(Menu):
     def __init__(
-        self, ctx, pagemaps, stop_pagemap={}, timeout_pagemap={}, *, timeout=300.0, auto_exit=True, check=None
+        self, ctx, pagemaps, *, delete_after=False, delete_invoke_after=None, timeout=300.0, auto_exit=True, check=None
     ):
-        super().__init__(ctx, pagemaps[0], stop_pagemap, timeout_pagemap)
+        super().__init__(ctx, pagemaps[0], delete_after=delete_after, delete_invoke_after=delete_invoke_after)
         self.selector = selectors.PageControls(self, pagemaps, timeout=timeout, auto_exit=auto_exit, check=check)
 
     async def start(self):
@@ -174,28 +145,7 @@ class MultiPageMenu(Menu):
             f" timeout={self.timeout!r}"
             f" auto_exit={self.auto_exit!r}"
             f" check={self.check!r}"
-            f" message={self.message!r}>"
-        )
-
-
-class MultiPageKeyMenu(MultiPageMenu):
-    def __init__(self, ctx, keys, stop_key=None, timeout_key=None, *, timeout=300.0, auto_exit=True, check=None):
-        pagemaps = [ctx.bot.embed.get_pagemap(key) for key in keys]
-        super().__init__(
-            ctx,
-            pagemaps,
-            ctx.bot.embed.get_pagemap(stop_key),
-            ctx.bot.embed.get_pagemap(timeout_key),
-            timeout=timeout,
-            auto_exit=auto_exit,
-            check=check,
-        )
-
-    def __repr__(self):
-        return (
-            f"<MultiPageKeyMenu"
-            f" timeout={self.timeout!r}"
-            f" auto_exit={self.auto_exit!r}"
-            f" check={self.check!r}"
+            f" delete_after={self.delete_after!r}"
+            f" delete_invoke_after={self.delete_invoke_after!r}"
             f" message={self.message!r}>"
         )
