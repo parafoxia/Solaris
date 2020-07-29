@@ -30,7 +30,7 @@ class EmojiGetter:
     def get(self, name):
         hub = self.bot.get_cog("Hub")
 
-        if hub.guild is not None:
+        if getattr(hub, "guild", None) is not None:
             return utils.get(hub.guild.emojis, name=name) or ALTERNATIVES[name]
         else:
             return ALTERNATIVES[name]
@@ -38,7 +38,7 @@ class EmojiGetter:
     def get_many(self, *names):
         hub = self.bot.get_cog("Hub")
 
-        if hub.guild is not None:
+        if getattr(hub, "guild", None) is not None:
             return [utils.get(hub.guild.emojis, name=name) or ALTERNATIVES[name] for name in names]
         else:
             return [ALTERNATIVES[name]]
@@ -46,7 +46,7 @@ class EmojiGetter:
     def yield_many(self, *names):
         hub = self.bot.get_cog("Hub")
 
-        if hub.guild is not None:
+        if getattr(hub, "guild", None) is not None:
             for name in names:
                 yield utils.get(hub.guild.emojis, name=name) or ALTERNATIVES[name]
         else:
@@ -55,7 +55,7 @@ class EmojiGetter:
     def mention(self, name):
         hub = self.bot.get_cog("Hub")
 
-        if hub.guild is not None:
+        if getattr(hub, "guild", None) is not None:
             return f"{utils.get(hub.guild.emojis, name=name) or ALTERNATIVES[name] or ''}"
         else:
             return ALTERNATIVES[name] or ""

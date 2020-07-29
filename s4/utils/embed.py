@@ -33,7 +33,7 @@ class EmbedConstructor:
         embed.set_author(name=kwargs.get("header", "S4"))
         embed.set_footer(
             text=kwargs.get(
-                "footer", f"Requested by {ctx.author.display_name}" if ctx else "Server Safety and Security Systems"
+                "footer", f"Invoked by {ctx.author.display_name}" if ctx else "Server Safety and Security Systems"
             ),
             icon_url=ctx.author.avatar_url if ctx else Embed.Empty,
         )
