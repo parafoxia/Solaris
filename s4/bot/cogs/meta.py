@@ -9,7 +9,7 @@ import psutil
 from beautifultable import BeautifulTable
 from discord.ext import commands
 
-from s4.utils import chron, converters, string, menu
+from s4.utils import SUPPORT_GUILD_INVITE_LINK, chron, converters, menu, string
 
 
 class DetailedServerInfoMenu(menu.MultiPageMenu):
@@ -42,45 +42,75 @@ class Meta(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         if not self.bot.ready.booted:
+            self.developer = (await self.bot.application_info()).owner
+            self.testers = [
+                (await self.bot.grab_user(id_)) for id_ in (116520426401693704, 300346872109989898, 135372594953060352)
+            ]
+            self.support_guild = self.bot.get_guild(661973136631398412)
+            self.helper_role = self.support_guild.get_role(689788551575109648)
+
             self.bot.ready.up(self)
 
     @commands.command(name="about", aliases=["credits"])
     async def about_command(self, ctx):
-        self.developer = (await self.bot.application_info()).owner.mention
-        self.testers = "\n".join(
-            [
-                (await self.bot.grab_user(id_)).mention
-                for id_ in (116520426401693704, 300346872109989898, 135372594953060352)
-            ]
+        await ctx.send(
+            embed=self.bot.embed.build(
+                ctx=ctx,
+                header="Information",
+                title="About S4",
+                description="Use `botinfo` for detailed statistics.",
+                thumbnail=self.bot.user.avatar_url,
+                fields=[
+                    ["Developer", f"Created and copyright ©️ {self.developer.mention} 2020.", False],
+                    ["Testers", "\n".join(t.mention for t in self.testers), False],
+                ],
+            )
         )
-
-        await ctx.send(embed=self.bot.embed.load("about bot", ctx=ctx, thumbnail=self.bot.user.avatar_url, info=self))
 
     @commands.command(name="support", aliases=["sos"])
     async def support_command(self, ctx):
-        sg = self.bot.get_guild(661973136631398412)
-        hr = sg.get_role(689788551575109648)
+        online = [m for m in self.support_guild.members if not m.bot and m.status == discord.Status.online]
+        helpers = [
+            m for m in self.support_guild.members if not m.bot and m.top_role.position >= self.helper_role.position
+        ]
+        online_helpers = set(online) & set(helpers)
 
         await ctx.send(
-            embed=self.bot.embed.load(
-                "support link",
+            embed=self.bot.embed.build(
                 ctx=ctx,
-                online_m=len([m for m in sg.members if m.status == discord.Status.online]),
-                members=len(sg.members),
-                online_h=len(
-                    [m for m in sg.members if m.top_role.position >= hr.position and str(m.status) == "online"]
-                )
-                - 1,
-                helpers=len([m for m in sg.members if m.top_role.position >= hr.position]) - 1,
-                status=str(sg.owner.status).title(),
+                header="Information",
+                description=f"Click [here]({SUPPORT_GUILD_INVITE_LINK}) to join the support server.",
+                thumbnail=self.bot.user.avatar_url,
+                fields=[
+                    ["Online / members", f"{len(online):,} / {len(self.support_guild.members):,}", True],
+                    ["Online / helpers", f"{len(online_helpers):,} / {len(helpers):,}", True],
+                    ["Developer", str(self.support_guild.owner.status).title(), True],
+                ],
             )
         )
 
     @commands.command(name="invite", aliases=["join"])
     async def invite_command(self, ctx):
         await ctx.send(
-            embed=self.bot.embed.load(
-                "invite link", ctx=ctx, al=self.bot.admin_invite, nal=self.bot.non_admin_invite, bot=self.bot
+            embed=self.bot.embed.build(
+                ctx=ctx,
+                header="Information",
+                thumbnail=self.bot.user.avatar_url,
+                fields=[
+                    [
+                        "Link 1",
+                        f"To invite S4 with the Administrator permission, click [here]({self.bot.admin_invite}).",
+                        False,
+                    ],
+                    [
+                        "Link 2",
+                        f"To invite S4 with the minimum required permissions, click [here]({self.bot.non_admin_invite}) (you may need to grant S4 some extra permissions in order to use some modules).",
+                        False,
+                    ],
+                    ["Servers", f"{self.bot.guild_count:,}", True],
+                    ["Users", f"{self.bot.user_count:,}", True],
+                    ["Get started", "`>>setup`", True],
+                ],
             )
         )
 
@@ -105,24 +135,44 @@ class Meta(commands.Cog):
     @commands.cooldown(1, 300, commands.BucketType.user)
     async def botinfo_command(self, ctx):
         with (proc := psutil.Process()).oneshot():
+            uptime = time() - proc.create_time()
+            cpu_times = proc.cpu_times()
+            total_memory = psutil.virtual_memory().total / (1024 ** 2)
+            memory_percent = proc.memory_percent()
+            memory_usage = total_memory * (memory_percent / 100)
+
             await ctx.send(
-                embed=self.bot.embed.load(
-                    "bot info",
+                embed=self.bot.embed.build(
                     ctx=ctx,
+                    header="Information",
+                    title="Bot information",
+                    description=f"S4 was developed by {(await self.bot.application_info()).owner.mention}. Use `about` for more information.",
                     thumbnail=self.bot.user.avatar_url,
-                    bot=self.bot,
-                    owner=(await self.bot.application_info()).owner,
-                    py_version=python_version(),
-                    dpy_version=discord.__version__,
-                    uptime=chron.short_delta(dt.timedelta(seconds=(secs := time() - proc.create_time()))),
-                    cpu_time=chron.short_delta(dt.timedelta(seconds=(cpu := proc.cpu_times()).system + cpu.user)),
-                    mem_total=(mt := psutil.virtual_memory().total / (1024 ** 2)),
-                    mem_percent=(mp := proc.memory_percent()),
-                    mem_usage=mt * (mp / 100),
-                    json_lines=0,
-                    sql_lines=0,
-                    db_calls=self.bot.db._calls,
-                    db_calls_ps=self.bot.db._calls / secs,
+                    fields=[
+                        ["Bot version", f"{self.bot.version}", True],
+                        ["Python version", f"{python_version()}", True],
+                        ["discord.py version", f"{discord.__version__}", True],
+                        ["Uptime", chron.short_delta(dt.timedelta(seconds=uptime)), True],
+                        [
+                            "CPU time",
+                            chron.short_delta(
+                                dt.timedelta(seconds=cpu_times.system + cpu_times.user), milliseconds=True
+                            ),
+                            True,
+                        ],
+                        ["Memory usage", f"{memory_usage:,.3f} / {total_memory:,.0f} ({memory_percent:.0f}%)", True],
+                        ["Servers", f"{self.bot.guild_count:,}", True],
+                        ["Users", f"{self.bot.user_count:,}", True],
+                        ["Commands", f"{self.bot.command_count:,}", True],
+                        ["Python code", f"{self.bot._python_lines:,}", True],
+                        ["JSON scripts", f"{self.bot._json_lines:,}", True],
+                        ["SQL scripts", f"{self.bot._sql_lines:,}", True],
+                        [
+                            "Database calls since uptime",
+                            f"{self.bot.db._calls:,} ({self.bot.db._calls/uptime:,.3f} per second)",
+                            True,
+                        ],
+                    ],
                 )
             )
 
@@ -133,41 +183,61 @@ class Meta(commands.Cog):
         target = target or ctx.author
 
         if isinstance(target, discord.Member):
+            ps = target.premium_since
+            ngr = len(target.guild.roles)
+
             await ctx.send(
-                embed=self.bot.embed.load(
-                    "member info",
+                embed=self.bot.embed.build(
                     ctx=ctx,
-                    description=f"This member is also known as {target.display_name} in this server."
-                    if target.nick
-                    else "This member does not have a nickname in this server.",
+                    header="Information",
+                    description=(
+                        f"This member is also known as {target.display_name} in this server."
+                        if target.nick
+                        else "This member does not have a nickname in this server."
+                    ),
+                    colour=target.colour,
                     thumbnail=target.avatar_url,
-                    target=target,
-                    created_on=chron.long_date(target.created_at),
-                    joined_on=chron.long_date(target.joined_at),
-                    boosted_on=chron.long_date(ps) if (ps := target.premium_since) else "-",
-                    existed_for=chron.short_delta(dt.datetime.utcnow() - target.created_at),
-                    member_for=chron.short_delta(dt.datetime.utcnow() - target.joined_at),
-                    booster_for=chron.short_delta(dt.datetime.utcnow() - ps) if ps else "-",
-                    status=str(target.status).title(),
-                    activity_type=str(target.activity.type).title().split(".")[-1]
-                    if target.activity is not None
-                    else "-",
-                    activity_name=target.activity.name if target.activity else "-",
-                    no_of_roles=len(target.roles),
-                    no_of_guild_roles=(ngr := len(target.guild.roles)),
-                    top_role_position=string.ordinal(ngr - target.top_role.position),
+                    fields=[
+                        ["ID", target.id, False],
+                        ["Discriminator", target.discriminator, True],
+                        ["Bot?", target.bot, True],
+                        ["Admin?", target.guild_permissions.administrator, True],
+                        ["Created on", chron.long_date(target.created_at), True],
+                        ["Joined on", chron.long_date(target.joined_at), True],
+                        ["Boosted on", chron.long_date(ps) if ps else "-", True],
+                        ["Existed for", chron.short_delta(dt.datetime.utcnow() - target.created_at), True],
+                        ["Member for", chron.short_delta(dt.datetime.utcnow() - target.joined_at), True],
+                        ["Booster for", chron.short_delta(dt.datetime.utcnow() - ps) if ps else "-", True],
+                        ["Status", str(target.status).title(), True],
+                        [
+                            "Activity type",
+                            str(target.activity.type).title().split(".")[-1] if target.activity is not None else "-",
+                            True,
+                        ],
+                        ["Activity name", target.activity.name if target.activity else "-", True],
+                        ["Nº of roles", f"{len(target.roles):,}", True],
+                        ["Top role", target.top_role.mention, True],
+                        ["Top role position", f"{string.ordinal(ngr - target.top_role.position)} / {ngr:,}", True],
+                    ],
                 )
             )
 
         elif isinstance(target, discord.User):
             await ctx.send(
-                embed=self.bot.embed.load(
-                    "user info",
+                embed=self.bot.embed.build(
                     ctx=ctx,
+                    header="Information",
+                    title=f"User information for {target.name}",
+                    description="Showing reduced information as the given user is not in this server.",
                     thumbnail=target.avatar_url,
-                    target=target,
-                    created_on=chron.long_date(target.created_at),
-                    existed_for=chron.short_delta(dt.datetime.utcnow() - target.created_at),
+                    fields=[
+                        ["ID", target.id, True],
+                        ["Discriminator", target.discriminator, True],
+                        ["Bot?", target.bot, True],
+                        ["Created on", chron.long_date(target.created_at), True],
+                        ["Existed for", chron.short_delta(dt.datetime.utcnow() - target.created_at), True],
+                        ["\u200b", "\u200b", True],
+                    ],
                 )
             )
 
@@ -182,37 +252,65 @@ class Meta(commands.Cog):
 
         if isinstance(target, discord.Member) or isinstance(target, discord.User):
             name = getattr(target, "display_name", target.name)
-            await ctx.send(embed=self.bot.embed.load("user avatar", ctx=ctx, image=target.avatar_url, name=name))
+            await ctx.send(
+                embed=self.bot.embed.build(
+                    ctx=ctx,
+                    header="Information",
+                    description=f"Displaying avatar for {name}.",
+                    image=target.avatar_url,
+                )
+            )
         else:
             await ctx.send(f"{self.bot.cross} S4 was unable to identify a user with the information provided.")
 
     @commands.command(name="serverinfo", aliases=["si", "guildinfo", "gi"])
     async def serverinfo_command(self, ctx):
+        bot_count = len([m for m in ctx.guild.members if m.bot])
+        human_count = ctx.guild.member_count - bot_count
+
         await ctx.send(
-            embed=self.bot.embed.load(
-                "guild info",
+            embed=self.bot.embed.build(
                 ctx=ctx,
+                header="Information",
+                title=f"Server information for {ctx.guild.name}",
                 thumbnail=ctx.guild.icon_url,
-                target=ctx.guild,
-                top_role=ctx.guild.roles[-1],
-                bot_count=(bc := len([m for m in ctx.guild.members if m.bot])),
-                human_count=ctx.guild.member_count - bc,
-                ban_count=f"{len(await ctx.guild.bans()):,}" if ctx.guild.me.guild_permissions.ban_members else "-",
-                role_count=len(ctx.guild.roles),
-                tc_count=len(ctx.guild.text_channels),
-                vc_count=len(ctx.guild.voice_channels),
-                invite_count=f"{len(await ctx.guild.invites()):,}"
-                if ctx.guild.me.guild_permissions.manage_guild
-                else "-",
-                emoji_count=len(ctx.guild.emojis),
-                emoji_limit=ctx.guild.emoji_limit,
-                newest_member=max(ctx.guild.members, key=lambda m: m.joined_at),
-                created_on=chron.long_date(ctx.guild.created_at),
-                existed_for=chron.short_delta(dt.datetime.utcnow() - ctx.guild.created_at),
-                online_count=len([m for m in ctx.guild.members if m.status == discord.Status.online]),
-                idle_count=len([m for m in ctx.guild.members if m.status == discord.Status.idle]),
-                dnd_count=len([m for m in ctx.guild.members if m.status == discord.Status.dnd]),
-                offline_count=len([m for m in ctx.guild.members if m.status == discord.Status.offline]),
+                colour=ctx.guild.owner.colour,
+                fields=[
+                    ["ID", ctx.guild.id, False],
+                    ["Owner", ctx.guild.owner.mention, True],
+                    ["Region", ctx.guild.region, True],
+                    ["Top role", ctx.guild.roles[-1].mention, True],
+                    ["Members", f"{ctx.guild.member_count:,}", True],
+                    ["Humans / bots", f"{human_count:,} / {bot_count:,}", True],
+                    [
+                        "Bans",
+                        f"{len(await ctx.guild.bans()):,}" if ctx.guild.me.guild_permissions.ban_members else "-",
+                        True,
+                    ],
+                    ["Roles", f"{len(ctx.guild.roles):,}", True],
+                    ["Text channels", f"{len(ctx.guild.text_channels):,}", True],
+                    ["Voice channels", f"{len(ctx.guild.voice_channels):,}", True],
+                    [
+                        "Invites",
+                        f"{len(await ctx.guild.invites()):,}" if ctx.guild.me.guild_permissions.manage_guild else "-",
+                        True,
+                    ],
+                    ["Emojis", f"{len(ctx.guild.emojis):,} / {ctx.guild.emoji_limit:,}", True],
+                    ["Boosts", f"{ctx.guild.premium_subscription_count:,} (level {ctx.guild.premium_tier})", True],
+                    ["Newest member", max(ctx.guild.members, key=lambda m: m.joined_at).mention, True],
+                    ["Created on", chron.long_date(ctx.guild.created_at), True],
+                    ["Existed for", chron.short_delta(dt.datetime.utcnow() - ctx.guild.created_at), True],
+                    [
+                        "Statuses",
+                        (
+                            f"🟢 {len([m for m in ctx.guild.members if m.status == discord.Status.online]):,} "
+                            f"🟠 {len([m for m in ctx.guild.members if m.status == discord.Status.idle]):,} "
+                            f"🔴 {len([m for m in ctx.guild.members if m.status == discord.Status.dnd]):,} "
+                            f"⚪ {len([m for m in ctx.guild.members if m.status == discord.Status.offline]):,}"
+                        ),
+                        False,
+                    ],
+                ],
             )
         )
 
@@ -274,7 +372,14 @@ class Meta(commands.Cog):
 
     @commands.command(name="icon")
     async def icon_command(self, ctx):
-        await ctx.send(embed=self.bot.embed.load("guild icon", ctx=ctx, image=ctx.guild.icon_url, target=ctx.guild))
+        await ctx.send(
+            embed=self.bot.embed.build(
+                ctx=ctx,
+                header="Information",
+                description=f"Displaying icon for {ctx.guild.name}.",
+                image=ctx.guild.icon_url,
+            )
+        )
 
     @commands.command(name="leave")
     async def leave_command(self, ctx):

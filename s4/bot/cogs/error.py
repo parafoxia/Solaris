@@ -36,7 +36,7 @@ class Error(commands.Cog):
         raise  # Re-raises the last known exception.
 
     async def command_error(self, ctx, exc):
-        prefix = await self.bot.prefix(ctx, guild)
+        prefix = await self.bot.prefix(ctx.guild)
 
         if isinstance(exc, commands.CommandNotFound):
             pass

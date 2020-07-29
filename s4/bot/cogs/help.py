@@ -7,10 +7,14 @@ from s4.utils import HELPS, converters, menu
 
 class HelpMenu(menu.MultiPageMenu):
     def __init__(self, ctx, pagemaps):
-        spm = ctx.bot.embed.get_pagemap("help menu closed", thumbnail=ctx.bot.user.avatar_url)
-        tpm = ctx.bot.embed.get_pagemap("help menu timed out", thumbnail=ctx.bot.user.avatar_url)
+        help_stop = {
+            "header": "Help",
+            "description": "Help menu closed by the user.",
+            "thumbnail": ctx.bot.user.avatar_url,
+        }
+        help_timeout = {"header": "Help", "description": "Help menu timed out.", "thumbnail": ctx.bot.user.avatar_url}
 
-        super().__init__(ctx, pagemaps, spm, tpm, timeout=120.0)
+        super().__init__(ctx, pagemaps, help_stop, help_timeout, timeout=120.0)
 
 
 class Help(commands.Cog):
@@ -101,14 +105,23 @@ class Help(commands.Cog):
                     await ctx.send(f"{self.bot.cross} No help is available for that command.")
                 else:
                     await ctx.send(
-                        embed=self.bot.embed.load(
-                            "help command",
+                        embed=self.bot.embed.build(
                             ctx=ctx,
-                            thumbnail=self.bot.user.avatar_url,
+                            header="Help",
                             description=self.full_help(help_entry),
+                            thumbnail=self.bot.user.avatar_url,
                             syntax=self.syntax(cmd),
                             user_reqs=self.user_requirements(help_entry),
                             bot_reqs=self.bot_requirements(help_entry),
+                            fields=[
+                                ["Syntax (<required> • [optional])", self.syntax(cmd), False],
+                                ["User requirements", self.user_requirements(help_entry), False],
+                                [
+                                    "S4 requirements",
+                                    f"Read Messages\nSend Messages\n{self.bot_requirements(help_entry)}",
+                                    False,
+                                ],
+                            ],
                         )
                     )
 
