@@ -7,14 +7,7 @@ from s4.utils import HELPS, converters, menu
 
 class HelpMenu(menu.MultiPageMenu):
     def __init__(self, ctx, pagemaps):
-        help_stop = {
-            "header": "Help",
-            "description": "Help menu closed by the user.",
-            "thumbnail": ctx.bot.user.avatar_url,
-        }
-        help_timeout = {"header": "Help", "description": "Help menu timed out.", "thumbnail": ctx.bot.user.avatar_url}
-
-        super().__init__(ctx, pagemaps, help_stop, help_timeout, timeout=120.0)
+        super().__init__(ctx, pagemaps, timeout=120.0)
 
 
 class Help(commands.Cog):
