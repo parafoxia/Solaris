@@ -5,6 +5,8 @@ __all__ = [
     "INFO_ICON",
     "LOADING_ICON",
     "ROOT_DIR",
+    "SUCCESS_ICON",
+    "SUPPORT_GUILD_INVITE_LINK",
 ]
 
 from json import load
@@ -15,6 +17,7 @@ ERROR_ICON = "https://cdn.discordapp.com/attachments/710177462989881415/71086638
 INFO_ICON = "https://cdn.discordapp.com/attachments/710177462989881415/711348122915176529/info.png"
 LOADING_ICON = "https://cdn.discordapp.com/attachments/710177462989881415/710178153200353360/loading500.gif"
 ROOT_DIR = Path(__file__).parent.parent.parent
+SUCCESS_ICON = "https://cdn.discordapp.com/attachments/710177462989881415/738066048640876544/confirm.png"
 SUPPORT_GUILD_INVITE_LINK = "https://discord.gg/c3b4cZs"
 
 with open("./s4/data/static/help.json", "r", encoding="utf-8") as f:
