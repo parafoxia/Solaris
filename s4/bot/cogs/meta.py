@@ -36,6 +36,8 @@ class DetailedServerInfoMenu(menu.MultiPageMenu):
 
 
 class Meta(commands.Cog):
+    """Commands for retrieving information regarding S4, from invitation links to detailed bot statistics."""
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -51,7 +53,11 @@ class Meta(commands.Cog):
 
             self.bot.ready.up(self)
 
-    @commands.command(name="about", aliases=["credits"])
+    @commands.command(
+        name="about",
+        aliases=["credits"],
+        help="View information regarding those behind S4's development. This includes the developer and the testers, and also shows copyright information.",
+    )
     async def about_command(self, ctx):
         await ctx.send(
             embed=self.bot.embed.build(
@@ -67,7 +73,7 @@ class Meta(commands.Cog):
             )
         )
 
-    @commands.command(name="support", aliases=["sos"])
+    @commands.command(name="support", aliases=["sos"], help="Provides an invite link to S4's support server.")
     async def support_command(self, ctx):
         online = [m for m in self.support_guild.members if not m.bot and m.status == discord.Status.online]
         helpers = [
@@ -89,7 +95,9 @@ class Meta(commands.Cog):
             )
         )
 
-    @commands.command(name="invite", aliases=["join"])
+    @commands.command(
+        name="invite", aliases=["join"], help="Provides the links necessary to invite S4 to other servers."
+    )
     async def invite_command(self, ctx):
         await ctx.send(
             embed=self.bot.embed.build(
@@ -114,7 +122,7 @@ class Meta(commands.Cog):
             )
         )
 
-    @commands.command(name="ping")
+    @commands.command(name="ping", help="Pings S4.")
     async def ping_command(self, ctx):
         lat = self.bot.latency * 1000
         s = time()
@@ -124,14 +132,21 @@ class Meta(commands.Cog):
             content=f"{self.bot.info} Pong! DWSP latency: {lat:,.0f} ms. Response time: {(e-s)*1000:,.0f} ms."
         )
 
-    @commands.command(name="prefix")
+    @commands.command(
+        name="prefix", help="Displays S4's prefix in your server. Note that mentioning S4 will always work."
+    )
     async def prefix_command(self, ctx):
         prefix = await self.bot.prefix(ctx.guild)
         await ctx.send(
             f"{self.bot.info} S4's prefix in this server is {prefix}. To change it, use `{prefix}config system prefix <new prefix>`."
         )
 
-    @commands.command(name="botinfo", aliases=["bi", "botstats", "stats", "bs"])
+    @commands.command(
+        name="botinfo",
+        aliases=["bi", "botstats", "stats", "bs"],
+        cooldown_after_parsing=True,
+        help="Displays statistical information on S4. This includes process and composition information, and also includes information about S4's reach.",
+    )
     @commands.cooldown(1, 300, commands.BucketType.user)
     async def botinfo_command(self, ctx):
         with (proc := psutil.Process()).oneshot():
@@ -176,7 +191,11 @@ class Meta(commands.Cog):
                 )
             )
 
-    @commands.command(name="userinfo", aliases=["ui", "memberinfo", "mi"])
+    @commands.command(
+        name="userinfo",
+        aliases=["ui", "memberinfo", "mi"],
+        help="Displays information on a given user. If no user is provided, S4 will display your information. Note that although S4 can display information about any user on Discord, the amount of information available is significantly lower for users not in the server the command was invoked in.",
+    )
     async def userinfo_command(
         self, ctx, *, target: t.Optional[t.Union[discord.Member, converters.User, converters.SearchedMember, str]]
     ):
@@ -244,7 +263,11 @@ class Meta(commands.Cog):
         else:
             await ctx.send(f"{self.bot.cross} S4 was unable to identify a user with the information provided.")
 
-    @commands.command(name="avatar", aliases=["profile", "pfp"])
+    @commands.command(
+        name="avatar",
+        aliases=["profile", "pfp"],
+        help="Displays the avatar (profile picture) of a given user. This is not limited to server members.",
+    )
     async def avatar_command(
         self, ctx, *, target: t.Optional[t.Union[discord.Member, converters.User, converters.SearchedMember, str]]
     ):
@@ -263,7 +286,9 @@ class Meta(commands.Cog):
         else:
             await ctx.send(f"{self.bot.cross} S4 was unable to identify a user with the information provided.")
 
-    @commands.command(name="serverinfo", aliases=["si", "guildinfo", "gi"])
+    @commands.command(
+        name="serverinfo", aliases=["si", "guildinfo", "gi"], help="Displays information on your server."
+    )
     async def serverinfo_command(self, ctx):
         bot_count = len([m for m in ctx.guild.members if m.bot])
         human_count = ctx.guild.member_count - bot_count
@@ -314,7 +339,12 @@ class Meta(commands.Cog):
             )
         )
 
-    @commands.command(name="detailedserverinfo", aliases=["dsi", "detailedguildinfo", "dgi"])
+    @commands.command(
+        name="detailedserverinfo",
+        aliases=["dsi", "detailedguildinfo", "dgi"],
+        cooldown_after_parsing=True,
+        help="Displays more detailed information on your server. This command does not display well on smaller displays.",
+    )
     @commands.cooldown(1, 300, commands.BucketType.guild)
     async def detailedserverinfo_command(self, ctx):
         table_info = {
@@ -370,7 +400,7 @@ class Meta(commands.Cog):
 
         await DetailedServerInfoMenu(ctx, table_info).start()
 
-    @commands.command(name="icon")
+    @commands.command(name="icon", help="Displays the icon of your server.")
     async def icon_command(self, ctx):
         await ctx.send(
             embed=self.bot.embed.build(

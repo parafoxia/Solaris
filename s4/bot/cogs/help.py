@@ -2,7 +2,7 @@ import typing as t
 
 from discord.ext import commands
 
-from s4.utils import HELPS, converters, menu
+from s4.utils import converters, menu, string
 
 
 class HelpMenu(menu.MultiPageMenu):
@@ -11,6 +11,8 @@ class HelpMenu(menu.MultiPageMenu):
 
 
 class Help(commands.Cog):
+    """This module is aimed at assisting you with using S4."""
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -22,43 +24,39 @@ class Help(commands.Cog):
             self.bot.ready.up(self)
 
     @staticmethod
-    def syntax(cmd):
+    async def syntax(ctx, cmd):
         invokations = "|".join([f"{cmd}", *cmd.aliases])
-        return f"```@S4 {invokations} {cmd.signature}```"
+        return f"```{await ctx.bot.prefix(ctx.guild)}{invokations} {cmd.signature}```"
 
     @staticmethod
-    def module_description(cog):
-        return HELPS[cog.qualified_name.lower()].get("_", "No module description available.")
+    async def required_permissions(ctx, cmd):
+        try:
+            await cmd.can_run(ctx)
+            return "You have all the required permissions to run this command."
+        except commands.MissingPermissions:
+            mp = string.list_of([str(perm.replace("_", " ")).title() for perm in exc.missing_perms])
+            return "You are missing the {mp} permission(s) required to run this command."
+        except commands.CommandError:
+            return "You are not able to run this command."
 
     @staticmethod
-    def brief(cog, cmd):
-        return (
-            HELPS[cog.qualified_name.lower()][cmd.name]
-            .get("description", "No description available.")
-            .split(".", maxsplit=1)[0]
-        )
-
-    @staticmethod
-    def full_help(help_entry):
-        return help_entry.get("description", "No description available.")
-
-    @staticmethod
-    def user_requirements(help_entry):
-        return "\n".join(help_entry.get("user requirements", ["None"]))
-
-    @staticmethod
-    def bot_requirements(help_entry):
-        return "\n".join(help_entry.get("bot requirements", []))
+    async def required_bot_permissions(ctx, cmd):
+        try:
+            await cmd.can_run(ctx)
+            return "S4 has all the required permissions to run this command."
+        except commands.MissingPermissions:
+            mp = string.list_of([str(perm.replace("_", " ")).title() for perm in exc.missing_perms])
+            return "S4 is missing the {mp} permission(s) required to run this command."
+        except commands.CommandError:
+            return "S4 is not able to run this command."
 
     async def get_command_mapping(self, ctx):
         mapping = {}
 
         for cog in self.bot.cogs.values():
-            cog_help = HELPS.get(cog.qualified_name.lower(), None)
-
-            if cog_help is not None:
+            if cog.__doc__ is not None:
                 cog_cmds = []
-                for cmd in filter(lambda c: c.name in cog_help.keys(), cog.get_commands()):
+                for cmd in filter(lambda c: c.help is not None, cog.get_commands()):
                     try:
                         await cmd.can_run(ctx)
                         cog_cmds.append(cmd)
@@ -70,7 +68,10 @@ class Help(commands.Cog):
 
         return mapping
 
-    @commands.command(name="help")
+    @commands.command(
+        name="help",
+        help="Help with anything S4. Passing a command name or alias through will show help with that specific command, while passing no arguments will bring up a general command overview.",
+    )
     async def help_command(self, ctx, cmd: t.Optional[converters.Command]):
         if cmd is None:
             pagemaps = []
@@ -80,9 +81,16 @@ class Help(commands.Cog):
                     {
                         "header": "Help",
                         "title": f"The `{cog.qualified_name.lower()}` module",
-                        "description": self.module_description(cog),
+                        "description": cog.__doc__,
                         "thumbnail": self.bot.user.avatar_url,
-                        "fields": [(self.brief(cog, cmd), self.syntax(cmd), False) for cmd in cmds],
+                        "fields": [
+                            (
+                                cmd.help.split(".")[0] if cmd.help is not None else "No help available.",
+                                await self.syntax(ctx, cmd),
+                                False,
+                            )
+                            for cmd in cmds
+                        ],
                     }
                 )
 
@@ -94,29 +102,20 @@ class Help(commands.Cog):
             elif cmd.name == "config":
                 pass
             else:
-                if (help_entry := HELPS.get(cmd.cog.qualified_name.lower(), {}).get(cmd.name)) is None:
-                    await ctx.send(f"{self.bot.cross} No help is available for that command.")
-                else:
-                    await ctx.send(
-                        embed=self.bot.embed.build(
-                            ctx=ctx,
-                            header="Help",
-                            description=self.full_help(help_entry),
-                            thumbnail=self.bot.user.avatar_url,
-                            syntax=self.syntax(cmd),
-                            user_reqs=self.user_requirements(help_entry),
-                            bot_reqs=self.bot_requirements(help_entry),
-                            fields=[
-                                ["Syntax (<required> • [optional])", self.syntax(cmd), False],
-                                ["User requirements", self.user_requirements(help_entry), False],
-                                [
-                                    "S4 requirements",
-                                    f"Read Messages\nSend Messages\n{self.bot_requirements(help_entry)}",
-                                    False,
-                                ],
-                            ],
-                        )
+                await ctx.send(
+                    embed=self.bot.embed.build(
+                        ctx=ctx,
+                        header="Help",
+                        description=cmd.help,
+                        thumbnail=self.bot.user.avatar_url,
+                        fields=[
+                            ("Syntax (<required> • [optional])", await self.syntax(ctx, cmd), False),
+                            ("On Cooldown?", cmd.is_on_cooldown(ctx), False),
+                            ("User requirements", await self.required_permissions(ctx, cmd), False),
+                            ("Bot requirements", await self.required_bot_permissions(ctx, cmd), False),
+                        ],
                     )
+                )
 
 
 def setup(bot):

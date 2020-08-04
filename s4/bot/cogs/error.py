@@ -125,15 +125,10 @@ class Error(commands.Cog):
         else:
             raise exc
 
-    async def record_error(self, ctx):
-        if ctx is not None:
-            content = ctx.message.content
-        else:
-            content = "Not applicable."
-
+    async def record_error(self, obj):
         ref = hex(int(time() * 1e7))[2:]
         await self.bot.db.execute(
-            "INSERT INTO errors (Ref, Content, Traceback) VALUES (?, ?, ?)", ref, content, format_exc()
+            "INSERT INTO errors (Ref, Cause, Traceback) VALUES (?, ?, ?)", ref, f"{obj!r}", format_exc()
         )
         return ref
 
@@ -141,13 +136,13 @@ class Error(commands.Cog):
     @commands.is_owner()
     @commands.bot_has_permissions(send_messages=True, attach_files=True)
     async def recallerror_command(self, ctx, ref: str):
-        content, error_time, traceback = await self.bot.db.record(
-            "SELECT Content, ErrorTime, Traceback FROM errors WHERE Ref = ?", ref
+        cause, error_time, traceback = await self.bot.db.record(
+            "SELECT Cause, ErrorTime, Traceback FROM errors WHERE Ref = ?", ref
         )
 
         path = f"{self.bot._dynamic}/{ref}.txt"
         async with aiofiles.open(path, "w", encoding="utf-8") as f:
-            text = f"Time of error:\n{error_time}\n\nContent:\n{content}\n\n{traceback}"
+            text = f"Time of error:\n{error_time}\n\nCause:\n{cause}\n\n{traceback}"
             await f.write(text)
 
         await ctx.send(file=File(path))

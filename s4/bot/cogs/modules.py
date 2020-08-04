@@ -84,7 +84,7 @@ class SetupMenu(menu.SelectionMenu):
             else:
                 await self.switch("setup admin role failed", clear_reactions=True)
 
-        await self.configure_modules()
+        await self.complete()
 
     async def configure_modules(self):
         await self.complete()
@@ -101,6 +101,8 @@ class SetupMenu(menu.SelectionMenu):
 
 
 class Modules(commands.Cog):
+    """Configure, activate, and deactivate S4 modules."""
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -109,17 +111,19 @@ class Modules(commands.Cog):
         if not self.bot.ready.booted:
             self.bot.ready.up(self)
 
-    @commands.command(name="setup")
+    @commands.command(name="setup", help="Runs the first time setup.")
+    @checks.bot_has_booted()
     @checks.first_time_setup_has_not_run()
     @checks.author_can_configure()
-    @checks.bot_has_booted()
     async def setup_command(self, ctx):
         await SetupMenu(ctx).start()
 
-    @commands.command(name="config", aliases=["set"])
+    @commands.command(
+        name="config", aliases=["set"], help="Configures S4; use `help config` to bring up a special help menu."
+    )
+    @checks.bot_has_booted()
     @checks.first_time_setup_has_run()
     @checks.author_can_configure()
-    @checks.bot_has_booted()
     async def config_command(
         self,
         ctx,
@@ -136,10 +140,14 @@ class Modules(commands.Cog):
         else:
             await ctx.send(f"{self.bot.cross} Invalid module or attribute.")
 
-    @commands.command(name="retrieve", aliases=["get"])
+    @commands.command(
+        name="retrieve",
+        aliases=["get"],
+        help="Retrieves attribute information for a module. Note that the output is raw, so some attributes may appear to have strange or incorrect values when in reality they are fine.",
+    )
+    @checks.bot_has_booted()
     @checks.first_time_setup_has_run()
     @checks.author_can_configure()
-    @checks.bot_has_booted()
     async def retrieve_command(self, ctx, module: str, attr: str):
         if module.startswith("_") or attr.startswith("_"):
             await ctx.send(f"{self.bot.cross} The module or attribute you are trying to access is non-configurable.")
@@ -149,11 +157,11 @@ class Modules(commands.Cog):
         else:
             await ctx.send(f"{self.bot.cross} Invalid module or attribute.")
 
-    @commands.command(name="activate", aliases=["enable"])
+    @commands.command(name="activate", aliases=["enable"], help="Activates a module.")
+    @checks.bot_is_ready()
     @checks.log_channel_is_set()
     @checks.first_time_setup_has_run()
     @checks.author_can_configure()
-    @checks.bot_is_ready()
     async def activate_command(self, ctx, module: str):
         if module.startswith("_"):
             await ctx.send(f"{self.bot.cross} The module you are trying to access is non-configurable.")
@@ -162,11 +170,11 @@ class Modules(commands.Cog):
         else:
             await ctx.send(f"{self.bot.cross} That module either does not exist, or can not be activated.")
 
-    @commands.command(name="deactivate", aliases=["disable"])
+    @commands.command(name="deactivate", aliases=["disable"], help="Deactivates a module.")
+    @checks.bot_is_ready()
     @checks.log_channel_is_set()
     @checks.first_time_setup_has_run()
     @checks.author_can_configure()
-    @checks.bot_is_ready()
     async def deactivate_command(self, ctx, module: str):
         if module.startswith("_"):
             await ctx.send(f"{self.bot.cross} The module you are trying to access is non-configurable.")
@@ -175,11 +183,13 @@ class Modules(commands.Cog):
         else:
             await ctx.send(f"{self.bot.cross} That module either does not exist, or can not be deactivated.")
 
-    @commands.command(name="restart")
+    @commands.command(
+        name="restart", help="Restarts a module. This is a shortcut command which calls `deactivate` then `activate`."
+    )
+    @checks.bot_is_ready()
     @checks.log_channel_is_set()
     @checks.first_time_setup_has_run()
     @checks.author_can_configure()
-    @checks.bot_is_ready()
     async def restart_command(self, ctx, module: str):
         if module.startswith("_"):
             await ctx.send(f"{self.bot.cross} The module you are trying to access is non-configurable.")

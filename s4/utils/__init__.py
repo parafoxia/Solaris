@@ -20,9 +20,6 @@ ROOT_DIR = Path(__file__).parent.parent.parent
 SUCCESS_ICON = "https://cdn.discordapp.com/attachments/710177462989881415/738066048640876544/confirm.png"
 SUPPORT_GUILD_INVITE_LINK = "https://discord.gg/c3b4cZs"
 
-with open("./s4/data/static/help.json", "r", encoding="utf-8") as f:
-    HELPS = load(f)
-
 # Dependant on constants above.
 from .embed import EmbedConstructor
 from .emoji import EmojiGetter

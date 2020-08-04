@@ -8,6 +8,8 @@ from s4.utils import chron, converters
 
 
 class Mod(commands.Cog):
+    """Basic moderation actions designed to help you keep your server clean and safe."""
+
     def __init__(self, bot):
         self.bot = bot
 
@@ -16,7 +18,7 @@ class Mod(commands.Cog):
         if not self.bot.ready.booted:
             self.bot.ready.up(self)
 
-    @commands.command(name="kick")
+    @commands.command(name="kick", help="Kicks one or more members from your server.")
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(send_messages=True, kick_members=True)
     async def kick_command(
@@ -42,7 +44,7 @@ class Mod(commands.Cog):
                 else:
                     await ctx.send(f"{self.bot.cross} No members were kicked.")
 
-    @commands.command(name="ban")
+    @commands.command(name="ban", help="Bans one or more members from your server.")
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(send_messages=True, ban_members=True)
     async def ban_command(
@@ -91,7 +93,7 @@ class Mod(commands.Cog):
         # TODO: Actually write this.
         await ctx.send("Not implemented.")
 
-    @commands.command(name="clear", aliases=["clr"])
+    @commands.command(name="clear", aliases=["clr"], help="Clears up to 100 messages from a channel.")
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(send_messages=True, manage_messages=True)
     async def clear_command(self, ctx, scan: int, targets: commands.Greedy[discord.Member]):
@@ -110,7 +112,11 @@ class Mod(commands.Cog):
                     f"{self.bot.tick} {len(cleared):,} message(s) were deleted.", delete_after=5,
                 )
 
-    @commands.command(name="clearchannel", aliases=["clrch"])
+    @commands.command(
+        name="clearchannel",
+        aliases=["clrch"],
+        help="Clears an entire channel of messages. S4 does this by cloning the given channel, and then deleting it, keeping the clean clone intact.",
+    )
     @commands.has_permissions(manage_messages=True, manage_channels=True)
     @commands.bot_has_permissions(send_messages=True, manage_channels=True)
     async def clearchannel_command(
@@ -134,7 +140,7 @@ class Mod(commands.Cog):
         # TODO: Actually write this.
         await ctx.send("Not implemented.")
 
-    @commands.command(name="setnickname", aliases=["setnick"])
+    @commands.command(name="setnickname", aliases=["setnick"], help="Sets a member's nickname.")
     @commands.has_permissions(manage_nicknames=True)
     @commands.bot_has_permissions(send_messages=True, manage_nicknames=True)
     async def setnickname_command(
@@ -157,7 +163,7 @@ class Mod(commands.Cog):
                     f"{self.bot.cross} Failed to change {target.display_name}'s nickname as their permission set is superior to S4's."
                 )
 
-    @commands.command(name="clearnickname", aliases=["clrnick"])
+    @commands.command(name="clearnickname", aliases=["clrnick"], help="Clears one or more members' nicknames.")
     @commands.has_permissions(manage_nicknames=True)
     @commands.bot_has_permissions(send_messages=True, manage_nicknames=True)
     async def clearnickname_command(self, ctx, targets: commands.Greedy[discord.Member]):
@@ -178,7 +184,10 @@ class Mod(commands.Cog):
             else:
                 await ctx.send(f"{self.bot.cross} No members' nicknames were changed.")
 
-    @commands.command(name="unhoistnicknames")
+    @commands.command(
+        name="unhoistnicknames",
+        help='"Unhoists" all members\' nicknames in the server. S4 does this by removing all except English upper and lower case letters from the start of the nickname where possible. Do not attempt to use this command if your server contains predominantly non-English members.',
+    )
     @commands.has_permissions(manage_nicknames=True)
     @commands.bot_has_permissions(send_messages=True, manage_nicknames=True)
     async def unhoistnicknames_command(self, ctx):
