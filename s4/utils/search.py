@@ -17,6 +17,7 @@
 # Ethan Henderson
 # parafoxia@carberra.xyz
 
+
 class Match:
     def __init__(self, term, comparison, case_sensitive=False):
         self.term = term

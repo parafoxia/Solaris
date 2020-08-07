@@ -17,6 +17,7 @@
 # Ethan Henderson
 # parafoxia@carberra.xyz
 
+
 class Ready:
     def __init__(self, bot):
         self.bot = bot
