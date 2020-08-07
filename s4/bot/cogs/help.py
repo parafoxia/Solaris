@@ -43,46 +43,39 @@ class Help(commands.Cog):
             self.bot.ready.up(self)
 
     @staticmethod
-    async def syntax(ctx, cmd):
-        invokations = "|".join([f"{cmd}", *cmd.aliases])
-        return f"```{await ctx.bot.prefix(ctx.guild)}{invokations} {cmd.signature}```"
+    async def basic_syntax(ctx, cmd, prefix):
+        try:
+            await cmd.can_run(ctx)
+            return f"{prefix}{cmd.name}"
+        except commands.CommandError:
+            return f"{prefix}{cmd.name} (✗)"
+
+    @staticmethod
+    async def full_syntax(ctx, cmd, prefix):
+        invokations = "|".join([cmd.name, *cmd.aliases])
+
+        return f"```{prefix}{invokations} {cmd.signature}```"
 
     @staticmethod
     async def required_permissions(ctx, cmd):
         try:
             await cmd.can_run(ctx)
-            return "You have all the required permissions to run this command."
-        except commands.MissingPermissions:
+            return "Yes"
+        except commands.MissingPermissions as exc:
             mp = string.list_of([str(perm.replace("_", " ")).title() for perm in exc.missing_perms])
-            return "You are missing the {mp} permission(s) required to run this command."
-        except commands.CommandError:
-            return "You are not able to run this command."
-
-    @staticmethod
-    async def required_bot_permissions(ctx, cmd):
-        try:
-            await cmd.can_run(ctx)
-            return "S4 has all the required permissions to run this command."
-        except commands.MissingPermissions:
+            return f"No - You are missing the {mp} permission(s)"
+        except commands.BotMissingPermissions as exc:
             mp = string.list_of([str(perm.replace("_", " ")).title() for perm in exc.missing_perms])
-            return "S4 is missing the {mp} permission(s) required to run this command."
+            return f"No - S4 is missing the {mp} permission(s)"
         except commands.CommandError:
-            return "S4 is not able to run this command."
+            return "No - S4 is not configured properly"
 
     async def get_command_mapping(self, ctx):
         mapping = {}
 
         for cog in self.bot.cogs.values():
             if cog.__doc__ is not None:
-                cog_cmds = []
-                for cmd in filter(lambda c: c.help is not None, cog.get_commands()):
-                    try:
-                        await cmd.can_run(ctx)
-                        cog_cmds.append(cmd)
-                    except commands.CommandError:
-                        pass
-
-                if cog_cmds:
+                if cog_cmds := [cmd for cmd in filter(lambda c: c.help is not None, cog.get_commands())]:
                     mapping.update({cog: cog_cmds})
 
         return mapping
@@ -92,6 +85,8 @@ class Help(commands.Cog):
         help="Help with anything S4. Passing a command name or alias through will show help with that specific command, while passing no arguments will bring up a general command overview.",
     )
     async def help_command(self, ctx, cmd: t.Optional[converters.Command]):
+        prefix = await self.bot.prefix(ctx.guild)
+
         if cmd is None:
             pagemaps = []
 
@@ -100,15 +95,16 @@ class Help(commands.Cog):
                     {
                         "header": "Help",
                         "title": f"The `{cog.qualified_name.lower()}` module",
-                        "description": cog.__doc__,
+                        "description": f"{cog.__doc__}\n\nUse `{prefix}help [command]` for more detailed help on a command. You can not run commands with `(✗)` next to them.",
                         "thumbnail": self.bot.user.avatar_url,
                         "fields": [
                             (
-                                cmd.help.split(".")[0] if cmd.help is not None else "No help available.",
-                                await self.syntax(ctx, cmd),
+                                f"{len(cmds)} command(s)",
+                                "```{}```".format(
+                                    "\n".join([await self.basic_syntax(ctx, cmd, prefix) for cmd in cmds])
+                                ),
                                 False,
                             )
-                            for cmd in cmds
                         ],
                     }
                 )
@@ -128,10 +124,9 @@ class Help(commands.Cog):
                         description=cmd.help,
                         thumbnail=self.bot.user.avatar_url,
                         fields=[
-                            ("Syntax (<required> • [optional])", await self.syntax(ctx, cmd), False),
-                            ("On Cooldown?", cmd.is_on_cooldown(ctx), False),
-                            ("User requirements", await self.required_permissions(ctx, cmd), False),
-                            ("Bot requirements", await self.required_bot_permissions(ctx, cmd), False),
+                            ("Syntax (<required> • [optional])", await self.full_syntax(ctx, cmd, prefix), False),
+                            ("On cooldown?", cmd.is_on_cooldown(ctx), False),
+                            ("Can be run?", await self.required_permissions(ctx, cmd), False),
                         ],
                     )
                 )
