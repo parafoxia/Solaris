@@ -81,12 +81,13 @@ class Error(commands.Cog):
             await ctx.send(f"{self.bot.cross} That command can only be used by S4's owner.")
 
         elif isinstance(exc, commands.CommandOnCooldown):
+            # Hooray for discord.py str() logic.
             cooldown_texts = {
-                "user": "{} You can not use that commands for another {}.",
-                "guild": "{} That command can not be used in this server for another {}.",
-                "channel": "{} That command can not be used in this channel for another {}.",
-                "member": "{} You can not use that command in this server for another {}.",
-                "category": "{} That command can not be used in this category for another {}.",
+                "BucketType.user": "{} You can not use that commands for another {}.",
+                "BucketType.guild": "{} That command can not be used in this server for another {}.",
+                "BucketType.channel": "{} That command can not be used in this channel for another {}.",
+                "BucketType.member": "{} You can not use that command in this server for another {}.",
+                "BucketType.category": "{} That command can not be used in this category for another {}.",
             }
             await ctx.send(
                 cooldown_texts[str(exc.cooldown.type)].format(
