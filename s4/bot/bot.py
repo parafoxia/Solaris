@@ -45,7 +45,6 @@ class Bot(commands.Bot):
         print("Running bot...")
         super().run(Config.TOKEN, reconnect=True)
 
-    # FIXME:
     async def shutdown(self):
         print("Shutting down...")
         self.scheduler.shutdown()
@@ -59,12 +58,7 @@ class Bot(commands.Bot):
             await sc.send(f"{self.info} S4 is shutting down. (Version {self.version})")
 
         print(" Closing connection to Discord...")
-        await super().close()
-
-    # FIXME:
-    async def close(self):
-        print("Closing on keyboard interrupt...")
-        await self.shutdown()
+        await self.logout()
 
     async def on_connect(self):
         if not self.ready.booted:
