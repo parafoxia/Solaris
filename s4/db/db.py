@@ -38,12 +38,16 @@ class Database:
     async def sync(self):
         # Insert.
         await self.executemany("INSERT OR IGNORE INTO system (GuildID) VALUES (?)", [(g.id,) for g in self.bot.guilds])
+        await self.executemany(
+            "INSERT OR IGNORE INTO gateway (GuildID) VALUES (?)", [(g.id,) for g in self.bot.guilds]
+        )
 
         # Remove.
         stored = await self.column("SELECT GuildID FROM system")
         member_of = [g.id for g in self.bot.guilds]
         removals = [(g_id,) for g_id in set(stored) - set(member_of)]
         await self.executemany("DELETE FROM system WHERE GuildID = ?", removals)
+        await self.executemany("DELETE FROM gateway WHERE GuildID = ?", removals)
 
         # Commit.
         await self.commit()
