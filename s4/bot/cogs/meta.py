@@ -179,9 +179,9 @@ class Meta(commands.Cog):
                         ["Servers", f"{self.bot.guild_count:,}", True],
                         ["Users", f"{self.bot.user_count:,}", True],
                         ["Commands", f"{self.bot.command_count:,}", True],
-                        ["Python code", f"{self.bot._python_lines:,}", True],
-                        ["JSON scripts", f"{self.bot._json_lines:,}", True],
-                        ["SQL scripts", f"{self.bot._sql_lines:,}", True],
+                        ["Python code", f"{self.bot._python_lines:,} lines", True],
+                        ["JSON scripts", f"{self.bot._json_lines:,} lines", True],
+                        ["SQL scripts", f"{self.bot._sql_lines:,} lines", True],
                         [
                             "Database calls since uptime",
                             f"{self.bot.db._calls:,} ({self.bot.db._calls/uptime:,.3f} per second)",
