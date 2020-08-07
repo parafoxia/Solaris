@@ -25,6 +25,7 @@ class Hub(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_join(self, guild):
         await self.bot.db.execute("INSERT OR IGNORE INTO system (GuildID) VALUES (?)", guild.id)
+        await self.bot.db.execute("INSERT OR IGNORE INTO gateway (GuildID) VALUES (?)", guild.id)
 
         if self.stdout_channel is not None:
             await self.stdout_channel.send(
@@ -34,6 +35,7 @@ class Hub(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_remove(self, guild):
         await self.bot.db.execute("DELETE FROM system WHERE GuildID = ?", guild.id)
+        await self.bot.db.execute("DELETE FROM gateway WHERE GuildID = ?", guild.id)
 
         if self.stdout_channel is not None:
             await self.stdout_channel.send(

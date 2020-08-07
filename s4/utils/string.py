@@ -9,7 +9,7 @@ class MessageFormatter(Formatter):
             try:
                 return kwargs[key]
             except KeyError:
-                return key
+                return "<BAD_VARIABLE>"
         else:
             return super().get_value(key, args, kwargs)
 
