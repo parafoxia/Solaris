@@ -71,7 +71,9 @@ def bot_is_ready():
 
 class FirstTimeSetupNotRun(CustomCheckFailure):
     def __init__(self, prefix=">>", /):
-        super().__init__(f"The first time setup needs to be run before you can do that. Use `{prefix}setup` to do this.")
+        super().__init__(
+            f"The first time setup needs to be run before you can do that. Use `{prefix}setup` to do this."
+        )
 
 
 def first_time_setup_has_run():
