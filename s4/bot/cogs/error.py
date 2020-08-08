@@ -48,7 +48,7 @@ class Error(commands.Cog):
             await sc.send(f"{self.bot.cross} Something went wrong (ref: {ref}).")
 
         if err == "on_command_error":
-            prefix = self.bot.prefix(args[0].guild)
+            prefix = await self.bot.prefix(args[0].guild)
             await args[0].send(
                 f"{self.bot.cross} Something went wrong (ref: {ref}). Quote this reference in the support server, which you can get a link for by using `{prefix}support`."
             )
@@ -67,7 +67,7 @@ class Error(commands.Cog):
 
         elif isinstance(exc, commands.MissingRequiredArgument):
             await ctx.send(
-                f"{self.bot.cross} No `{exc.param.name}` argument was passed, despite being required. Use `{prefix}help {ctx.comamnd}` for more information."
+                f"{self.bot.cross} No `{exc.param.name}` argument was passed, despite being required. Use `{prefix}help {ctx.command}` for more information."
             )
 
         elif isinstance(exc, commands.BadArgument):
