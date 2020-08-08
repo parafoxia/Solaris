@@ -70,14 +70,14 @@ def bot_is_ready():
 
 
 class FirstTimeSetupNotRun(CustomCheckFailure):
-    def __init__(self):
-        super().__init__("The first time setup needs to be run before you can do that. Use `@S4 setup` to do this.")
+    def __init__(self, prefix=">>", /):
+        super().__init__(f"The first time setup needs to be run before you can do that. Use `{prefix}setup` to do this.")
 
 
 def first_time_setup_has_run():
     async def predicate(ctx):
         if not await modules.retrieve._system__runfts(ctx.bot, ctx.guild):
-            raise FirstTimeSetupNotRun()
+            raise FirstTimeSetupNotRun(await ctx.bot.prefix(ctx.guild))
         return True
 
     return commands.check(predicate)

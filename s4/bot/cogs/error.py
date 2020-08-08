@@ -48,8 +48,9 @@ class Error(commands.Cog):
             await sc.send(f"{self.bot.cross} Something went wrong (ref: {ref}).")
 
         if err == "on_command_error":
+            prefix = self.bot.prefix(args[0].guild)
             await args[0].send(
-                f"{self.bot.cross} Something went wrong (ref: {ref}). Quote this reference in the support server, which you can get a link for by using `@S4 support`."
+                f"{self.bot.cross} Something went wrong (ref: {ref}). Quote this reference in the support server, which you can get a link for by using `{prefix}support`."
             )
 
         raise  # Re-raises the last known exception.
