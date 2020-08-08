@@ -152,15 +152,6 @@ class Meta(commands.Cog):
         )
 
     @commands.command(
-        name="prefix", help="Displays S4's prefix in your server. Note that mentioning S4 will always work."
-    )
-    async def prefix_command(self, ctx):
-        prefix = await self.bot.prefix(ctx.guild)
-        await ctx.send(
-            f"{self.bot.info} S4's prefix in this server is {prefix}. To change it, use `{prefix}config system prefix <new prefix>`."
-        )
-
-    @commands.command(
         name="botinfo",
         aliases=["bi", "botstats", "stats", "bs"],
         cooldown_after_parsing=True,
@@ -438,6 +429,7 @@ class Meta(commands.Cog):
     @commands.is_owner()
     async def shutdown_command(self, ctx):
         # Use hub shutdown instead where possible.
+        await ctx.message.delete()
         await self.bot.shutdown()
 
 
