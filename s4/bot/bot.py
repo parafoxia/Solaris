@@ -104,7 +104,7 @@ class Bot(commands.Bot):
             print(" Synchronised database.")
 
             self.ready.booted = True
-            print(" Bot booted.")
+            print(" Bot booted. Don't use CTRL+C to shut the bot down!")
 
         else:
             print("Bot reconnected.")

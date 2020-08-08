@@ -21,12 +21,56 @@ import typing as t
 
 from discord.ext import commands
 
-from s4.utils import converters, menu, string
+from s4.utils import converters, menu, modules, string
 
 
 class HelpMenu(menu.MultiPageMenu):
     def __init__(self, ctx, pagemaps):
         super().__init__(ctx, pagemaps, timeout=120.0)
+
+
+class ConfigHelpMenu(menu.NumberedSelectionMenu):
+    def __init__(self, ctx):
+        pagemap = {
+            "header": "Help",
+            "title": "Configuration help",
+            "description": "Select the module you want to configure.",
+            "thumbnail": ctx.bot.user.avatar_url,
+        }
+        super().__init__(
+            ctx,
+            [cog.qualified_name.lower() for cog in ctx.bot.cogs.values() if getattr(cog, "configurable", False)],
+            pagemap,
+        )
+
+    async def start(self):
+        r = await super().start()
+        await self.display_help(r)
+
+    async def display_help(self, module):
+        prefix = await self.bot.prefix(self.ctx.guild)
+
+        await self.message.clear_reactions()
+        await self.message.edit(
+            embed=self.bot.embed.build(
+                ctx=self.ctx,
+                header="Help",
+                title=f"Configuration help for {module}",
+                description=(
+                    list(filter(lambda c: c.qualified_name.lower() == module, self.bot.cogs.values())).pop().__doc__
+                ),
+                thumbnail=self.bot.user.avatar_url,
+                fields=[
+                    (
+                        (doc := func.__doc__.split("\n", maxsplit=1))[0],
+                        f"{doc[1]}\n`{prefix}config {module} {name[len(module)+2:]}`",
+                        False,
+                    )
+                    for name, func in filter(lambda f: module in f[0], modules.config.__dict__.items())
+                    if not name.startswith("_")
+                ],
+            )
+        )
 
 
 class Help(commands.Cog):
@@ -115,7 +159,7 @@ class Help(commands.Cog):
             if not cmd:
                 await ctx.send(f"{self.bot.cross} S4 has no commands or aliases with that name.")
             elif cmd.name == "config":
-                pass
+                await ConfigHelpMenu(ctx).start()
             else:
                 await ctx.send(
                     embed=self.bot.embed.build(

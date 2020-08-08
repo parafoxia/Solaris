@@ -248,6 +248,7 @@ class Gateway(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.bot.scheduler.add_job(self.remove_on_timeout, CronTrigger(second=0))
+        self.configurable = True
 
     @commands.Cog.listener()
     async def on_ready(self):
