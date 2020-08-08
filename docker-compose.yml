@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  bot:
+    build: .
+
+    volumes:
+      - data:/app/data/dynamic
+
+    environment:
+      TOKEN: /run/secrets/token
+      DEFAULT_PREFIX: ">>"
+      HUB_GUILD_ID: 530249508177575952
+      HUB_COMMANDS_CHANNEL_ID: 657611609094619146
+      HUB_RELAY_CHANNEL_ID: 657612250768736271
+      HUB_STDOUT_CHANNEL_ID: 657562932413988873
+
+    secrets:
+      - token
+
+secrets:
+  token:
+    file: ./secrets/token
+
+volumes:
+  data:

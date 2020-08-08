@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "S4-Server-Safety-Security-Systems"
+version = "1.0.0-beta1"
+description = "Server Safety and Security Systems designed to make your server a safer and better place."
+
+license = "GPLv3"
+repository = "https://github.com/parafoxia/S4"
+readme = "README.md"
+
+authors = [
+    "Ethan Henderson <parafoxia@carberra.xyz>"
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+aiofiles = "^0.5.0"
+aiosqlite = "^0.13.0"
+apscheduler = "^3.6.3"
+beautifultable = "^1.0.0"
+"discord.py" = "1.3.4"
+psutil = "^5.7.0"
+python-dotenv = "^0.14.0"
+
+[tool.poetry.dev-dependencies]
+black = "^19.10b0"
+mypy = "^0.782"
+
+[tool.black]
+line-length = 119
+target-version = ["py38"]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
