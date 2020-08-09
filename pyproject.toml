@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "S4-Server-Safety-Security-Systems"
-version = "1.0.0-beta.1"
+version = "1.0.0-beta.2"
 description = "Server Safety and Security Systems designed to make your server a safer and better place."
 
 license = "GPLv3"
@@ -19,6 +19,7 @@ apscheduler = "^3.6.3"
 beautifultable = "^1.0.0"
 "discord.py" = "1.3.4"
 psutil = "^5.7.0"
+pygount = "^1.2.3"
 python-dotenv = "^0.14.0"
 toml = "^0.10.1"
 

@@ -36,7 +36,7 @@ class PresenceSetter:
                 "Invite S4 to your server by using @S4 invite",
                 "To view information about S4, use @S4 botinfo",
                 "Need help with S4? Join the support server! Use @S4 support to get an invite",
-                "Developed by Parafoxia#1911 under the MPL-2.0 license",
+                "Developed by Parafoxia#1911 under the GPLv3 license",
             )
         )
 

@@ -65,7 +65,8 @@ class Meta(commands.Cog):
         if not self.bot.ready.booted:
             self.developer = (await self.bot.application_info()).owner
             self.testers = [
-                (await self.bot.grab_user(id_)) for id_ in (116520426401693704, 300346872109989898, 135372594953060352)
+                (await self.bot.grab_user(id_))
+                for id_ in (116520426401693704, 300346872109989898, 135372594953060352, 287969892689379331)
             ]
             self.support_guild = self.bot.get_guild(661973136631398412)
             self.helper_role = self.support_guild.get_role(689788551575109648)
@@ -78,12 +79,13 @@ class Meta(commands.Cog):
         help="View information regarding those behind S4's development. This includes the developer and the testers, and also shows copyright information.",
     )
     async def about_command(self, ctx):
+        prefix = await self.bot.prefix(ctx.guild)
         await ctx.send(
             embed=self.bot.embed.build(
                 ctx=ctx,
                 header="Information",
                 title="About S4",
-                description="Use `botinfo` for detailed statistics.",
+                description=f"Use `{prefix}botinfo` for detailed statistics.",
                 thumbnail=self.bot.user.avatar_url,
                 fields=[
                     ["Developer", f"Created and copyright ©️ {self.developer.mention} 2020.", False],
@@ -160,6 +162,7 @@ class Meta(commands.Cog):
     @commands.cooldown(1, 300, commands.BucketType.user)
     async def botinfo_command(self, ctx):
         with (proc := psutil.Process()).oneshot():
+            prefix = await self.bot.prefix(ctx.guild)
             uptime = time() - proc.create_time()
             cpu_times = proc.cpu_times()
             total_memory = psutil.virtual_memory().total / (1024 ** 2)
@@ -171,7 +174,7 @@ class Meta(commands.Cog):
                     ctx=ctx,
                     header="Information",
                     title="Bot information",
-                    description=f"S4 was developed by {(await self.bot.application_info()).owner.mention}. Use `about` for more information.",
+                    description=f"S4 was developed by {(await self.bot.application_info()).owner.mention}. Use `{prefix}about` for more information.",
                     thumbnail=self.bot.user.avatar_url,
                     fields=[
                         ["Bot version", f"{self.bot.version}", True],
@@ -185,13 +188,17 @@ class Meta(commands.Cog):
                             ),
                             True,
                         ],
-                        ["Memory usage", f"{memory_usage:,.3f} / {total_memory:,.0f} ({memory_percent:.0f}%)", True],
+                        [
+                            "Memory usage",
+                            f"{memory_usage:,.3f} / {total_memory:,.0f} MiB ({memory_percent:.0f}%)",
+                            True,
+                        ],
                         ["Servers", f"{self.bot.guild_count:,}", True],
                         ["Users", f"{self.bot.user_count:,}", True],
                         ["Commands", f"{self.bot.command_count:,}", True],
-                        ["Python code", f"{self.bot._python_lines:,} lines", True],
-                        ["JSON scripts", f"{self.bot._json_lines:,} lines", True],
-                        ["SQL scripts", f"{self.bot._sql_lines:,} lines", True],
+                        ["Code", f"{self.bot.loc.code:,} lines", True],
+                        ["Comments", f"{self.bot.loc.docs:,} lines", True],
+                        ["Blank", f"{self.bot.loc.empty:,} lines", True],
                         [
                             "Database calls since uptime",
                             f"{self.bot.db._calls:,} ({self.bot.db._calls/uptime:,.3f} per second)",

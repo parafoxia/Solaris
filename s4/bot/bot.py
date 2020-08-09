@@ -36,16 +36,16 @@ class Bot(commands.Bot):
         self._cogs = [p.stem for p in Path(".").glob("./s4/bot/cogs/*.py")]
         self._dynamic = "./s4/data/dynamic"
         self._static = "./s4/data/static"
-        self._python_lines = loc.python_lines()
-        self._json_lines = loc.json_lines()
-        self._sql_lines = loc.sql_lines()
 
         self.scheduler = AsyncIOScheduler()
         self.db = Database(self)
         self.embed = utils.EmbedConstructor(self)
         self.emoji = utils.EmojiGetter(self)
+        self.loc = utils.CodeCounter()
         self.presence = utils.PresenceSetter(self)
         self.ready = utils.Ready(self)
+
+        self.loc.count()
 
         super().__init__(command_prefix=self.command_prefix, case_insensitive=True, status=discord.Status.dnd)
 
@@ -166,6 +166,7 @@ class Bot(commands.Bot):
                 manage_channels=True,
                 kick_members=True,
                 ban_members=True,
+                manage_nicknames=True,
                 read_messages=True,
                 send_messages=True,
                 manage_messages=True,
