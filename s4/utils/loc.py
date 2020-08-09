@@ -33,10 +33,11 @@ def _loc(filetype):
                 ]
             )
         )
-    elif os.name == "posix":
-        return int(
-            sp.check_output(f"find {ROOT_DIR / 's4'} -type f -name \"*.{filetype}\" -print0 | wc -l --files0-from=-")
-        )
+    # FIXME: This just doesn't work.
+    # elif os.name == "posix":
+    #     return int(
+    #         sp.check_output(f"find {ROOT_DIR / 's4'} -type f -name \"*.{filetype}\" -print0 | wc -l --files0-from=-")
+    #     )
     return 0
 
 
