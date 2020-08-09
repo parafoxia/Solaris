@@ -65,7 +65,8 @@ class Meta(commands.Cog):
         if not self.bot.ready.booted:
             self.developer = (await self.bot.application_info()).owner
             self.testers = [
-                (await self.bot.grab_user(id_)) for id_ in (116520426401693704, 300346872109989898, 135372594953060352)
+                (await self.bot.grab_user(id_))
+                for id_ in (116520426401693704, 300346872109989898, 135372594953060352, 287969892689379331)
             ]
             self.support_guild = self.bot.get_guild(661973136631398412)
             self.helper_role = self.support_guild.get_role(689788551575109648)

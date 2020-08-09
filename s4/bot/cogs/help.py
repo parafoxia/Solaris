@@ -74,7 +74,7 @@ class ConfigHelpMenu(menu.NumberedSelectionMenu):
 
 
 class Help(commands.Cog):
-    """This module is aimed at assisting you with using S4."""
+    """Assistance with using a configuring S4."""
 
     def __init__(self, bot):
         self.bot = bot
