@@ -166,6 +166,7 @@ class Bot(commands.Bot):
                 manage_channels=True,
                 kick_members=True,
                 ban_members=True,
+                manage_nicknames=True,
                 read_messages=True,
                 send_messages=True,
                 manage_messages=True,

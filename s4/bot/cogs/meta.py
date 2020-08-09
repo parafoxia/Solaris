@@ -187,7 +187,11 @@ class Meta(commands.Cog):
                             ),
                             True,
                         ],
-                        ["Memory usage", f"{memory_usage:,.3f} / {total_memory:,.0f} MiB ({memory_percent:.0f}%)", True],
+                        [
+                            "Memory usage",
+                            f"{memory_usage:,.3f} / {total_memory:,.0f} MiB ({memory_percent:.0f}%)",
+                            True,
+                        ],
                         ["Servers", f"{self.bot.guild_count:,}", True],
                         ["Users", f"{self.bot.user_count:,}", True],
                         ["Commands", f"{self.bot.command_count:,}", True],
