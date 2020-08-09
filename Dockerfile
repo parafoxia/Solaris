@@ -1,6 +1,6 @@
 FROM python:3-slim
 
-RUN apt update && apt install curl -y
+RUN apt-get update && apt-get install gcc python3-dev curl -y
 RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
 
 WORKDIR /app
