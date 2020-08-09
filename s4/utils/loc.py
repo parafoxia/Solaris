@@ -18,36 +18,22 @@
 # parafoxia@carberra.xyz
 
 import os
-import subprocess as sp
+
+from pygount import SourceAnalysis
 
 from s4.utils import ROOT_DIR
 
 
-def _loc(filetype):
-    if os.name == "nt":
-        return int(
-            sp.check_output(
-                [
-                    "powershell.exe",
-                    f"(Get-ChildItem -Path \"{ROOT_DIR / 's4'}\" | Get-ChildItem -Filter '*.{filetype}' -Recurse | Get-Content | Measure-Object -line).lines",
-                ]
-            )
-        )
-    # FIXME: This just doesn't work.
-    # elif os.name == "posix":
-    #     return int(
-    #         sp.check_output(f"find {ROOT_DIR / 's4'} -type f -name \"*.{filetype}\" -print0 | wc -l --files0-from=-")
-    #     )
-    return 0
+class CodeCounter:
+    def __init__(self):
+        self.code = 0
+        self.docs = 0
+        self.empty = 0
 
-
-def python_lines():
-    return _loc("py")
-
-
-def json_lines():
-    return _loc("json")
-
-
-def sql_lines():
-    return _loc("sql")
+    def count(self):
+        for subdir, _, files in os.walk(ROOT_DIR / "s4"):
+            for file in (f for f in files if f.endswith(".py")):
+                analysis = SourceAnalysis.from_file(f"{subdir}/{file}", "pygount", encoding="utf=8")
+                self.code += analysis.code_count
+                self.docs += analysis.documentation_count
+                self.empty += analysis.empty_count
