@@ -103,7 +103,7 @@ class Error(commands.Cog):
         elif isinstance(exc, commands.CommandOnCooldown):
             # Hooray for discord.py str() logic.
             cooldown_texts = {
-                "BucketType.user": "{} You can not use that commands for another {}.",
+                "BucketType.user": "{} You can not use that command for another {}.",
                 "BucketType.guild": "{} That command can not be used in this server for another {}.",
                 "BucketType.channel": "{} That command can not be used in this channel for another {}.",
                 "BucketType.member": "{} You can not use that command in this server for another {}.",

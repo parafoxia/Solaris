@@ -78,12 +78,13 @@ class Meta(commands.Cog):
         help="View information regarding those behind S4's development. This includes the developer and the testers, and also shows copyright information.",
     )
     async def about_command(self, ctx):
+        prefix = await self.bot.prefix(ctx.guild)
         await ctx.send(
             embed=self.bot.embed.build(
                 ctx=ctx,
                 header="Information",
                 title="About S4",
-                description="Use `botinfo` for detailed statistics.",
+                description=f"Use `{prefix}botinfo` for detailed statistics.",
                 thumbnail=self.bot.user.avatar_url,
                 fields=[
                     ["Developer", f"Created and copyright ©️ {self.developer.mention} 2020.", False],
@@ -160,6 +161,7 @@ class Meta(commands.Cog):
     @commands.cooldown(1, 300, commands.BucketType.user)
     async def botinfo_command(self, ctx):
         with (proc := psutil.Process()).oneshot():
+            prefix = await self.bot.prefix(ctx.guild)
             uptime = time() - proc.create_time()
             cpu_times = proc.cpu_times()
             total_memory = psutil.virtual_memory().total / (1024 ** 2)
@@ -171,7 +173,7 @@ class Meta(commands.Cog):
                     ctx=ctx,
                     header="Information",
                     title="Bot information",
-                    description=f"S4 was developed by {(await self.bot.application_info()).owner.mention}. Use `about` for more information.",
+                    description=f"S4 was developed by {(await self.bot.application_info()).owner.mention}. Use `{prefix}about` for more information.",
                     thumbnail=self.bot.user.avatar_url,
                     fields=[
                         ["Bot version", f"{self.bot.version}", True],
@@ -185,7 +187,7 @@ class Meta(commands.Cog):
                             ),
                             True,
                         ],
-                        ["Memory usage", f"{memory_usage:,.3f} / {total_memory:,.0f} ({memory_percent:.0f}%)", True],
+                        ["Memory usage", f"{memory_usage:,.3f} / {total_memory:,.0f} MiB ({memory_percent:.0f}%)", True],
                         ["Servers", f"{self.bot.guild_count:,}", True],
                         ["Users", f"{self.bot.user_count:,}", True],
                         ["Commands", f"{self.bot.command_count:,}", True],
