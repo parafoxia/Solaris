@@ -12,4 +12,4 @@ RUN $HOME/.poetry/bin/poetry install --no-ansi --no-root --no-dev
 COPY . .
 RUN $HOME/.poetry/bin/poetry install --no-ansi --no-dev
 
-CMD ["python3", "-m", "s4"]
+CMD ["python3", "-m", "solaris"]
