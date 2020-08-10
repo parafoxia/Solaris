@@ -37,7 +37,9 @@ class Hub(commands.Cog):
                 self.stdout_channel = self.guild.get_channel(Config.HUB_STDOUT_CHANNEL_ID)
 
                 if self.stdout_channel is not None:
-                    await self.stdout_channel.send(f"{self.bot.info} Solaris is now online! (Version {self.bot.version})")
+                    await self.stdout_channel.send(
+                        f"{self.bot.info} Solaris is now online! (Version {self.bot.version})"
+                    )
 
             self.bot.ready.up(self)
 

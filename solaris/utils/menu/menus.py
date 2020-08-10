@@ -122,12 +122,12 @@ class NumberedSelectionMenu(Menu):
         return (f"{self.selector.page_info}", f"{self.selector.table}", False)
 
     async def start(self):
-        self.pagemap.update({"fields": [self.page_field]})
+        self.pagemap.update({"fields": (self.page_field,)})
         await super().start()
         return await self.selector.response()
 
     async def switch(self, reaction):
-        self.pagemap.update({"fields": [self.page_field]})
+        self.pagemap.update({"fields": (self.page_field,)})
         await super().switch()
         await self.message.remove_reaction(reaction, self.ctx.author)
 

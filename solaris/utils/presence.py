@@ -36,7 +36,7 @@ class PresenceSetter:
                 "Invite Solaris to your server by using @Solaris invite",
                 "To view information about Solaris, use @Solaris botinfo",
                 "Need help with Solaris? Join the support server! Use @Solaris support to get an invite",
-                "Developed by Parafoxia#1911 under the GPLv3 license",
+                "Developed by Parafoxia#1911, and available under the GPLv3 license",
             )
         )
 

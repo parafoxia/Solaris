@@ -58,7 +58,7 @@ class EmbedConstructor:
         if image := kwargs.get("image"):
             embed.set_image(url=image)
 
-        for name, value, inline in kwargs.get("fields", []):
+        for name, value, inline in kwargs.get("fields", ()):
             embed.add_field(name=name, value=value, inline=inline)
 
         return embed

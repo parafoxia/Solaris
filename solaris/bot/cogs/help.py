@@ -60,7 +60,7 @@ class ConfigHelpMenu(menu.NumberedSelectionMenu):
                     list(filter(lambda c: c.qualified_name.lower() == module, self.bot.cogs.values())).pop().__doc__
                 ),
                 thumbnail=self.bot.user.avatar_url,
-                fields=[
+                fields=(
                     (
                         (doc := func.__doc__.split("\n", maxsplit=1))[0],
                         f"{doc[1]}\n`{prefix}config {module} {name[len(module)+2:]}`",
@@ -68,7 +68,7 @@ class ConfigHelpMenu(menu.NumberedSelectionMenu):
                     )
                     for name, func in filter(lambda f: module in f[0], modules.config.__dict__.items())
                     if not name.startswith("_")
-                ],
+                ),
             )
         )
 
@@ -141,7 +141,7 @@ class Help(commands.Cog):
                         "title": f"The `{cog.qualified_name.lower()}` module",
                         "description": f"{cog.__doc__}\n\nUse `{prefix}help [command]` for more detailed help on a command. You can not run commands with `(✗)` next to them.",
                         "thumbnail": self.bot.user.avatar_url,
-                        "fields": [
+                        "fields": (
                             (
                                 f"{len(cmds)} command(s)",
                                 "```{}```".format(
@@ -149,7 +149,7 @@ class Help(commands.Cog):
                                 ),
                                 False,
                             )
-                        ],
+                        ),
                     }
                 )
 
@@ -167,11 +167,11 @@ class Help(commands.Cog):
                         header="Help",
                         description=cmd.help,
                         thumbnail=self.bot.user.avatar_url,
-                        fields=[
+                        fields=(
                             ("Syntax (<required> • [optional])", await self.full_syntax(ctx, cmd, prefix), False),
                             ("On cooldown?", cmd.is_on_cooldown(ctx), False),
                             ("Can be run?", await self.required_permissions(ctx, cmd), False),
-                        ],
+                        ),
                     )
                 )
 

@@ -52,7 +52,9 @@ class Okay:
                 gm = await rc.fetch_message(gm_id)
 
                 if not rc.permissions_for(self.guild.me).manage_messages:
-                    await trips.gateway(self, "Solaris does not have the Manage Messages permission in the rules channel")
+                    await trips.gateway(
+                        self, "Solaris does not have the Manage Messages permission in the rules channel"
+                    )
                 else:
                     return gm
 
@@ -100,7 +102,9 @@ class Okay:
     async def welcome_channel(self, wc_id):
         if wc_id is not None:
             if (wc := self.bot.get_channel(wc_id)) is None:
-                await trips.gateway(self, "the welcome channel no longer exists or is unable to be accessed by Solaris")
+                await trips.gateway(
+                    self, "the welcome channel no longer exists or is unable to be accessed by Solaris"
+                )
             elif not wc.permissions_for(self.guild.me).send_messages:
                 await trips.gateway(self, "Solaris does not have the Send Messages permission in the welcome channel")
             else:
@@ -109,7 +113,9 @@ class Okay:
     async def goodbye_channel(self, gc_id):
         if gc_id is not None:
             if (gc := self.bot.get_channel(gc_id)) is None:
-                await trips.gateway(self, "the goodbye channel no longer exists or is unable to be accessed by Solaris")
+                await trips.gateway(
+                    self, "the goodbye channel no longer exists or is unable to be accessed by Solaris"
+                )
             elif not gc.permissions_for(self.guild.me).send_messages:
                 await trips.gateway(self, "Solaris does not have the Send Messages permission in the goodbye channel")
             else:
@@ -461,7 +467,7 @@ class Gateway(commands.Cog):
                 ctx=ctx,
                 header="Sync",
                 description="There are a few different syncing methods you can use.",
-                fields=[
+                fields=(
                     (
                         "Member sync",
                         f"Handles offline arrivals and departures. This is generally not required as Solaris does this on start-up.```{prefix}sync members```",
@@ -487,7 +493,7 @@ class Gateway(commands.Cog):
                         "Generally speaking, it will not 99% of the time, especially as Solaris performs an automatic synchronisation on start-up. However, due to the complexity of the systems used, and measures taken to make sure there are no database conflicts, it can fall out of sync sometimes. This command is the solution to that problem.",
                         False,
                     ),
-                ],
+                ),
             )
         )
 

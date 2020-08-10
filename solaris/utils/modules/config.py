@@ -230,7 +230,9 @@ async def gateway__welcomechannel(bot, channel, value):
         await channel.send(f"{bot.cross} You need to set the rules channel before you can set the welcome channel.")
     elif value is None:
         await bot.db.execute("UPDATE gateway SET WelcomeChannelID = NULL WHERE GuildID = ?", channel.guild.id)
-        await channel.send(f"{bot.tick} The welcome channel has been reset. Solaris will stop sending welcome messages.")
+        await channel.send(
+            f"{bot.tick} The welcome channel has been reset. Solaris will stop sending welcome messages."
+        )
         lc = await retrieve.log_channel(bot, channel.guild)
         await lc.send(f"{bot.info} The welcome channel has been reset.")
     elif not isinstance(value, discord.TextChannel):
@@ -255,7 +257,9 @@ async def gateway__goodbyechannel(bot, channel, value):
         await channel.send(f"{bot.cross} You need to set the rules channel before you can set the goodbye channel.")
     elif value is None:
         await bot.db.execute("UPDATE gateway SET GoodbyeChannelID = NULL WHERE GuildID = ?", channel.guild.id)
-        await channel.send(f"{bot.tick} The goodbye channel has been reset. Solaris will stop sending goodbye messages.")
+        await channel.send(
+            f"{bot.tick} The goodbye channel has been reset. Solaris will stop sending goodbye messages."
+        )
         lc = await retrieve.log_channel(bot, channel.guild)
         await lc.send(f"{bot.info} The goodbye channel has been reset.")
     elif not isinstance(value, discord.TextChannel):

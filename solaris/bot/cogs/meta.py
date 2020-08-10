@@ -88,11 +88,11 @@ class Meta(commands.Cog):
                 title="About Solaris",
                 description=f"Use `{prefix}botinfo` for detailed statistics.",
                 thumbnail=self.bot.user.avatar_url,
-                fields=[
-                    ["Developer", self.developer.mention, False],
-                    ["Avatar Designer", self.artist.mention, False],
-                    ["Testers", "\n".join(t.mention for t in self.testers), False],
-                ],
+                fields=(
+                    ("Developer", self.developer.mention, False),
+                    ("Avatar Designer", self.artist.mention, False),
+                    ("Testers", "\n".join(t.mention for t in self.testers), False),
+                ),
             )
         )
 
@@ -110,11 +110,11 @@ class Meta(commands.Cog):
                 header="Information",
                 description=f"Click [here]({SUPPORT_GUILD_INVITE_LINK}) to join the support server.",
                 thumbnail=self.bot.user.avatar_url,
-                fields=[
-                    ["Online / members", f"{len(online):,} / {len(self.support_guild.members):,}", True],
-                    ["Online / helpers", f"{len(online_helpers):,} / {len(helpers):,}", True],
-                    ["Developer", str(self.support_guild.owner.status).title(), True],
-                ],
+                fields=(
+                    ("Online / members", f"{len(online):,} / {len(self.support_guild.members):,}", True),
+                    ("Online / helpers", f"{len(online_helpers):,} / {len(helpers):,}", True),
+                    ("Developer", str(self.support_guild.owner.status).title(), True),
+                ),
             )
         )
 
@@ -127,21 +127,38 @@ class Meta(commands.Cog):
                 ctx=ctx,
                 header="Information",
                 thumbnail=self.bot.user.avatar_url,
-                fields=[
-                    [
-                        "Link 1",
-                        f"To invite Solaris with the Administrator permission, click [here]({self.bot.admin_invite}).",
+                fields=(
+                    (
+                        "Primary link",
+                        f"To invite Solaris with administrator privileges, click [here]({self.bot.admin_invite}).",
                         False,
-                    ],
-                    [
-                        "Link 2",
-                        f"To invite Solaris with the minimum required permissions, click [here]({self.bot.non_admin_invite}) (you may need to grant Solaris some extra permissions in order to use some modules).",
+                    ),
+                    (
+                        "Secondary",
+                        f"To invite Solaris without administrator privileges, click [here]({self.bot.non_admin_invite}) (you may need to grant Solaris some extra permissions in order to use some modules).",
                         False,
-                    ],
-                    ["Servers", f"{self.bot.guild_count:,}", True],
-                    ["Users", f"{self.bot.user_count:,}", True],
-                    ["Get started", "`>>setup`", True],
-                ],
+                    ),
+                    ("Servers", f"{self.bot.guild_count:,}", True),
+                    ("Users", f"{self.bot.user_count:,}", True),
+                    ("Get started", "`>>setup`", True),
+                ),
+            )
+        )
+
+    @commands.command(name="source", aliases=["src"], help="Provides a link to Solaris' source code.")
+    async def source_command(self, ctx):
+        await ctx.send(
+            embed=self.bot.embed.build(
+                ctx=ctx,
+                header="Information",
+                thumbnail=self.bot.user.avatar_url,
+                fields=(
+                    (
+                        "Available under the GPLv3 license",
+                        "Click [here](https://github.com/parafoxia/Solaris) to view.",
+                        False,
+                    ),
+                ),
             )
         )
 
@@ -178,35 +195,35 @@ class Meta(commands.Cog):
                     title="Bot information",
                     description=f"Solaris was developed by {(await self.bot.application_info()).owner.mention}. Use `{prefix}about` for more information.",
                     thumbnail=self.bot.user.avatar_url,
-                    fields=[
-                        ["Bot version", f"{self.bot.version}", True],
-                        ["Python version", f"{python_version()}", True],
-                        ["discord.py version", f"{discord.__version__}", True],
-                        ["Uptime", chron.short_delta(dt.timedelta(seconds=uptime)), True],
-                        [
+                    fields=(
+                        ("Bot version", f"{self.bot.version}", True),
+                        ("Python version", f"{python_version()}", True),
+                        ("discord.py version", f"{discord.__version__}", True),
+                        ("Uptime", chron.short_delta(dt.timedelta(seconds=uptime)), True),
+                        (
                             "CPU time",
                             chron.short_delta(
                                 dt.timedelta(seconds=cpu_times.system + cpu_times.user), milliseconds=True
                             ),
                             True,
-                        ],
-                        [
+                        ),
+                        (
                             "Memory usage",
                             f"{memory_usage:,.3f} / {total_memory:,.0f} MiB ({memory_percent:.0f}%)",
                             True,
-                        ],
-                        ["Servers", f"{self.bot.guild_count:,}", True],
-                        ["Users", f"{self.bot.user_count:,}", True],
-                        ["Commands", f"{self.bot.command_count:,}", True],
-                        ["Code", f"{self.bot.loc.code:,} lines", True],
-                        ["Comments", f"{self.bot.loc.docs:,} lines", True],
-                        ["Blank", f"{self.bot.loc.empty:,} lines", True],
-                        [
+                        ),
+                        ("Servers", f"{self.bot.guild_count:,}", True),
+                        ("Users", f"{self.bot.user_count:,}", True),
+                        ("Commands", f"{self.bot.command_count:,}", True),
+                        ("Code", f"{self.bot.loc.code:,} lines", True),
+                        ("Comments", f"{self.bot.loc.docs:,} lines", True),
+                        ("Blank", f"{self.bot.loc.empty:,} lines", True),
+                        (
                             "Database calls since uptime",
                             f"{self.bot.db._calls:,} ({self.bot.db._calls/uptime:,.3f} per second)",
                             True,
-                        ],
-                    ],
+                        ),
+                    ),
                 )
             )
 
@@ -235,28 +252,28 @@ class Meta(commands.Cog):
                     ),
                     colour=target.colour,
                     thumbnail=target.avatar_url,
-                    fields=[
-                        ["ID", target.id, False],
-                        ["Discriminator", target.discriminator, True],
-                        ["Bot?", target.bot, True],
-                        ["Admin?", target.guild_permissions.administrator, True],
-                        ["Created on", chron.long_date(target.created_at), True],
-                        ["Joined on", chron.long_date(target.joined_at), True],
-                        ["Boosted on", chron.long_date(ps) if ps else "-", True],
-                        ["Existed for", chron.short_delta(dt.datetime.utcnow() - target.created_at), True],
-                        ["Member for", chron.short_delta(dt.datetime.utcnow() - target.joined_at), True],
-                        ["Booster for", chron.short_delta(dt.datetime.utcnow() - ps) if ps else "-", True],
-                        ["Status", str(target.status).title(), True],
-                        [
+                    fields=(
+                        ("ID", target.id, False),
+                        ("Discriminator", target.discriminator, True),
+                        ("Bot?", target.bot, True),
+                        ("Admin?", target.guild_permissions.administrator, True),
+                        ("Created on", chron.long_date(target.created_at), True),
+                        ("Joined on", chron.long_date(target.joined_at), True),
+                        ("Boosted on", chron.long_date(ps) if ps else "-", True),
+                        ("Existed for", chron.short_delta(dt.datetime.utcnow() - target.created_at), True),
+                        ("Member for", chron.short_delta(dt.datetime.utcnow() - target.joined_at), True),
+                        ("Booster for", chron.short_delta(dt.datetime.utcnow() - ps) if ps else "-", True),
+                        ("Status", str(target.status).title(), True),
+                        (
                             "Activity type",
                             str(target.activity.type).title().split(".")[-1] if target.activity is not None else "-",
                             True,
-                        ],
-                        ["Activity name", target.activity.name if target.activity else "-", True],
-                        ["Nº of roles", f"{len(target.roles):,}", True],
-                        ["Top role", target.top_role.mention, True],
-                        ["Top role position", f"{string.ordinal(ngr - target.top_role.position)} / {ngr:,}", True],
-                    ],
+                        ),
+                        ("Activity name", target.activity.name if target.activity else "-", True),
+                        ("Nº of roles", f"{len(target.roles):,}", True),
+                        ("Top role", target.top_role.mention, True),
+                        ("Top role position", f"{string.ordinal(ngr - target.top_role.position)} / {ngr:,}", True),
+                    ),
                 )
             )
 
@@ -268,14 +285,14 @@ class Meta(commands.Cog):
                     title=f"User information for {target.name}",
                     description="Showing reduced information as the given user is not in this server.",
                     thumbnail=target.avatar_url,
-                    fields=[
-                        ["ID", target.id, True],
-                        ["Discriminator", target.discriminator, True],
-                        ["Bot?", target.bot, True],
-                        ["Created on", chron.long_date(target.created_at), True],
-                        ["Existed for", chron.short_delta(dt.datetime.utcnow() - target.created_at), True],
-                        ["\u200b", "\u200b", True],
-                    ],
+                    fields=(
+                        ("ID", target.id, True),
+                        ("Discriminator", target.discriminator, True),
+                        ("Bot?", target.bot, True),
+                        ("Created on", chron.long_date(target.created_at), True),
+                        ("Existed for", chron.short_delta(dt.datetime.utcnow() - target.created_at), True),
+                        ("\u200b", "\u200b", True),
+                    ),
                 )
             )
 
@@ -319,32 +336,32 @@ class Meta(commands.Cog):
                 title=f"Server information for {ctx.guild.name}",
                 thumbnail=ctx.guild.icon_url,
                 colour=ctx.guild.owner.colour,
-                fields=[
-                    ["ID", ctx.guild.id, False],
-                    ["Owner", ctx.guild.owner.mention, True],
-                    ["Region", ctx.guild.region, True],
-                    ["Top role", ctx.guild.roles[-1].mention, True],
-                    ["Members", f"{ctx.guild.member_count:,}", True],
-                    ["Humans / bots", f"{human_count:,} / {bot_count:,}", True],
-                    [
+                fields=(
+                    ("ID", ctx.guild.id, False),
+                    ("Owner", ctx.guild.owner.mention, True),
+                    ("Region", ctx.guild.region, True),
+                    ("Top role", ctx.guild.roles[-1].mention, True),
+                    ("Members", f"{ctx.guild.member_count:,}", True),
+                    ("Humans / bots", f"{human_count:,} / {bot_count:,}", True),
+                    (
                         "Bans",
                         f"{len(await ctx.guild.bans()):,}" if ctx.guild.me.guild_permissions.ban_members else "-",
                         True,
-                    ],
-                    ["Roles", f"{len(ctx.guild.roles):,}", True],
-                    ["Text channels", f"{len(ctx.guild.text_channels):,}", True],
-                    ["Voice channels", f"{len(ctx.guild.voice_channels):,}", True],
-                    [
+                    ),
+                    ("Roles", f"{len(ctx.guild.roles):,}", True),
+                    ("Text channels", f"{len(ctx.guild.text_channels):,}", True),
+                    ("Voice channels", f"{len(ctx.guild.voice_channels):,}", True),
+                    (
                         "Invites",
                         f"{len(await ctx.guild.invites()):,}" if ctx.guild.me.guild_permissions.manage_guild else "-",
                         True,
-                    ],
-                    ["Emojis", f"{len(ctx.guild.emojis):,} / {ctx.guild.emoji_limit:,}", True],
-                    ["Boosts", f"{ctx.guild.premium_subscription_count:,} (level {ctx.guild.premium_tier})", True],
-                    ["Newest member", max(ctx.guild.members, key=lambda m: m.joined_at).mention, True],
-                    ["Created on", chron.long_date(ctx.guild.created_at), True],
-                    ["Existed for", chron.short_delta(dt.datetime.utcnow() - ctx.guild.created_at), True],
-                    [
+                    ),
+                    ("Emojis", f"{len(ctx.guild.emojis):,} / {ctx.guild.emoji_limit:,}", True),
+                    ("Boosts", f"{ctx.guild.premium_subscription_count:,} (level {ctx.guild.premium_tier})", True),
+                    ("Newest member", max(ctx.guild.members, key=lambda m: m.joined_at).mention, True),
+                    ("Created on", chron.long_date(ctx.guild.created_at), True),
+                    ("Existed for", chron.short_delta(dt.datetime.utcnow() - ctx.guild.created_at), True),
+                    (
                         "Statuses",
                         (
                             f"🟢 {len([m for m in ctx.guild.members if m.status == discord.Status.online]):,} "
@@ -353,8 +370,8 @@ class Meta(commands.Cog):
                             f"⚪ {len([m for m in ctx.guild.members if m.status == discord.Status.offline]):,}"
                         ),
                         False,
-                    ],
-                ],
+                    ),
+                ),
             )
         )
 
@@ -367,7 +384,7 @@ class Meta(commands.Cog):
     @commands.cooldown(1, 300, commands.BucketType.guild)
     async def detailedserverinfo_command(self, ctx):
         table_info = {
-            "overview": [
+            "overview": (
                 ("ID", ctx.guild.id),
                 ("Name", ctx.guild.name),
                 ("Region", ctx.guild.region),
@@ -380,13 +397,13 @@ class Meta(commands.Cog):
                     "Default notifications",
                     "Only @mentions" if ctx.guild.default_notifications.value else "All Messages",
                 ),
-            ],
-            "moderation": [
+            ),
+            "moderation": (
                 ("Verficiation level", str(ctx.guild.verification_level).title()),
                 ("Explicit media content filter", str(ctx.guild.explicit_content_filter).replace("_", " ").title()),
                 ("2FA requirement for moderation", ctx.guild.mfa_level),
-            ],
-            "numerical": [
+            ),
+            "numerical": (
                 ("Members", f"{ctx.guild.member_count:,}"),
                 ("Humans", f"{(hc := len([m for m in ctx.guild.members if not m.bot])):,}"),
                 ("Bots", f"{ctx.guild.member_count - hc:,}"),
@@ -412,7 +429,7 @@ class Meta(commands.Cog):
                 ("Filesize limit", f"{ctx.guild.filesize_limit//(1024**2):,.0f} MB"),
                 ("Boosts", f"{ctx.guild.premium_subscription_count:,}"),
                 ("Boosters", f"{len(ctx.guild.premium_subscribers):,}"),
-            ],
+            ),
             # "miscellaneous": [
             # ]
         }
