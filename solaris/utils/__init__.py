@@ -31,10 +31,10 @@ __all__ = [
 from json import load
 from pathlib import Path
 
-DEFAULT_EMBED_COLOUR = 0x38B3C8
+DEFAULT_EMBED_COLOUR = 0xE99234
 ERROR_ICON = "https://cdn.discordapp.com/attachments/710177462989881415/710866387018711080/cancel.png"
 INFO_ICON = "https://cdn.discordapp.com/attachments/710177462989881415/711348122915176529/info.png"
-LOADING_ICON = "https://cdn.discordapp.com/attachments/710177462989881415/710178153200353360/loading500.gif"
+LOADING_ICON = "https://cdn.discordapp.com/attachments/710177462989881415/742505284408443010/loading500.gif"
 ROOT_DIR = Path(__file__).parent.parent.parent
 SUCCESS_ICON = "https://cdn.discordapp.com/attachments/710177462989881415/738066048640876544/confirm.png"
 SUPPORT_GUILD_INVITE_LINK = "https://discord.gg/c3b4cZs"
