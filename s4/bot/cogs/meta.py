@@ -64,6 +64,7 @@ class Meta(commands.Cog):
     async def on_ready(self):
         if not self.bot.ready.booted:
             self.developer = (await self.bot.application_info()).owner
+            self.artist = await self.bot.grab_user(167803836839231488)
             self.testers = [
                 (await self.bot.grab_user(id_))
                 for id_ in (116520426401693704, 300346872109989898, 135372594953060352, 287969892689379331)
@@ -88,7 +89,8 @@ class Meta(commands.Cog):
                 description=f"Use `{prefix}botinfo` for detailed statistics.",
                 thumbnail=self.bot.user.avatar_url,
                 fields=[
-                    ["Developer", f"Created and copyright ©️ {self.developer.mention} 2020.", False],
+                    ["Developer", self.developer.mention, False],
+                    ["Avatar Designer", self.artist.mention, False],
                     ["Testers", "\n".join(t.mention for t in self.testers), False],
                 ],
             )
