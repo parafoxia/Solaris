@@ -1,4 +1,4 @@
-# S4 - A security and statistics focussed Discord bot.
+# Solaris - A Discord bot designed to make your server a safer and better place.
 # Copyright (C) 2020  Ethan Henderson
 
 # This program is free software: you can redistribute it and/or modify
@@ -37,22 +37,22 @@ class Okay:
 
     async def permissions(self):
         if not self.guild.me.guild_permissions.manage_roles:
-            await trips.gateway(self, "S4 no longer has the Manage Roles permission")
+            await trips.gateway(self, "Solaris no longer has the Manage Roles permission")
         elif not self.guild.me.guild_permissions.kick_members:
-            await trips.gateway(self, "S4 no longer has the Kick Members permission")
+            await trips.gateway(self, "Solaris no longer has the Kick Members permission")
         else:
             return True
 
     async def gate_message(self, rc_id, gm_id):
         try:
             if (rc := self.bot.get_channel(rc_id)) is None:
-                await trips.gateway(self, "the rules channel no longer exists, or is unable to be accessed by S4")
+                await trips.gateway(self, "the rules channel no longer exists, or is unable to be accessed by Solaris")
             else:
                 # This is done here to ensure the correct order of operations.
                 gm = await rc.fetch_message(gm_id)
 
                 if not rc.permissions_for(self.guild.me).manage_messages:
-                    await trips.gateway(self, "S4 does not have the Manage Messages permission in the rules channel")
+                    await trips.gateway(self, "Solaris does not have the Manage Messages permission in the rules channel")
                 else:
                     return gm
 
@@ -61,10 +61,10 @@ class Okay:
 
     async def blocking_role(self, br_id):
         if (br := self.guild.get_role(br_id)) is None:
-            await trips.gateway(self, "the blocking role no longer exists, or is unable to be accessed by S4")
+            await trips.gateway(self, "the blocking role no longer exists, or is unable to be accessed by Solaris")
         elif br.position >= self.guild.me.top_role.position:
             await trips.gateway(
-                self, "the blocking role is equal to or higher than S4's top role in the role hierarchy"
+                self, "the blocking role is equal to or higher than Solaris' top role in the role hierarchy"
             )
         else:
             return br
@@ -74,13 +74,13 @@ class Okay:
             for r in (mrs := [self.guild.get_role(int(id_)) for id_ in mr_ids.split(",")]) :
                 if r is None:
                     await trips.gateway(
-                        self, "one or more member roles no longer exist, or are unable to be accessed by S4"
+                        self, "one or more member roles no longer exist, or are unable to be accessed by Solaris"
                     )
                     return
                 elif r.position >= self.guild.me.top_role.position:
                     await trips.gateway(
                         self,
-                        "one or more member roles are equal to or higher than S4's top role in the role hierarchy",
+                        "one or more member roles are equal to or higher than Solaris' top role in the role hierarchy",
                     )
                     return
 
@@ -91,7 +91,7 @@ class Okay:
             for r in (ers := [self.guild.get_role(int(id_)) for id_ in er_ids.split(",")]) :
                 if r is None:
                     await trips.gateway(
-                        self, "one or more exception roles no longer exist, or are unable to be accessed by S4"
+                        self, "one or more exception roles no longer exist, or are unable to be accessed by Solaris"
                     )
                     return
 
@@ -100,18 +100,18 @@ class Okay:
     async def welcome_channel(self, wc_id):
         if wc_id is not None:
             if (wc := self.bot.get_channel(wc_id)) is None:
-                await trips.gateway(self, "the welcome channel no longer exists or is unable to be accessed by S4")
+                await trips.gateway(self, "the welcome channel no longer exists or is unable to be accessed by Solaris")
             elif not wc.permissions_for(self.guild.me).send_messages:
-                await trips.gateway(self, "S4 does not have the Send Messages permission in the welcome channel")
+                await trips.gateway(self, "Solaris does not have the Send Messages permission in the welcome channel")
             else:
                 return wc
 
     async def goodbye_channel(self, gc_id):
         if gc_id is not None:
             if (gc := self.bot.get_channel(gc_id)) is None:
-                await trips.gateway(self, "the goodbye channel no longer exists or is unable to be accessed by S4")
+                await trips.gateway(self, "the goodbye channel no longer exists or is unable to be accessed by Solaris")
             elif not gc.permissions_for(self.guild.me).send_messages:
-                await trips.gateway(self, "S4 does not have the Send Messages permission in the goodbye channel")
+                await trips.gateway(self, "Solaris does not have the Send Messages permission in the goodbye channel")
             else:
                 return gc
 
@@ -449,7 +449,7 @@ class Gateway(commands.Cog):
         name="synchronise",
         aliases=["synchronize", "sync"],
         invoke_without_command=True,
-        help="Synchronise the gateway module. In theory, you should only ever need this as a convenience utility, but it is useful to use if S4 falls out of sync for whatever reason.",
+        help="Synchronise the gateway module. In theory, you should only ever need this as a convenience utility, but it is useful to use if Solaris falls out of sync for whatever reason.",
     )
     @checks.module_has_initialised(MODULE_NAME)
     @checks.module_is_active(MODULE_NAME)
@@ -464,12 +464,12 @@ class Gateway(commands.Cog):
                 fields=[
                     (
                         "Member sync",
-                        f"Handles offline arrivals and departures. This is generally not required as S4 does this on start-up.```{prefix}sync members```",
+                        f"Handles offline arrivals and departures. This is generally not required as Solaris does this on start-up.```{prefix}sync members```",
                         False,
                     ),
                     (
                         "Role sync",
-                        f"Provides the member roles to those who have accepted the rules. This is good to run after you add a new member role, but S4 will not remove roles that are no longer member roles. If `accepted_only` is set to `False`, every single member will receive these roles regardless of any other factors.```{prefix}sync roles [accepted_only=True]```",
+                        f"Provides the member roles to those who have accepted the rules. This is good to run after you add a new member role, but Solaris will not remove roles that are no longer member roles. If `accepted_only` is set to `False`, every single member will receive these roles regardless of any other factors.```{prefix}sync roles [accepted_only=True]```",
                         False,
                     ),
                     (
@@ -484,7 +484,7 @@ class Gateway(commands.Cog):
                     ),
                     (
                         "Why does the module need synchronising?",
-                        "Generally speaking, it will not 99% of the time, especially as S4 performs an automatic synchronisation on start-up. However, due to the complexity of the systems used, and measures taken to make sure there are no database conflicts, it can fall out of sync sometimes. This command is the solution to that problem.",
+                        "Generally speaking, it will not 99% of the time, especially as Solaris performs an automatic synchronisation on start-up. However, due to the complexity of the systems used, and measures taken to make sure there are no database conflicts, it can fall out of sync sometimes. This command is the solution to that problem.",
                         False,
                     ),
                 ],
@@ -584,7 +584,7 @@ class Gateway(commands.Cog):
     @commands.command(
         name="checkaccepted",
         aliases=["ca"],
-        help='Checks whether a given user has accepted the server rules. If no user is provided, S4 will display the total number of members who have accepted. A member who has "accepted" is taken as one who has reacted to the gate message with the confirm emoji at some point, regardless of whether they unreacted later. The only exceptions to this are if the member leaves the server, or if the acceptance records are manually reset.',
+        help='Checks whether a given user has accepted the server rules. If no user is provided, Solaris will display the total number of members who have accepted. A member who has "accepted" is taken as one who has reacted to the gate message with the confirm emoji at some point, regardless of whether they unreacted later. The only exceptions to this are if the member leaves the server, or if the acceptance records are manually reset.',
     )
     @checks.module_has_initialised(MODULE_NAME)
     @checks.module_is_active(MODULE_NAME)
@@ -605,7 +605,7 @@ class Gateway(commands.Cog):
     @commands.command(
         name="resetaccepted",
         cooldown_after_parsing=True,
-        help="Resets S4's records regarding who has accepted the rules in your server. This action is irreversible.",
+        help="Resets Solaris' records regarding who has accepted the rules in your server. This action is irreversible.",
     )
     @commands.cooldown(1, 300, commands.BucketType.guild)
     @checks.module_has_initialised(MODULE_NAME)

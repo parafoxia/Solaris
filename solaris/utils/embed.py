@@ -1,4 +1,4 @@
-# S4 - A security and statistics focussed Discord bot.
+# Solaris - A Discord bot designed to make your server a safer and better place.
 # Copyright (C) 2020  Ethan Henderson
 
 # This program is free software: you can redistribute it and/or modify
@@ -42,7 +42,7 @@ class EmbedConstructor:
             timestamp=datetime.utcnow(),
         )
 
-        embed.set_author(name=kwargs.get("header", "S4"))
+        embed.set_author(name=kwargs.get("header", "Solaris"))
         embed.set_footer(
             text=kwargs.get(
                 "footer", f"Invoked by {ctx.author.display_name}" if ctx else "Server Safety and Security Systems"

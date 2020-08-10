@@ -1,4 +1,4 @@
-# S4 - A security and statistics focussed Discord bot.
+# Solaris - A Discord bot designed to make your server a safer and better place.
 # Copyright (C) 2020  Ethan Henderson
 
 # This program is free software: you can redistribute it and/or modify
@@ -55,7 +55,7 @@ class Mod(commands.Cog):
                         count += 1
                     except discord.Forbidden:
                         await ctx.send(
-                            f"Failed to kick {target.display_name} as their permission set is superior to S4's."
+                            f"Failed to kick {target.display_name} as their permission set is superior to Solaris'."
                         )
 
                 if count > 0:
@@ -95,7 +95,7 @@ class Mod(commands.Cog):
                         count += 1
                     except discord.Forbidden:
                         await ctx.send(
-                            f"Failed to ban {target.display_name} as their permission set is superior to S4's."
+                            f"Failed to ban {target.display_name} as their permission set is superior to Solaris'."
                         )
 
                 if count > 0:
@@ -134,7 +134,7 @@ class Mod(commands.Cog):
     @commands.command(
         name="clearchannel",
         aliases=["clrch"],
-        help="Clears an entire channel of messages. S4 does this by cloning the given channel, and then deleting it, keeping the clean clone intact.",
+        help="Clears an entire channel of messages. Solaris does this by cloning the given channel, and then deleting it, keeping the clean clone intact.",
     )
     @commands.has_permissions(manage_messages=True, manage_channels=True)
     @commands.bot_has_permissions(send_messages=True, manage_channels=True)
@@ -171,7 +171,7 @@ class Mod(commands.Cog):
             await ctx.send(f"{self.bot.cross} Nicknames can not be more than 32 characters in length.")
         elif not isinstance(target, discord.Member):
             await ctx.send(
-                f"{self.bot.cross} S4 was unable to identify a server member with the information provided."
+                f"{self.bot.cross} Solaris was unable to identify a server member with the information provided."
             )
         else:
             try:
@@ -179,7 +179,7 @@ class Mod(commands.Cog):
                 await ctx.send(f"{self.bot.tick} Nickname changed.")
             except discord.Forbidden:
                 await ctx.send(
-                    f"{self.bot.cross} Failed to change {target.display_name}'s nickname as their permission set is superior to S4's."
+                    f"{self.bot.cross} Failed to change {target.display_name}'s nickname as their permission set is superior to Solaris'."
                 )
 
     @commands.command(name="clearnickname", aliases=["clrnick"], help="Clears one or more members' nicknames.")
@@ -195,7 +195,7 @@ class Mod(commands.Cog):
                     count += 1
                 except discord.Forbidden:
                     await ctx.send(
-                        f"Failed to clear {target.display_name}'s nickname as their permission set is superior to S4's."
+                        f"Failed to clear {target.display_name}'s nickname as their permission set is superior to Solaris'."
                     )
 
             if count > 0:
@@ -205,7 +205,7 @@ class Mod(commands.Cog):
 
     @commands.command(
         name="unhoistnicknames",
-        help='"Unhoists" all members\' nicknames in the server. S4 does this by removing all except English upper and lower case letters from the start of the nickname where possible. Do not attempt to use this command if your server contains predominantly non-English members.',
+        help='"Unhoists" all members\' nicknames in the server. Solaris does this by removing all except English upper and lower case letters from the start of the nickname where possible. Do not attempt to use this command if your server contains predominantly non-English members.',
     )
     @commands.has_permissions(manage_nicknames=True)
     @commands.bot_has_permissions(send_messages=True, manage_nicknames=True)

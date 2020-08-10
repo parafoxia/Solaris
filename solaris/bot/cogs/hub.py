@@ -1,4 +1,4 @@
-# S4 - A security and statistics focussed Discord bot.
+# Solaris - A Discord bot designed to make your server a safer and better place.
 # Copyright (C) 2020  Ethan Henderson
 
 # This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ class Hub(commands.Cog):
                 self.stdout_channel = self.guild.get_channel(Config.HUB_STDOUT_CHANNEL_ID)
 
                 if self.stdout_channel is not None:
-                    await self.stdout_channel.send(f"{self.bot.info} S4 is now online! (Version {self.bot.version})")
+                    await self.stdout_channel.send(f"{self.bot.info} Solaris is now online! (Version {self.bot.version})")
 
             self.bot.ready.up(self)
 

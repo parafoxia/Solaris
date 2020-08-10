@@ -1,4 +1,4 @@
-# S4 - A security and statistics focussed Discord bot.
+# Solaris - A Discord bot designed to make your server a safer and better place.
 # Copyright (C) 2020  Ethan Henderson
 
 # This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ class CustomCheckFailure(commands.CheckFailure):
 
 class BotHasNotBooted(CustomCheckFailure):
     def __init__(self):
-        super().__init__("S4 is still booting. Please try again later.")
+        super().__init__("Solaris is still booting. Please try again later.")
 
 
 def bot_has_booted():
@@ -57,7 +57,7 @@ def module_has_initialised(module):
 
 class BotIsNotReady(CustomCheckFailure):
     def __init__(self):
-        super().__init__("S4 is still performing some start-up procedures. Please try again later.")
+        super().__init__("Solaris is still performing some start-up procedures. Please try again later.")
 
 
 def bot_is_ready():
@@ -101,7 +101,7 @@ def first_time_setup_has_not_run():
 
 class AuthorCanNotConfigure(CustomCheckFailure):
     def __init__(self):
-        super().__init__("You are not able to configure S4.")
+        super().__init__("You are not able to configure Solaris.")
 
 
 def author_can_configure():

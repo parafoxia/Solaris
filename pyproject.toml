@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "S4-Server-Safety-Security-Systems"
+name = "Solaris-Bot"
 version = "1.0.0-beta.2"
-description = "Server Safety and Security Systems designed to make your server a safer and better place."
+description = "A Discord bot designed to make your server a safer and better place."
 
 license = "GPLv3"
-repository = "https://github.com/parafoxia/S4"
+repository = "https://github.com/parafoxia/Solaris"
 readme = "README.md"
 
 authors = [

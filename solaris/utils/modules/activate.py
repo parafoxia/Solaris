@@ -1,4 +1,4 @@
-# S4 - A security and statistics focussed Discord bot.
+# Solaris - A Discord bot designed to make your server a safer and better place.
 # Copyright (C) 2020  Ethan Henderson
 
 # This program is free software: you can redistribute it and/or modify
@@ -33,15 +33,15 @@ async def gateway(ctx):
             await ctx.send(f"{ctx.bot.cross} The gateway module is already active.")
         elif not (ctx.guild.me.guild_permissions.manage_roles and ctx.guild.me.guild_permissions.kick_members):
             await ctx.send(
-                f"{ctx.bot.cross} The gateway module could not be activated as S4 does not have the Manage Roles and Kick Members permissions."
+                f"{ctx.bot.cross} The gateway module could not be activated as Solaris does not have the Manage Roles and Kick Members permissions."
             )
         elif (rc := ctx.bot.get_channel(rc_id)) is None:
             await ctx.send(
-                f"{ctx.bot.cross} The gateway module could not be activated as the rules channel does not exist or can not be accessed by S4."
+                f"{ctx.bot.cross} The gateway module could not be activated as the rules channel does not exist or can not be accessed by Solaris."
             )
         elif ctx.guild.get_role(br_id) is None:
             await ctx.send(
-                f"{ctx.bot.cross} The gateway module could not be activated as the blocking role does not exist or can not be accessed by S4."
+                f"{ctx.bot.cross} The gateway module could not be activated as the blocking role does not exist or can not be accessed by Solaris."
             )
         else:
             gm = await rc.send(

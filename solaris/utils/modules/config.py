@@ -1,4 +1,4 @@
-# S4 - A security and statistics focussed Discord bot.
+# Solaris - A Discord bot designed to make your server a safer and better place.
 # Copyright (C) 2020  Ethan Henderson
 
 # This program is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ async def _system__runfts(bot, channel, value):
 
 async def system__prefix(bot, channel, value):
     """The server prefix
-    The prefix S4 responds to, aside from mentions. The default is >>."""
+    The prefix Solaris responds to, aside from mentions. The default is >>."""
     if not isinstance(value, str):
         await channel.send(f"{bot.cross} The server prefix must be a string.")
     elif len(value) > MAX_PREFIX_LEN:
@@ -52,19 +52,19 @@ async def system__prefix(bot, channel, value):
 
 async def system__logchannel(bot, channel, value):
     """The log channel
-    The channel S4 uses to communicate important information. It is recommended you keep this channel restricted to members of the server's moderation team. Upon selecting a new channel, S4 will delete the one that was created should it still exist."""
+    The channel Solaris uses to communicate important information. It is recommended you keep this channel restricted to members of the server's moderation team. Upon selecting a new channel, Solaris will delete the one that was created should it still exist."""
     if not isinstance(value, discord.TextChannel):
         await channel.send(f"{bot.cross} The log channel must be a Discord text channel in this server.")
     elif not value.permissions_for(channel.guild.me).send_messages:
         await channel.send(
-            f"{bot.cross} The given channel can not be used as the log channel as S4 can not send messages to it."
+            f"{bot.cross} The given channel can not be used as the log channel as Solaris can not send messages to it."
         )
     else:
         await bot.db.execute("UPDATE system SET LogChannelID = ? WHERE GuildID = ?", value.id, channel.guild.id)
         await channel.send(f"{bot.tick} The log channel has been set to {value.mention}.")
         await value.send(
             (
-                f"{bot.info} This is the new log channel. S4 will use this channel to communicate with you if needed. "
+                f"{bot.info} This is the new log channel. Solaris will use this channel to communicate with you if needed. "
                 "Configuration updates will also be sent here."
             )
         )
@@ -79,12 +79,12 @@ async def system__logchannel(bot, channel, value):
 
 async def system__adminrole(bot, channel, value):
     """The admin role
-    The role used to denote which members can configure S4. Alongside server administrators, only members with this role can use any of S4's configuration commands. Upon selecting a new channel, S4 will delete the one that was created should it still exist."""
+    The role used to denote which members can configure Solaris. Alongside server administrators, only members with this role can use any of Solaris' configuration commands. Upon selecting a new channel, Solaris will delete the one that was created should it still exist."""
     if not isinstance(value, discord.Role):
         await channel.send(f"{bot.cross} The admin role must be a Discord role in this server.")
     elif value.position > channel.guild.me.top_role.position:
         await channel.send(
-            f"{bot.cross} The given role can not be used as the admin role as it is above S4's top role in the role hierarchy."
+            f"{bot.cross} The given role can not be used as the admin role as it is above Solaris' top role in the role hierarchy."
         )
     else:
         await bot.db.execute("UPDATE system SET AdminRoleID = ? WHERE GuildID = ?", value.id, channel.guild.id)
@@ -117,7 +117,7 @@ async def gateway__ruleschannel(bot, channel, value):
         and value.permissions_for(channel.guild.me).manage_messages
     ):
         await channel.send(
-            f"{bot.cross} The given channel can not be used as the rules channel as S4 can not send messages to it or manage exising messages there."
+            f"{bot.cross} The given channel can not be used as the rules channel as Solaris can not send messages to it or manage exising messages there."
         )
     else:
         await bot.db.execute("UPDATE gateway SET RulesChannelID = ? WHERE GuildID = ?", value.id, channel.guild.id)
@@ -137,14 +137,14 @@ async def _gateway__gatemessage(bot, channel, value):
 
 async def gateway__blockingrole(bot, channel, value):
     """The blockng role
-    The role that S4 will give new members upon entering the server, and remove when they accept the server rules. This role should prohibit access to all but the rules channel, or all but a read-only category."""
+    The role that Solaris will give new members upon entering the server, and remove when they accept the server rules. This role should prohibit access to all but the rules channel, or all but a read-only category."""
     if await retrieve._gateway__active(bot, channel.guild):
         await channel.send(f"{bot.cross} This can not be done as the gateway module is currently active.")
     elif not isinstance(value, discord.Role):
         await channel.send(f"{bot.cross} The blocking role must be a Discord role in this server.")
     elif value.position >= channel.guild.me.top_role.position:
         await channel.send(
-            f"{bot.cross} The given role can not be used as the blocking role as it is above S4's top role in the role hierarchy."
+            f"{bot.cross} The given role can not be used as the blocking role as it is above Solaris' top role in the role hierarchy."
         )
     else:
         await bot.db.execute("UPDATE gateway SET BlockingRoleID = ? WHERE GuildID = ?", value.id, channel.guild.id)
@@ -157,7 +157,7 @@ async def gateway__blockingrole(bot, channel, value):
 
 async def gateway__memberroles(bot, channel, values):
     """The member roles
-    The role(s) that S4 will give members upon accepting the server rules. This is optional, but could be useful if you want members to have specific role when they join, for example for a levelling system, or automatically opt them in to server announcements. You can set up to 3 member roles. The roles can be unset any time by passing no arguments to the command below."""
+    The role(s) that Solaris will give members upon accepting the server rules. This is optional, but could be useful if you want members to have specific role when they join, for example for a levelling system, or automatically opt them in to server announcements. You can set up to 3 member roles. The roles can be unset any time by passing no arguments to the command below."""
     values = [values] if not isinstance(values, list) else values
 
     if (br := await retrieve.gateway__blockingrole(bot, channel.guild)) is None:
@@ -175,7 +175,7 @@ async def gateway__memberroles(bot, channel, values):
         await channel.send(f"{bot.cross} No member roles can be the same as the blocking role.")
     elif any(v.position > channel.guild.me.top_role.position for v in values):
         await channel.send(
-            f"{bot.cross} One or more given roles can not be used as member roles as they are above S4's top role in the role hierarchy."
+            f"{bot.cross} One or more given roles can not be used as member roles as they are above Solaris' top role in the role hierarchy."
         )
     else:
         await bot.db.execute(
@@ -225,12 +225,12 @@ async def gateway__exceptionroles(bot, channel, values):
 
 async def gateway__welcomechannel(bot, channel, value):
     """The welcome channel
-    The channel that S4 will send welcome messages to upon a member accepting the server rules. If no channel is set, S4 will not send welcome messages. The channel can be unset any time by passing no arguments to the command below. Note that S4 does not send welcome messages in all situations, such as if the member received an exception role."""
+    The channel that Solaris will send welcome messages to upon a member accepting the server rules. If no channel is set, Solaris will not send welcome messages. The channel can be unset any time by passing no arguments to the command below. Note that Solaris does not send welcome messages in all situations, such as if the member received an exception role."""
     if (rc := await retrieve.gateway__ruleschannel(bot, channel.guild)) is None:
         await channel.send(f"{bot.cross} You need to set the rules channel before you can set the welcome channel.")
     elif value is None:
         await bot.db.execute("UPDATE gateway SET WelcomeChannelID = NULL WHERE GuildID = ?", channel.guild.id)
-        await channel.send(f"{bot.tick} The welcome channel has been reset. S4 will stop sending welcome messages.")
+        await channel.send(f"{bot.tick} The welcome channel has been reset. Solaris will stop sending welcome messages.")
         lc = await retrieve.log_channel(bot, channel.guild)
         await lc.send(f"{bot.info} The welcome channel has been reset.")
     elif not isinstance(value, discord.TextChannel):
@@ -239,7 +239,7 @@ async def gateway__welcomechannel(bot, channel, value):
         await channel.send(f"{bot.cross} The welcome channel can not be the same as the rules channel.")
     elif not value.permissions_for(channel.guild.me).send_messages:
         await channel.send(
-            f"{bot.cross} The given channel can not be used as the welcome channel as S4 can not send messages to it."
+            f"{bot.cross} The given channel can not be used as the welcome channel as Solaris can not send messages to it."
         )
     else:
         await bot.db.execute("UPDATE gateway SET WelcomeChannelID = ? WHERE GuildID = ?", value.id, channel.guild.id)
@@ -250,12 +250,12 @@ async def gateway__welcomechannel(bot, channel, value):
 
 async def gateway__goodbyechannel(bot, channel, value):
     """The goodbye channel
-    The channel that S4 will send goodbye messages to upon a member leaving the server. If no channel is set, S4 will not send goodbye messages. The channel can be unset any time by passing no arguments to the command below. Note that S4 will only send goodbye messages for members who have accepted the server rules, or members who were in the server before the module was activated."""
+    The channel that Solaris will send goodbye messages to upon a member leaving the server. If no channel is set, Solaris will not send goodbye messages. The channel can be unset any time by passing no arguments to the command below. Note that Solaris will only send goodbye messages for members who have accepted the server rules, or members who were in the server before the module was activated."""
     if (rc := await retrieve.gateway__ruleschannel(bot, channel.guild)) is None:
         await channel.send(f"{bot.cross} You need to set the rules channel before you can set the goodbye channel.")
     elif value is None:
         await bot.db.execute("UPDATE gateway SET GoodbyeChannelID = NULL WHERE GuildID = ?", channel.guild.id)
-        await channel.send(f"{bot.tick} The goodbye channel has been reset. S4 will stop sending goodbye messages.")
+        await channel.send(f"{bot.tick} The goodbye channel has been reset. Solaris will stop sending goodbye messages.")
         lc = await retrieve.log_channel(bot, channel.guild)
         await lc.send(f"{bot.info} The goodbye channel has been reset.")
     elif not isinstance(value, discord.TextChannel):
@@ -264,7 +264,7 @@ async def gateway__goodbyechannel(bot, channel, value):
         await channel.send(f"{bot.cross} The goodbye channel can not be the same as the rules channel.")
     elif not value.permissions_for(channel.guild.me).send_messages:
         await channel.send(
-            f"{bot.cross} The given channel can not be used as the goodbye channel as S4 can not send messages to it."
+            f"{bot.cross} The given channel can not be used as the goodbye channel as Solaris can not send messages to it."
         )
     else:
         await bot.db.execute("UPDATE gateway SET GoodbyeChannelID = ? WHERE GuildID = ?", value.id, channel.guild.id)
@@ -275,7 +275,7 @@ async def gateway__goodbyechannel(bot, channel, value):
 
 async def gateway__timeout(bot, channel, value):
     """The gateway timeout
-    The amount of time S4 gives new members to react to the gate message before being kicked. This is set in minutes, and can be set to any value between 1 and 60 inclusive. If no timeout is set, the default is 5 minutes. This can be reset any time by passing no arguments to the command below."""
+    The amount of time Solaris gives new members to react to the gate message before being kicked. This is set in minutes, and can be set to any value between 1 and 60 inclusive. If no timeout is set, the default is 5 minutes. This can be reset any time by passing no arguments to the command below."""
     if value is None:
         await bot.db.execute("UPDATE gateway SET Timeout = NULL WHERE GuildID = ?", channel.guild.id)
         await channel.send(f"{bot.tick} The timeout has been reset.")

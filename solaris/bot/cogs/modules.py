@@ -1,4 +1,4 @@
-# S4 - A security and statistics focussed Discord bot.
+# Solaris - A Discord bot designed to make your server a safer and better place.
 # Copyright (C) 2020  Ethan Henderson
 
 # This program is free software: you can redistribute it and/or modify
@@ -30,17 +30,17 @@ class SetupMenu(menu.SelectionMenu):
         pagemap = {
             "header": "Setup",
             "title": "Hello!",
-            "description": "Welcome to the S4 first time setup! You need to run this before you can use most of S4's commands, but you only ever need to run once.\n\nIn order to operate effectively in your server, S4 needs to create a few things:",
+            "description": "Welcome to the Solaris first time setup! You need to run this before you can use most of Solaris' commands, but you only ever need to run once.\n\nIn order to operate effectively in your server, Solaris needs to create a few things:",
             "thumbnail": ctx.bot.user.avatar_url,
             "fields": [
                 [
                     "A log channel",
-                    "This will be called s4-logs and will be placed directly under the channel you run the setup in. This channel is what S4 will use to communicate important information to you, so it is recommended you only allow server moderators access to it. You will be able to change what S4 uses as the log channel later.",
+                    "This will be called solaris-logs and will be placed directly under the channel you run the setup in. This channel is what Solaris will use to communicate important information to you, so it is recommended you only allow server moderators access to it. You will be able to change what Solaris uses as the log channel later.",
                     False,
                 ],
                 [
                     "An admin role",
-                    "This will be called S4 Administrator and will be placed at the bottom of the role hierarchy. This role does not provide members any additional access to the server, but does allow them to use S4's configuration commands. Server administrators do not need this role to configure S4. You will be able to change what S4 uses as the admin role later.",
+                    "This will be called Solaris Administrator and will be placed at the bottom of the role hierarchy. This role does not provide members any additional access to the server, but does allow them to use Solaris' configuration commands. Server administrators do not need this role to configure Solaris. You will be able to change what Solaris uses as the admin role later.",
                     False,
                 ],
                 [
@@ -70,11 +70,11 @@ class SetupMenu(menu.SelectionMenu):
         if not await modules.retrieve.system__logchannel(self.bot, self.ctx.guild):
             if self.ctx.guild.me.guild_permissions.manage_channels:
                 lc = await self.ctx.guild.create_text_channel(
-                    name="s4-logs",
+                    name="solaris-logs",
                     category=self.ctx.channel.category,
                     position=self.ctx.channel.position,
                     topic=f"Log output for {self.ctx.guild.me.mention}",
-                    reason="Needed for S4 log output.",
+                    reason="Needed for Solaris log output.",
                 )
                 await self.bot.db.execute(
                     "UPDATE system SET DefaultLogChannelID = ?, LogChannelID = ? WHERE GuildID = ?",
@@ -89,9 +89,9 @@ class SetupMenu(menu.SelectionMenu):
         if not await modules.retrieve.system__adminrole(self.bot, self.ctx.guild):
             if self.ctx.guild.me.guild_permissions.manage_roles:
                 ar = await self.ctx.guild.create_role(
-                    name="S4 Administrator",
+                    name="Solaris Administrator",
                     permissions=discord.Permissions(permissions=0),
-                    reason="Needed for S4 configuration.",
+                    reason="Needed for Solaris configuration.",
                 )
                 await self.bot.db.execute(
                     "UPDATE system SET DefaultAdminRoleID = ?, AdminRoleID = ? WHERE GuildID = ?",
@@ -112,7 +112,7 @@ class SetupMenu(menu.SelectionMenu):
         pagemap = {
             "header": "Setup",
             "title": "First time setup complete",
-            "description": "Congratulations - the first time setup has been completed! You can now use all of S4's commands, and activate all of S4's modules.\n\nEnjoy using S4!",
+            "description": "Congratulations - the first time setup has been completed! You can now use all of Solaris' commands, and activate all of Solaris' modules.\n\nEnjoy using Solaris!",
             "thumbnail": SUCCESS_ICON,
         }
         await modules.config._system__runfts(self.bot, self.ctx.channel, 1)
@@ -120,7 +120,7 @@ class SetupMenu(menu.SelectionMenu):
 
 
 class Modules(commands.Cog):
-    """Configure, activate, and deactivate S4 modules."""
+    """Configure, activate, and deactivate Solaris modules."""
 
     def __init__(self, bot):
         self.bot = bot
@@ -138,7 +138,7 @@ class Modules(commands.Cog):
         await SetupMenu(ctx).start()
 
     @commands.command(
-        name="config", aliases=["set"], help="Configures S4; use `help config` to bring up a special help menu."
+        name="config", aliases=["set"], help="Configures Solaris; use `help config` to bring up a special help menu."
     )
     @checks.bot_has_booted()
     @checks.first_time_setup_has_run()

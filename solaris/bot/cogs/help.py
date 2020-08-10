@@ -1,4 +1,4 @@
-# S4 - A security and statistics focussed Discord bot.
+# Solaris - A Discord bot designed to make your server a safer and better place.
 # Copyright (C) 2020  Ethan Henderson
 
 # This program is free software: you can redistribute it and/or modify
@@ -74,7 +74,7 @@ class ConfigHelpMenu(menu.NumberedSelectionMenu):
 
 
 class Help(commands.Cog):
-    """Assistance with using a configuring S4."""
+    """Assistance with using a configuring Solaris."""
 
     def __init__(self, bot):
         self.bot = bot
@@ -110,9 +110,9 @@ class Help(commands.Cog):
             return f"No - You are missing the {mp} permission(s)"
         except commands.BotMissingPermissions as exc:
             mp = string.list_of([str(perm.replace("_", " ")).title() for perm in exc.missing_perms])
-            return f"No - S4 is missing the {mp} permission(s)"
+            return f"No - Solaris is missing the {mp} permission(s)"
         except commands.CommandError:
-            return "No - S4 is not configured properly"
+            return "No - Solaris is not configured properly"
 
     async def get_command_mapping(self, ctx):
         mapping = {}
@@ -126,7 +126,7 @@ class Help(commands.Cog):
 
     @commands.command(
         name="help",
-        help="Help with anything S4. Passing a command name or alias through will show help with that specific command, while passing no arguments will bring up a general command overview.",
+        help="Help with anything Solaris. Passing a command name or alias through will show help with that specific command, while passing no arguments will bring up a general command overview.",
     )
     async def help_command(self, ctx, cmd: t.Optional[converters.Command]):
         prefix = await self.bot.prefix(ctx.guild)
@@ -157,7 +157,7 @@ class Help(commands.Cog):
 
         else:
             if not cmd:
-                await ctx.send(f"{self.bot.cross} S4 has no commands or aliases with that name.")
+                await ctx.send(f"{self.bot.cross} Solaris has no commands or aliases with that name.")
             elif cmd.name == "config":
                 await ConfigHelpMenu(ctx).start()
             else:

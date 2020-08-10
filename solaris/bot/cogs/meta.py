@@ -1,4 +1,4 @@
-# S4 - A security and statistics focussed Discord bot.
+# Solaris - A Discord bot designed to make your server a safer and better place.
 # Copyright (C) 2020  Ethan Henderson
 
 # This program is free software: you can redistribute it and/or modify
@@ -55,7 +55,7 @@ class DetailedServerInfoMenu(menu.MultiPageMenu):
 
 
 class Meta(commands.Cog):
-    """Commands for retrieving information regarding S4, from invitation links to detailed bot statistics."""
+    """Commands for retrieving information regarding Solaris, from invitation links to detailed bot statistics."""
 
     def __init__(self, bot):
         self.bot = bot
@@ -77,7 +77,7 @@ class Meta(commands.Cog):
     @commands.command(
         name="about",
         aliases=["credits"],
-        help="View information regarding those behind S4's development. This includes the developer and the testers, and also shows copyright information.",
+        help="View information regarding those behind Solaris' development. This includes the developer and the testers, and also shows copyright information.",
     )
     async def about_command(self, ctx):
         prefix = await self.bot.prefix(ctx.guild)
@@ -85,7 +85,7 @@ class Meta(commands.Cog):
             embed=self.bot.embed.build(
                 ctx=ctx,
                 header="Information",
-                title="About S4",
+                title="About Solaris",
                 description=f"Use `{prefix}botinfo` for detailed statistics.",
                 thumbnail=self.bot.user.avatar_url,
                 fields=[
@@ -96,7 +96,7 @@ class Meta(commands.Cog):
             )
         )
 
-    @commands.command(name="support", aliases=["sos"], help="Provides an invite link to S4's support server.")
+    @commands.command(name="support", aliases=["sos"], help="Provides an invite link to Solaris' support server.")
     async def support_command(self, ctx):
         online = [m for m in self.support_guild.members if not m.bot and m.status == discord.Status.online]
         helpers = [
@@ -119,7 +119,7 @@ class Meta(commands.Cog):
         )
 
     @commands.command(
-        name="invite", aliases=["join"], help="Provides the links necessary to invite S4 to other servers."
+        name="invite", aliases=["join"], help="Provides the links necessary to invite Solaris to other servers."
     )
     async def invite_command(self, ctx):
         await ctx.send(
@@ -130,12 +130,12 @@ class Meta(commands.Cog):
                 fields=[
                     [
                         "Link 1",
-                        f"To invite S4 with the Administrator permission, click [here]({self.bot.admin_invite}).",
+                        f"To invite Solaris with the Administrator permission, click [here]({self.bot.admin_invite}).",
                         False,
                     ],
                     [
                         "Link 2",
-                        f"To invite S4 with the minimum required permissions, click [here]({self.bot.non_admin_invite}) (you may need to grant S4 some extra permissions in order to use some modules).",
+                        f"To invite Solaris with the minimum required permissions, click [here]({self.bot.non_admin_invite}) (you may need to grant Solaris some extra permissions in order to use some modules).",
                         False,
                     ],
                     ["Servers", f"{self.bot.guild_count:,}", True],
@@ -145,7 +145,7 @@ class Meta(commands.Cog):
             )
         )
 
-    @commands.command(name="ping", help="Pings S4.")
+    @commands.command(name="ping", help="Pings Solaris.")
     async def ping_command(self, ctx):
         lat = self.bot.latency * 1000
         s = time()
@@ -159,7 +159,7 @@ class Meta(commands.Cog):
         name="botinfo",
         aliases=["bi", "botstats", "stats", "bs"],
         cooldown_after_parsing=True,
-        help="Displays statistical information on S4. This includes process and composition information, and also includes information about S4's reach.",
+        help="Displays statistical information on Solaris. This includes process and composition information, and also includes information about Solaris' reach.",
     )
     @commands.cooldown(1, 300, commands.BucketType.user)
     async def botinfo_command(self, ctx):
@@ -176,7 +176,7 @@ class Meta(commands.Cog):
                     ctx=ctx,
                     header="Information",
                     title="Bot information",
-                    description=f"S4 was developed by {(await self.bot.application_info()).owner.mention}. Use `{prefix}about` for more information.",
+                    description=f"Solaris was developed by {(await self.bot.application_info()).owner.mention}. Use `{prefix}about` for more information.",
                     thumbnail=self.bot.user.avatar_url,
                     fields=[
                         ["Bot version", f"{self.bot.version}", True],
@@ -213,7 +213,7 @@ class Meta(commands.Cog):
     @commands.command(
         name="userinfo",
         aliases=["ui", "memberinfo", "mi"],
-        help="Displays information on a given user. If no user is provided, S4 will display your information. Note that although S4 can display information about any user on Discord, the amount of information available is significantly lower for users not in the server the command was invoked in.",
+        help="Displays information on a given user. If no user is provided, Solaris will display your information. Note that although Solaris can display information about any user on Discord, the amount of information available is significantly lower for users not in the server the command was invoked in.",
     )
     async def userinfo_command(
         self, ctx, *, target: t.Optional[t.Union[discord.Member, converters.User, converters.SearchedMember, str]]
@@ -280,7 +280,7 @@ class Meta(commands.Cog):
             )
 
         else:
-            await ctx.send(f"{self.bot.cross} S4 was unable to identify a user with the information provided.")
+            await ctx.send(f"{self.bot.cross} Solaris was unable to identify a user with the information provided.")
 
     @commands.command(
         name="avatar",
@@ -303,7 +303,7 @@ class Meta(commands.Cog):
                 )
             )
         else:
-            await ctx.send(f"{self.bot.cross} S4 was unable to identify a user with the information provided.")
+            await ctx.send(f"{self.bot.cross} Solaris was unable to identify a user with the information provided.")
 
     @commands.command(
         name="serverinfo", aliases=["si", "guildinfo", "gi"], help="Displays information on your server."

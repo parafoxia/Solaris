@@ -15,12 +15,12 @@ class System(commands.Cog):
             self.bot.ready.up(self)
 
     @commands.command(
-        name="prefix", help="Displays S4's prefix in your server. Note that mentioning S4 will always work."
+        name="prefix", help="Displays Solaris' prefix in your server. Note that mentioning Solaris will always work."
     )
     async def prefix_command(self, ctx):
         prefix = await self.bot.prefix(ctx.guild)
         await ctx.send(
-            f"{self.bot.info} S4's prefix in this server is {prefix}. To change it, use `{prefix}config system prefix <new prefix>`."
+            f"{self.bot.info} Solaris' prefix in this server is {prefix}. To change it, use `{prefix}config system prefix <new prefix>`."
         )
 
 

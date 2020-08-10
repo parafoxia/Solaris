@@ -1,4 +1,4 @@
-# S4 - A security and statistics focussed Discord bot.
+# Solaris - A Discord bot designed to make your server a safer and better place.
 # Copyright (C) 2020  Ethan Henderson
 
 # This program is free software: you can redistribute it and/or modify
@@ -29,13 +29,13 @@ class PresenceSetter:
     def __init__(self, bot):
         self.bot = bot
 
-        self._name = "@S4 help • {message} • Version {version}"
+        self._name = "@Solaris help • {message} • Version {version}"
         self._type = "watching"
         self._messages = deque(
             (
-                "Invite S4 to your server by using @S4 invite",
-                "To view information about S4, use @S4 botinfo",
-                "Need help with S4? Join the support server! Use @S4 support to get an invite",
+                "Invite Solaris to your server by using @Solaris invite",
+                "To view information about Solaris, use @Solaris botinfo",
+                "Need help with Solaris? Join the support server! Use @Solaris support to get an invite",
                 "Developed by Parafoxia#1911 under the GPLv3 license",
             )
         )

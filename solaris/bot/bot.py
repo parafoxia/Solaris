@@ -1,4 +1,4 @@
-# S4 - A security and statistics focussed Discord bot.
+# Solaris - A Discord bot designed to make your server a safer and better place.
 # Copyright (C) 2020  Ethan Henderson
 
 # This program is free software: you can redistribute it and/or modify
@@ -6,7 +6,7 @@
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 
-# This program is distributed in the hope that it will be useful,
+# T2his program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
@@ -74,7 +74,7 @@ class Bot(commands.Bot):
 
         hub = self.get_cog("Hub")
         if (sc := getattr(hub, "stdout_channel", None)) is not None:
-            await sc.send(f"{self.info} S4 is shutting down. (Version {self.version})")
+            await sc.send(f"{self.info} Solaris is now shutting down. (Version {self.version})")
 
         print(" Closing connection to Discord...")
         await self.logout()
@@ -134,7 +134,7 @@ class Bot(commands.Bot):
                 await self.invoke(ctx)
             else:
                 await ctx.send(
-                    f"{self.cross} S4 is still booting and is not ready to receive commands. Please try again later."
+                    f"{self.cross} Solaris is still booting and is not ready to receive commands. Please try again later."
                 )
 
     async def on_message(self, msg):
