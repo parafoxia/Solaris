@@ -21,7 +21,7 @@ from datetime import datetime
 
 from discord import Embed
 
-from s4.utils import DEFAULT_EMBED_COLOUR
+from solaris.utils import DEFAULT_EMBED_COLOUR
 
 
 class EmbedConstructor:

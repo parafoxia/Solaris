@@ -21,7 +21,7 @@ import typing as t
 
 from discord.ext import commands
 
-from s4.utils import converters, menu, modules, string
+from solaris.utils import converters, menu, modules, string
 
 
 class HelpMenu(menu.MultiPageMenu):

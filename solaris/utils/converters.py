@@ -20,7 +20,7 @@
 import discord
 from discord.ext import commands
 
-from s4.utils import Search
+from solaris.utils import Search
 
 
 class User(commands.Converter):

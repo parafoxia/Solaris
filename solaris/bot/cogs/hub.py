@@ -19,7 +19,7 @@
 
 from discord.ext import commands
 
-from s4 import Config
+from solaris import Config
 
 
 class Hub(commands.Cog):

@@ -20,7 +20,7 @@
 import datetime as dt
 from time import strftime
 
-from s4.utils import string
+from solaris.utils import string
 
 
 def sys_time():

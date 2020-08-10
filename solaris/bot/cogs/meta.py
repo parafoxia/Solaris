@@ -28,7 +28,7 @@ import psutil
 from beautifultable import BeautifulTable
 from discord.ext import commands
 
-from s4.utils import SUPPORT_GUILD_INVITE_LINK, chron, converters, menu, string
+from solaris.utils import SUPPORT_GUILD_INVITE_LINK, chron, converters, menu, string
 
 
 class DetailedServerInfoMenu(menu.MultiPageMenu):

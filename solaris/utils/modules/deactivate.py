@@ -19,7 +19,7 @@
 
 import discord
 
-from s4.utils.modules import retrieve
+from solaris.utils.modules import retrieve
 
 
 async def gateway(ctx):

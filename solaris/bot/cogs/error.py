@@ -28,7 +28,7 @@ import aiofiles.os  # This is necessary... :pepegaface:
 from discord import File, Forbidden, HTTPException
 from discord.ext import commands
 
-from s4.utils import chron, string
+from solaris.utils import chron, string
 
 
 class Error(commands.Cog):

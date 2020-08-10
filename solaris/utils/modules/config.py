@@ -19,8 +19,8 @@
 
 import discord
 
-from s4.utils import string
-from s4.utils.modules import retrieve
+from solaris.utils import string
+from solaris.utils.modules import retrieve
 
 MAX_PREFIX_LEN = 5
 MAX_MEMBER_ROLES = 3

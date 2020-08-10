@@ -17,13 +17,13 @@
 # Ethan Henderson
 # parafoxia@carberra.xyz
 
-from pathlib import Path
+from solaris import Bot, __version__
 
-from toml import loads
 
-from s4.config import Config
+def main():
+    bot = Bot(__version__)
+    bot.run()
 
-# Dependant on above imports.
-from s4.bot import Bot
 
-__version__ = loads(open(Path(__name__).resolve().parents[0] / "pyproject.toml").read())["tool"]["poetry"]["version"]
+if __name__ == "__main__":
+    main()

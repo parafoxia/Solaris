@@ -25,7 +25,7 @@ import discord
 from apscheduler.triggers.cron import CronTrigger
 from discord.ext import commands
 
-from s4.utils import checks, chron, string, trips
+from solaris.utils import checks, chron, string, trips
 
 MODULE_NAME = "gateway"
 

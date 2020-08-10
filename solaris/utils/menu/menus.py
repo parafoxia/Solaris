@@ -17,7 +17,7 @@
 # Ethan Henderson
 # parafoxia@carberra.xyz
 
-from s4.utils.menu import selectors
+from solaris.utils.menu import selectors
 
 
 class Menu:

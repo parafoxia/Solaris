@@ -25,17 +25,17 @@ import discord
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from discord.ext import commands
 
-from s4 import Config, utils
-from s4.db import Database
-from s4.utils import loc
+from solaris import Config, utils
+from solaris.db import Database
+from solaris.utils import loc
 
 
 class Bot(commands.Bot):
     def __init__(self, version):
         self.version = version
-        self._cogs = [p.stem for p in Path(".").glob("./s4/bot/cogs/*.py")]
-        self._dynamic = "./s4/data/dynamic"
-        self._static = "./s4/data/static"
+        self._cogs = [p.stem for p in Path(".").glob("./solaris/bot/cogs/*.py")]
+        self._dynamic = "./solaris/data/dynamic"
+        self._static = "./solaris/data/static"
 
         self.scheduler = AsyncIOScheduler()
         self.db = Database(self)
@@ -53,7 +53,7 @@ class Bot(commands.Bot):
         print("Running setup...")
 
         for cog in self._cogs:
-            self.load_extension(f"s4.bot.cogs.{cog}")
+            self.load_extension(f"solaris.bot.cogs.{cog}")
             print(f" Loaded `{cog}` cog.")
 
         print("Setup complete.")

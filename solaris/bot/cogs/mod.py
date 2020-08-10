@@ -23,7 +23,7 @@ import typing as t
 import discord
 from discord.ext import commands
 
-from s4.utils import chron, converters
+from solaris.utils import chron, converters
 
 
 class Mod(commands.Cog):

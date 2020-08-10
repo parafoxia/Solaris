@@ -19,7 +19,7 @@
 
 from discord.ext import commands
 
-from s4.utils import modules
+from solaris.utils import modules
 
 
 class CustomCheckFailure(commands.CheckFailure):

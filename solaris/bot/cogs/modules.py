@@ -22,7 +22,7 @@ import typing as t
 import discord
 from discord.ext import commands
 
-from s4.utils import LOADING_ICON, SUCCESS_ICON, checks, menu, modules
+from solaris.utils import LOADING_ICON, SUCCESS_ICON, checks, menu, modules
 
 
 class SetupMenu(menu.SelectionMenu):

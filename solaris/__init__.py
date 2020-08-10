@@ -17,23 +17,13 @@
 # Ethan Henderson
 # parafoxia@carberra.xyz
 
-import os
+from pathlib import Path
 
-from pygount import SourceAnalysis
+from toml import loads
 
-from s4.utils import ROOT_DIR
+from solaris.config import Config
 
+# Dependant on above imports.
+from solaris.bot import Bot
 
-class CodeCounter:
-    def __init__(self):
-        self.code = 0
-        self.docs = 0
-        self.empty = 0
-
-    def count(self):
-        for subdir, _, files in os.walk(ROOT_DIR / "s4"):
-            for file in (f for f in files if f.endswith(".py")):
-                analysis = SourceAnalysis.from_file(f"{subdir}/{file}", "pygount", encoding="utf=8")
-                self.code += analysis.code_count
-                self.docs += analysis.documentation_count
-                self.empty += analysis.empty_count
+__version__ = loads(open(Path(__name__).resolve().parents[0] / "pyproject.toml").read())["tool"]["poetry"]["version"]

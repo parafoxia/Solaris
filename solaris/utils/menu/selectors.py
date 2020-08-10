@@ -20,7 +20,7 @@
 from asyncio import TimeoutError
 from datetime import timedelta
 
-from s4.utils import chron
+from solaris.utils import chron
 
 
 class Selector:
