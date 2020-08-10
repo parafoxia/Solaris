@@ -44,8 +44,8 @@ class ConfigHelpMenu(menu.NumberedSelectionMenu):
         )
 
     async def start(self):
-        r = await super().start()
-        await self.display_help(r)
+        if (r := await super().start()) is not None:
+            await self.display_help(r)
 
     async def display_help(self, module):
         prefix = await self.bot.prefix(self.ctx.guild)
@@ -148,7 +148,7 @@ class Help(commands.Cog):
                                     "\n".join([await self.basic_syntax(ctx, cmd, prefix) for cmd in cmds])
                                 ),
                                 False,
-                            )
+                            ),
                         ),
                     }
                 )

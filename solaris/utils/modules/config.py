@@ -52,7 +52,7 @@ async def system__prefix(bot, channel, value):
 
 async def system__logchannel(bot, channel, value):
     """The log channel
-    The channel Solaris uses to communicate important information. It is recommended you keep this channel restricted to members of the server's moderation team. Upon selecting a new channel, Solaris will delete the one that was created should it still exist."""
+    The channel Solaris uses to communicate important information. It is recommended you keep this channel restricted to members of the server's moderation team. Upon selecting a new channel, Solaris will delete the one that was created during the first time setup should it still exist."""
     if not isinstance(value, discord.TextChannel):
         await channel.send(f"{bot.cross} The log channel must be a Discord text channel in this server.")
     elif not value.permissions_for(channel.guild.me).send_messages:
@@ -79,7 +79,7 @@ async def system__logchannel(bot, channel, value):
 
 async def system__adminrole(bot, channel, value):
     """The admin role
-    The role used to denote which members can configure Solaris. Alongside server administrators, only members with this role can use any of Solaris' configuration commands. Upon selecting a new channel, Solaris will delete the one that was created should it still exist."""
+    The role used to denote which members can configure Solaris. Alongside server administrators, only members with this role can use any of Solaris' configuration commands. Upon selecting a new channel, Solaris will delete the one that was created during the first time setup should it still exist."""
     if not isinstance(value, discord.Role):
         await channel.send(f"{bot.cross} The admin role must be a Discord role in this server.")
     elif value.position > channel.guild.me.top_role.position:
@@ -136,7 +136,7 @@ async def _gateway__gatemessage(bot, channel, value):
 
 
 async def gateway__blockingrole(bot, channel, value):
-    """The blockng role
+    """The blocking role
     The role that Solaris will give new members upon entering the server, and remove when they accept the server rules. This role should prohibit access to all but the rules channel, or all but a read-only category."""
     if await retrieve._gateway__active(bot, channel.guild):
         await channel.send(f"{bot.cross} This can not be done as the gateway module is currently active.")
@@ -157,7 +157,7 @@ async def gateway__blockingrole(bot, channel, value):
 
 async def gateway__memberroles(bot, channel, values):
     """The member roles
-    The role(s) that Solaris will give members upon accepting the server rules. This is optional, but could be useful if you want members to have specific role when they join, for example for a levelling system, or automatically opt them in to server announcements. You can set up to 3 member roles. The roles can be unset any time by passing no arguments to the command below."""
+    The role(s) that Solaris will give members upon accepting the server rules. This is optional, but could be useful if you want members to have specific roles when they join, for example for a levelling system, or to automatically opt them in to server announcements. You can set up to 3 member roles. The roles can be unset at any time by passing no arguments to the command below."""
     values = [values] if not isinstance(values, list) else values
 
     if (br := await retrieve.gateway__blockingrole(bot, channel.guild)) is None:
@@ -192,7 +192,7 @@ async def gateway__memberroles(bot, channel, values):
 
 async def gateway__exceptionroles(bot, channel, values):
     """The exception roles
-    The role(s) that, when given to a new member before they accept the server rules, will grant them access to the server. This is optional, but could be useful if you want members to have access upon receiving a premium role, for example, one given by the Patreon bot. You can set up to 3 member roles. The roles can be unset any time by passing no arguments to the command below."""
+    The role(s) that, when given to a new member before they accept the server rules, will grant them access to the server. This is optional, but could be useful if you want members to have access upon receiving a premium role, for example, one given by the Patreon bot. You can set up to 3 exception roles. The roles can be unset at any time by passing no arguments to the command below."""
     values = [values] if not isinstance(values, list) else values
 
     if (br := await retrieve.gateway__blockingrole(bot, channel.guild)) is None:
@@ -225,7 +225,7 @@ async def gateway__exceptionroles(bot, channel, values):
 
 async def gateway__welcomechannel(bot, channel, value):
     """The welcome channel
-    The channel that Solaris will send welcome messages to upon a member accepting the server rules. If no channel is set, Solaris will not send welcome messages. The channel can be unset any time by passing no arguments to the command below. Note that Solaris does not send welcome messages in all situations, such as if the member received an exception role."""
+    The channel that Solaris will send welcome messages to upon a member accepting the server rules. If no channel is set, Solaris will not send welcome messages. The channel can be unset at any time by passing no arguments to the command below. Note that Solaris does not send welcome messages in all situations, such as if the member received an exception role."""
     if (rc := await retrieve.gateway__ruleschannel(bot, channel.guild)) is None:
         await channel.send(f"{bot.cross} You need to set the rules channel before you can set the welcome channel.")
     elif value is None:
@@ -252,7 +252,7 @@ async def gateway__welcomechannel(bot, channel, value):
 
 async def gateway__goodbyechannel(bot, channel, value):
     """The goodbye channel
-    The channel that Solaris will send goodbye messages to upon a member leaving the server. If no channel is set, Solaris will not send goodbye messages. The channel can be unset any time by passing no arguments to the command below. Note that Solaris will only send goodbye messages for members who have accepted the server rules, or members who were in the server before the module was activated."""
+    The channel that Solaris will send goodbye messages to upon a member leaving the server. If no channel is set, Solaris will not send goodbye messages. The channel can be unset at any time by passing no arguments to the command below. Note that Solaris will only send goodbye messages for members who have accepted the server rules, or members who were in the server before the module was activated."""
     if (rc := await retrieve.gateway__ruleschannel(bot, channel.guild)) is None:
         await channel.send(f"{bot.cross} You need to set the rules channel before you can set the goodbye channel.")
     elif value is None:
@@ -279,7 +279,7 @@ async def gateway__goodbyechannel(bot, channel, value):
 
 async def gateway__timeout(bot, channel, value):
     """The gateway timeout
-    The amount of time Solaris gives new members to react to the gate message before being kicked. This is set in minutes, and can be set to any value between 1 and 60 inclusive. If no timeout is set, the default is 5 minutes. This can be reset any time by passing no arguments to the command below."""
+    The amount of time Solaris gives new members to react to the gate message before being kicked. This is set in minutes, and can be set to any value between 1 and 60 inclusive. If no timeout is set, the default is 5 minutes. This can be reset at any time by passing no arguments to the command below."""
     if value is None:
         await bot.db.execute("UPDATE gateway SET Timeout = NULL WHERE GuildID = ?", channel.guild.id)
         await channel.send(f"{bot.tick} The timeout has been reset.")
@@ -300,7 +300,7 @@ async def gateway__timeout(bot, channel, value):
 
 async def gateway__gatetext(bot, channel, value):
     """The gate message text
-    The message displayed in the gate message. This is probably the first thing members will see when joining the server, so make sure it is set correctly. The message can be up to 250 characters in length, and should **not** contain the server rules. If no message is set, a default will be used instead. The message can be reset any time by passing no arguments to the command below."""
+    The message displayed in the gate message. The message can be up to 250 characters in length, and should **not** contain the server rules. If no message is set, a default will be used instead. The message can be reset at any time by passing no arguments to the command below."""
     if value is None:
         await bot.db.execute("UPDATE gateway SET GateText = NULL WHERE GuildID = ?", channel.guild.id)
         await channel.send(
@@ -327,7 +327,7 @@ async def gateway__gatetext(bot, channel, value):
 
 async def gateway__welcometext(bot, channel, value):
     """The welcome message text
-    The message sent to the welcome channel (if set) when a new member accepts the server rules. This message can be up to 1,000 characters in length. If no message is set, a default will be used instead. The message can be reset any time by passing no arguments to the command below."""
+    The message sent to the welcome channel (if set) when a new member accepts the server rules. This message can be up to 1,000 characters in length. If no message is set, a default will be used instead. The message can be reset at any time by passing no arguments to the command below."""
     if value is None:
         await bot.db.execute("UPDATE gateway SET WelcomeText = NULL WHERE GuildID = ?", channel.guild.id)
         await channel.send(f"{bot.tick} The welcome message text has been reset.")
@@ -350,7 +350,7 @@ async def gateway__welcometext(bot, channel, value):
 
 async def gateway__goodbyetext(bot, channel, value):
     """The goodbye message text
-    The message sent to the goodbye channel (if set) when a member leaves the server. This message can be up to 1,000 characters in length. If no message is set, a default will be used instead. The message can be reset any time by passing no arguments to the command below."""
+    The message sent to the goodbye channel (if set) when a member leaves the server. This message can be up to 1,000 characters in length. If no message is set, a default will be used instead. The message can be reset at any time by passing no arguments to the command below."""
     if value is None:
         await bot.db.execute("UPDATE gateway SET GoodbyeText = NULL WHERE GuildID = ?", channel.guild.id)
         await channel.send(f"{bot.tick} The goodbye message text has been reset.")
@@ -373,7 +373,7 @@ async def gateway__goodbyetext(bot, channel, value):
 
 async def gateway__welcomebottext(bot, channel, value):
     """The welcome message text for bots
-    The message sent to the welcome channel (if set) when a bot joins the server. This message can be up to 500 characters in length. If no message is set, a default will be used instead. The message can be reset any time by passing no arguments to the command below."""
+    The message sent to the welcome channel (if set) when a bot joins the server. This message can be up to 500 characters in length. If no message is set, a default will be used instead. The message can be reset at any time by passing no arguments to the command below."""
     if value is None:
         await bot.db.execute("UPDATE gateway SET WelcomeBotText = NULL WHERE GuildID = ?", channel.guild.id)
         await channel.send(f"{bot.tick} The welcome bot message text has been reset.")
@@ -396,7 +396,7 @@ async def gateway__welcomebottext(bot, channel, value):
 
 async def gateway__goodbyebottext(bot, channel, value):
     """The goodbye message text for bots
-    The message sent to the welcome channel (if set) when a bot leaves the server. This message can be up to 500 characters in length. If no message is set, a default will be used instead. The message can be reset any time by passing no arguments to the command below."""
+    The message sent to the goodbye channel (if set) when a bot leaves the server. This message can be up to 500 characters in length. If no message is set, a default will be used instead. The message can be reset at any time by passing no arguments to the command below."""
     if value is None:
         await bot.db.execute("UPDATE gateway SET GoodbyeBotText = NULL WHERE GuildID = ?", channel.guild.id)
         await channel.send(f"{bot.tick} The goodbye bot message text has been reset.")
