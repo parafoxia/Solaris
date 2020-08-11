@@ -25,7 +25,7 @@ from traceback import format_exc
 
 import aiofiles
 import aiofiles.os  # This is necessary... :pepegaface:
-from discord import File, Forbidden, HTTPException
+import discord
 from discord.ext import commands
 
 from solaris.utils import chron, string
@@ -92,7 +92,7 @@ class Error(commands.Cog):
                 await ctx.send(
                     f"{self.bot.cross} Solaris does not have the {mp} permission(s), which are required to use this command."
                 )
-            except Forbidden:
+            except discord.Forbidden:
                 # If Solaris does not have the Send Messages permission
                 # (might redirect this to log channel once it's set up).
                 pass
@@ -136,7 +136,7 @@ class Error(commands.Cog):
 
         # Non-command errors.
         elif (original := getattr(exc, "original", None)) is not None:
-            if isinstance(original, HTTPException):
+            if isinstance(original, discord.HTTPException):
                 await ctx.send(
                     f"{self.bot.cross} A HTTP exception occurred ({original.status})\n```{original.text}```"
                 )
@@ -147,9 +147,15 @@ class Error(commands.Cog):
             raise exc
 
     async def record_error(self, obj):
+        obj = getattr(obj, "message", obj)
+        if isinstance(obj, discord.Message):
+            cause = f"{obj.content}\n{obj!r}"
+        else:
+            cause = f"{obj!r}"
+
         ref = hex(int(time() * 1e7))[2:]
         await self.bot.db.execute(
-            "INSERT INTO errors (Ref, Cause, Traceback) VALUES (?, ?, ?)", ref, f"{obj!r}", format_exc()
+            "INSERT INTO errors (Ref, Cause, Traceback) VALUES (?, ?, ?)", ref, cause, format_exc()
         )
         return ref
 
@@ -166,7 +172,7 @@ class Error(commands.Cog):
             text = f"Time of error:\n{error_time}\n\nCause:\n{cause}\n\n{traceback}"
             await f.write(text)
 
-        await ctx.send(file=File(path))
+        await ctx.send(file=discord.File(path))
         await aiofiles.os.remove(path)
 
 
