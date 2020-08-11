@@ -171,7 +171,8 @@ class Modules(commands.Cog):
         if module.startswith("_") or attr.startswith("_"):
             await ctx.send(f"{self.bot.cross} The module or attribute you are trying to access is non-configurable.")
         elif (func := getattr(modules.retrieve, f"{module}__{attr}", None)) is not None:
-            value = v.mention if hasattr((v := await func(self.bot, ctx.guild)), "mention") else v
+            v = await func(self.bot, ctx.guild)
+            value = getattr(v, "mention", v)
             await ctx.send(f"{self.bot.info} Value of {attr}: {value}")
         else:
             await ctx.send(f"{self.bot.cross} Invalid module or attribute.")
