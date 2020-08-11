@@ -276,7 +276,7 @@ class Meta(commands.Cog):
                             True,
                         ),
                         ("Activity name", target.activity.name if target.activity else "-", True),
-                        ("Nº of roles", f"{len(target.roles):,}", True),
+                        ("Nº of roles", f"{len(target.roles)-1:,}", True),
                         ("Top role", target.top_role.mention, True),
                         ("Top role position", f"{string.ordinal(ngr - target.top_role.position)} / {ngr:,}", True),
                     ),
@@ -354,7 +354,7 @@ class Meta(commands.Cog):
                         f"{len(await ctx.guild.bans()):,}" if ctx.guild.me.guild_permissions.ban_members else "-",
                         True,
                     ),
-                    ("Roles", f"{len(ctx.guild.roles):,}", True),
+                    ("Roles", f"{len(ctx.guild.roles)-1:,}", True),
                     ("Text channels", f"{len(ctx.guild.text_channels):,}", True),
                     ("Voice channels", f"{len(ctx.guild.voice_channels):,}", True),
                     (
