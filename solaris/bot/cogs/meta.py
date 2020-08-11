@@ -67,7 +67,13 @@ class Meta(commands.Cog):
             self.artist = await self.bot.grab_user(167803836839231488)
             self.testers = [
                 (await self.bot.grab_user(id_))
-                for id_ in (116520426401693704, 300346872109989898, 135372594953060352, 287969892689379331)
+                for id_ in (
+                    116520426401693704,
+                    300346872109989898,
+                    135372594953060352,
+                    287969892689379331,
+                    254245982395564032,
+                )
             ]
             self.support_guild = self.bot.get_guild(661973136631398412)
             self.helper_role = self.support_guild.get_role(689788551575109648)
@@ -91,7 +97,7 @@ class Meta(commands.Cog):
                 fields=(
                     ("Developer", self.developer.mention, False),
                     ("Avatar Designer", self.artist.mention, False),
-                    ("Testers", "\n".join(t.mention for t in self.testers), False),
+                    ("Testers", string.list_of([t.mention for t in self.testers]), False),
                 ),
             )
         )
