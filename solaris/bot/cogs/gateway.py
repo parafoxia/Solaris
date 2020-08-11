@@ -605,7 +605,7 @@ class Gateway(commands.Cog):
         else:
             accepted = await self.bot.db.column("SELECT UserID FROM accepted WHERE GuildID = ?", ctx.guild.id)
             await ctx.send(
-                f"{self.bot.info} {len(accepted):,} / {len([m for m in ctx.guild.members if not m.bot])} members have accepted the server rules."
+                f"{self.bot.info} {len(accepted):,} / {len([m for m in ctx.guild.members if not m.bot]):,} members have accepted the server rules."
             )
 
     @commands.command(
