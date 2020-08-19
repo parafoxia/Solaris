@@ -34,7 +34,7 @@ async def gateway(ctx):
             try:
                 gm = await ctx.bot.get_channel(rc_id).fetch_message(gm_id)
                 await gm.delete()
-            except (discord.NotFound, discord.Forbidden):
+            except (discord.NotFound, discord.Forbidden, AttributeError):
                 pass
 
             await ctx.bot.db.execute("DELETE FROM entrants WHERE GuildID = ?", ctx.guild.id)
