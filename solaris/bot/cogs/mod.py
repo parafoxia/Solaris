@@ -17,6 +17,7 @@
 # Ethan Henderson
 # parafoxia@carberra.xyz
 
+import datetime as dt
 import re
 import typing as t
 
@@ -24,6 +25,9 @@ import discord
 from discord.ext import commands
 
 from solaris.utils import chron, converters
+
+UNHOIST_PATTERN = "".join(chr(i) for i in [*range(0x20, 0x30), *range(0x3A, 0x41), *range(0x5B, 0x61)])
+STRICT_UNHOIST_PATTERN = "".join(chr(i) for i in [*range(0x20, 0x41), *range(0x5B, 0x61)])
 
 
 class Mod(commands.Cog):
@@ -126,7 +130,9 @@ class Mod(commands.Cog):
         else:
             async with ctx.channel.typing():
                 await ctx.message.delete()
-                cleared = await ctx.channel.purge(limit=scan, check=_check)
+                cleared = await ctx.channel.purge(
+                    limit=scan, check=_check, after=dt.datetime.utcnow() - dt.timedelta(days=14)
+                )
                 await ctx.send(
                     f"{self.bot.tick} {len(cleared):,} message(s) were deleted.", delete_after=5,
                 )
@@ -205,17 +211,22 @@ class Mod(commands.Cog):
 
     @commands.command(
         name="unhoistnicknames",
+        cooldown_after_parsing=True,
         help='"Unhoists" all members\' nicknames in the server. Solaris does this by removing all except English upper and lower case letters from the start of the nickname where possible. Do not attempt to use this command if your server contains predominantly non-English members.',
     )
+    @commands.cooldown(1, 3600, commands.BucketType.guild)
     @commands.has_permissions(manage_nicknames=True)
     @commands.bot_has_permissions(send_messages=True, manage_nicknames=True)
-    async def unhoistnicknames_command(self, ctx):
+    async def unhoistnicknames_command(self, ctx, *, strict: t.Optional[bool] = False):
         count = 0
 
         async with ctx.channel.typing():
             for member in ctx.guild.members:
                 try:
-                    if (match := re.match("[^A-Za-z]+", member.display_name)) is not None:
+                    match = re.match(
+                        rf"[{STRICT_UNHOIST_PATTERN if strict else UNHOIST_PATTERN}]+", member.display_name
+                    )
+                    if match is not None:
                         await member.edit(nick=member.display_name.replace(match.group(), "", 1))
                         count += 1
                 except discord.Forbidden:

@@ -73,14 +73,14 @@ async def gateway__blockingrole(bot, guild):
 
 async def gateway__memberroles(bot, guild):
     if ids := await bot.db.field("SELECT MemberRoleIDs FROM gateway WHERE GuildID = ?", guild.id):
-        return [guild.get_role(id_) for id_ in ids.split(",")]
+        return [guild.get_role(int(id_)) for id_ in ids.split(",")]
     else:
         return []
 
 
 async def gateway__exceptionroles(bot, guild):
     if ids := await bot.db.field("SELECT ExceptionRoleIDs FROM gateway WHERE GuildID = ?", guild.id):
-        return [guild.get_role(id_) for id_ in ids.split(",")]
+        return [guild.get_role(int(id_)) for id_ in ids.split(",")]
     else:
         return []
 

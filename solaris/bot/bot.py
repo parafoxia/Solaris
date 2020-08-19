@@ -120,7 +120,8 @@ class Bot(commands.Bot):
         await error.command_error(ctx, exc)
 
     async def prefix(self, guild):
-        return await self.db.field("SELECT Prefix FROM system WHERE GuildID = ?", guild.id)
+        if guild is not None:
+            return await self.db.field("SELECT Prefix FROM system WHERE GuildID = ?", guild.id)
 
     async def command_prefix(self, bot, msg):
         prefix = await self.prefix(msg.guild)
@@ -130,12 +131,14 @@ class Bot(commands.Bot):
         ctx = await self.get_context(msg, cls=commands.Context)
 
         if ctx.command is not None:
-            if self.ready.booted:
-                await self.invoke(ctx)
-            else:
+            if isinstance(msg.channel, discord.DMChannel):
+                await ctx.send(f"{self.cross} Solaris does not support command invokations in DMs.")
+            elif not self.ready.booted:
                 await ctx.send(
                     f"{self.cross} Solaris is still booting and is not ready to receive commands. Please try again later."
                 )
+            else:
+                await self.invoke(ctx)
 
     async def on_message(self, msg):
         if not msg.author.bot:
