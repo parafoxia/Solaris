@@ -362,7 +362,7 @@ class Meta(commands.Cog):
                         f"{len(await ctx.guild.invites()):,}" if ctx.guild.me.guild_permissions.manage_guild else "-",
                         True,
                     ),
-                    ("Emojis", f"{len(ctx.guild.emojis):,} / {ctx.guild.emoji_limit:,}", True),
+                    ("Emojis", f"{len(ctx.guild.emojis):,} / {ctx.guild.emoji_limit*2:,}", True),
                     ("Boosts", f"{ctx.guild.premium_subscription_count:,} (level {ctx.guild.premium_tier})", True),
                     ("Newest member", max(ctx.guild.members, key=lambda m: m.joined_at).mention, True),
                     ("Created on", chron.long_date(ctx.guild.created_at), True),
