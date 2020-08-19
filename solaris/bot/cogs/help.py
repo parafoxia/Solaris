@@ -21,7 +21,7 @@ import typing as t
 
 from discord.ext import commands
 
-from solaris.utils import converters, menu, modules, string
+from solaris.utils import checks, converters, menu, modules, string
 
 
 class HelpMenu(menu.MultiPageMenu):
@@ -111,6 +111,8 @@ class Help(commands.Cog):
         except commands.BotMissingPermissions as exc:
             mp = string.list_of([str(perm.replace("_", " ")).title() for perm in exc.missing_perms])
             return f"No - Solaris is missing the {mp} permission(s)"
+        except checks.AuthorCanNotConfigure:
+            return "No - You are not able to configure Solaris."
         except commands.CommandError:
             return "No - Solaris is not configured properly"
 
