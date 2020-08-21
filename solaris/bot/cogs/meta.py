@@ -252,9 +252,9 @@ class Meta(commands.Cog):
                     ctx=ctx,
                     header="Information",
                     description=(
-                        f"This member is also known as {target.display_name} in this server."
+                        f"This member is known as both **{target.name}** and **{target.display_name}** in this server."
                         if target.nick
-                        else "This member does not have a nickname in this server."
+                        else f"This member is known as **{target.name}** in this server."
                     ),
                     colour=target.colour,
                     thumbnail=target.avatar_url,
