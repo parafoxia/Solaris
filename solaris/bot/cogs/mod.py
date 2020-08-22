@@ -107,7 +107,10 @@ class Mod(commands.Cog):
                 else:
                     await ctx.send(f"{self.bot.cross} No members were banned.")
 
-    @commands.command(name="unban")
+    @commands.command(
+        name="unban",
+        help="Unbans one or more users from your server. You must provide the username and discriminator of the user you want to unban in the following format: Username#0000.",
+    )
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(send_messages=True, ban_members=True)
     async def unban_command(
