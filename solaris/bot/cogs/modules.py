@@ -148,6 +148,7 @@ class Modules(commands.Cog):
     @checks.bot_has_booted()
     @checks.first_time_setup_has_not_run()
     @checks.author_can_configure()
+    @checks.guild_is_not_discord_bot_list()
     async def setup_command(self, ctx):
         await SetupMenu(ctx).start()
 
