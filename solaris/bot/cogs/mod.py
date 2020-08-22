@@ -52,7 +52,7 @@ class Mod(commands.Cog):
         else:
             count = 0
 
-            async with ctx.channel.typing():
+            async with ctx.typing():
                 for target in targets:
                     try:
                         await target.kick(reason=f"{reason} - Actioned by {ctx.author.name}")
@@ -90,7 +90,7 @@ class Mod(commands.Cog):
         else:
             count = 0
 
-            async with ctx.channel.typing():
+            async with ctx.typing():
                 for target in targets:
                     try:
                         await target.ban(
@@ -111,10 +111,22 @@ class Mod(commands.Cog):
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(send_messages=True, ban_members=True)
     async def unban_command(
-        self, ctx, targets: commands.Greedy[discord.Member], *, reason: t.Optional[str] = "No reason provided."
+        self, ctx, targets: commands.Greedy[converters.BannedUser], *, reason: t.Optional[str] = "No reason provided."
     ):
-        # TODO: Actually write this.
-        await ctx.send("Not implemented.")
+        if not targets:
+            await ctx.send(f"{self.bot.cross} No valid targets were passed.")
+        else:
+            count = 0
+
+            async with ctx.typing():
+                for target in targets:
+                    await ctx.guild.unban(target, reason=f"{reason} - Actioned by {ctx.author.name}")
+                    count += 1
+
+                if count > 0:
+                    await ctx.send(f"{self.bot.tick} {count:,} user(s) were unbanned.")
+                else:
+                    await ctx.send(f"{self.bot.cross} No users were unbanned.")
 
     @commands.command(name="clear", aliases=["clr"], help="Clears up to 100 messages from a channel.")
     @commands.has_permissions(manage_messages=True)
@@ -128,7 +140,7 @@ class Mod(commands.Cog):
                 f"{self.bot.cross} The number of messages to clear is outside valid bounds - it should be between 1 and 100 inclusive."
             )
         else:
-            async with ctx.channel.typing():
+            async with ctx.typing():
                 await ctx.message.delete()
                 cleared = await ctx.channel.purge(
                     limit=scan, check=_check, after=dt.datetime.utcnow() - dt.timedelta(days=14)
@@ -149,7 +161,7 @@ class Mod(commands.Cog):
     ):
         ctx_is_target = ctx.channel == target
 
-        async with ctx.channel.typing():
+        async with ctx.typing():
             await target.clone(reason=f"{reason} - Actioned by {ctx.author.name}")
             await target.delete(reason=f"Channel cleared. - Actioned by {ctx.author.name}")
 
@@ -194,7 +206,7 @@ class Mod(commands.Cog):
     async def clearnickname_command(self, ctx, targets: commands.Greedy[discord.Member]):
         count = 0
 
-        async with ctx.channel.typing():
+        async with ctx.typing():
             for target in targets:
                 try:
                     await target.edit(nick=None)
@@ -220,7 +232,7 @@ class Mod(commands.Cog):
     async def unhoistnicknames_command(self, ctx, *, strict: t.Optional[bool] = False):
         count = 0
 
-        async with ctx.channel.typing():
+        async with ctx.typing():
             for member in ctx.guild.members:
                 try:
                     match = re.match(
