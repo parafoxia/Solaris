@@ -22,13 +22,13 @@ import typing as t
 import discord
 from discord.ext import commands
 
-from solaris.utils import LOADING_ICON, SUCCESS_ICON, checks, menu, modules
+from solaris.utils import ERROR_ICON, LOADING_ICON, SUCCESS_ICON, checks, menu, modules
 
 
 class SetupMenu(menu.SelectionMenu):
     def __init__(self, ctx):
         pagemap = {
-            "header": "Setup",
+            "header": "Setup Wizard",
             "title": "Hello!",
             "description": "Welcome to the Solaris first time setup! You need to run this before you can use most of Solaris' commands, but you only ever need to run once.\n\nIn order to operate effectively in your server, Solaris needs to create a few things:",
             "thumbnail": ctx.bot.user.avatar_url,
@@ -57,7 +57,7 @@ class SetupMenu(menu.SelectionMenu):
 
         if r == "confirm":
             pagemap = {
-                "header": "Setup",
+                "header": "Setup Wizard",
                 "description": "Please wait... This should only take a few seconds.",
                 "thumbnail": LOADING_ICON,
             }
@@ -84,7 +84,14 @@ class SetupMenu(menu.SelectionMenu):
                 )
                 await lc.send(f"{self.bot.tick} The log channel has been created and set to {lc.mention}.")
             else:
-                await self.switch("setup log channel failed", clear_reactions=True)
+                pagemap = {
+                    "header": "Setup Wizard",
+                    "title": "Setup failed",
+                    "description": "The log channel could not be created as Solaris does not have the Manage Channels permission. The setup can not continue.",
+                    "thumbnail": ERROR_ICON,
+                }
+                await self.switch(pagemap)
+                return
 
         if not await modules.retrieve.system__adminrole(self.bot, self.ctx.guild):
             if self.ctx.guild.me.guild_permissions.manage_roles:
@@ -101,7 +108,14 @@ class SetupMenu(menu.SelectionMenu):
                 )
                 await lc.send(f"{self.bot.tick} The admin role has been created and set to {ar.mention}.")
             else:
-                await self.switch("setup admin role failed", clear_reactions=True)
+                pagemap = {
+                    "header": "Setup Wizard",
+                    "title": "Setup failed",
+                    "description": "The admin role could not be created as Solaris does not have the Manage Roles permission. The setup can not continue.",
+                    "thumbnail": ERROR_ICON,
+                }
+                await self.switch(pagemap)
+                return
 
         await self.complete()
 
@@ -134,6 +148,7 @@ class Modules(commands.Cog):
     @checks.bot_has_booted()
     @checks.first_time_setup_has_not_run()
     @checks.author_can_configure()
+    @checks.guild_is_not_discord_bot_list()
     async def setup_command(self, ctx):
         await SetupMenu(ctx).start()
 

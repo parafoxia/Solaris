@@ -170,3 +170,19 @@ def module_is_not_active(module):
         return True
 
     return commands.check(predicate)
+
+
+class GuildIsDiscordBotList(CustomCheckFailure):
+    def __init__(self):
+        super().__init__(
+            "In order to prevent unintended disruption, this command can not be run in the Discord Bot List server. If you wish to test module functionality, you will need to do so in another server."
+        )
+
+
+def guild_is_not_discord_bot_list():
+    async def predicate(ctx):
+        if ctx.guild.id == 264445053596991498:
+            raise GuildIsDiscordBotList()
+        return True
+
+    return commands.check(predicate)

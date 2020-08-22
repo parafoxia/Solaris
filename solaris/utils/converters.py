@@ -50,3 +50,9 @@ class SearchedMember(commands.Converter):
             ctx.guild.members,
             name=str(Search(arg, [m.display_name for m in ctx.guild.members]).best(min_accuracy=0.75)),
         )
+
+
+class BannedUser(commands.Converter):
+    async def convert(self, ctx, arg):
+        if ctx.guild.me.guild_permissions.ban_members:
+            return next(filter(lambda u: str(u) == arg, [e.user for e in await ctx.guild.bans()]))

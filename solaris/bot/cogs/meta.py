@@ -28,7 +28,18 @@ import psutil
 from beautifultable import BeautifulTable
 from discord.ext import commands
 
-from solaris.utils import SUPPORT_GUILD_INVITE_LINK, chron, converters, menu, string
+from solaris.utils import (
+    INFO_ICON,
+    LOADING_ICON,
+    SUCCESS_ICON,
+    SUPPORT_GUILD_INVITE_LINK,
+    checks,
+    chron,
+    converters,
+    menu,
+    string,
+)
+from solaris.utils.modules import deactivate
 
 
 class DetailedServerInfoMenu(menu.MultiPageMenu):
@@ -52,6 +63,73 @@ class DetailedServerInfoMenu(menu.MultiPageMenu):
             pagemaps.append(pm)
 
         super().__init__(ctx, pagemaps, timeout=120.0)
+
+
+class LeavingMenu(menu.SelectionMenu):
+    def __init__(self, ctx):
+        pagemap = {
+            "header": "Leave Wizard",
+            "title": "Leaving already?",
+            "description": (
+                "If you remove Solaris from your server, all server information Solaris has stored, as well as any roles and channels Solaris has created, will be deleted."
+                f"If you are having issues with Solaris, consider joining the support server to try and find a resolution - select {ctx.bot.info} to get an invite link.\n\n"
+                "Are you sure you want to remove Solaris from your server?"
+            ),
+            "thumbnail": ctx.bot.user.avatar_url,
+        }
+        super().__init__(ctx, ["confirm", "cancel", "info"], pagemap, timeout=120.0)
+
+    async def start(self):
+        r = await super().start()
+
+        if r == "confirm":
+            pagemap = {
+                "header": "Leave Wizard",
+                "description": "Please wait... This should only take a few seconds.",
+                "thumbnail": LOADING_ICON,
+            }
+            await self.switch(pagemap, clear_reactions=True)
+            await self.leave()
+        elif r == "cancel":
+            await self.stop()
+        elif r == "info":
+            pagemap = {
+                "header": "Leave Wizard",
+                "title": "Let's get to the bottom of this!",
+                "description": f"Click [here]({SUPPORT_GUILD_INVITE_LINK}) to join the support server.",
+                "thumbnail": INFO_ICON,
+            }
+            await self.switch(pagemap, clear_reactions=True)
+
+    async def leave(self):
+        dlc_id, dar_id = (
+            await self.bot.db.record(
+                "SELECT DefaultLogChannelID, DefaultAdminRoleID FROM system WHERE GuildID = ?", self.ctx.guild.id
+            )
+            or [None] * 2
+        )
+
+        await deactivate.everything(self.ctx)
+
+        if self.ctx.guild.me.guild_permissions.manage_roles and (dar := self.ctx.guild.get_role(dar_id)) is not None:
+            await dar.delete(reason="Solaris is leaving the server.")
+
+        if (
+            self.ctx.guild.me.guild_permissions.manage_channels
+            and (dlc := self.ctx.guild.get_channel(dlc_id)) is not None
+        ):
+            await dlc.delete(reason="Solaris is leaving the server.")
+
+        pagemap = {
+            "header": "Leave Wizard",
+            "title": "Sorry to see you go!",
+            "description": (
+                f"If you ever wish to reinvite Solaris, you can do so by clicking [here]({self.bot.admin_invite}) (recommended permissions), or [here]({self.bot.non_admin_invite}) (minimum required permissions).\n\n"
+                "The Solaris team wish you and your server all the best."
+            ),
+        }
+        await self.switch(pagemap)
+        await self.ctx.guild.leave()
 
 
 class Meta(commands.Cog):
@@ -252,9 +330,9 @@ class Meta(commands.Cog):
                     ctx=ctx,
                     header="Information",
                     description=(
-                        f"This member is also known as {target.display_name} in this server."
+                        f"This member is known as both **{target.name}** and **{target.display_name}** in this server."
                         if target.nick
-                        else "This member does not have a nickname in this server."
+                        else f"This member is known as **{target.name}** in this server."
                     ),
                     colour=target.colour,
                     thumbnail=target.avatar_url,
@@ -453,9 +531,13 @@ class Meta(commands.Cog):
             )
         )
 
-    @commands.command(name="leave")
+    @commands.command(
+        name="leave",
+        help="Utility to make Solaris clean up before leaving the server. This involves deactivating all active modules and deleting the default log channel and the default admin role should they still exist.",
+    )
+    @checks.author_can_configure()
     async def leave_command(self, ctx):
-        pass
+        await LeavingMenu(ctx).start()
 
     @commands.command(name="shutdown")
     @commands.is_owner()

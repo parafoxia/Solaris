@@ -45,9 +45,9 @@ class EmbedConstructor:
         embed.set_author(name=kwargs.get("header", "Solaris"))
         embed.set_footer(
             text=kwargs.get(
-                "footer", f"Invoked by {ctx.author.display_name}" if ctx else "Server Safety and Security Systems"
+                "footer", f"Invoked by {ctx.author.display_name}" if ctx else r"\o/"
             ),
-            icon_url=ctx.author.avatar_url if ctx else Embed.Empty,
+            icon_url=ctx.author.avatar_url if ctx else self.bot.user.avatar_url,
         )
 
         # FIXME: In d.py 1.4, `Embed.Empty` will be supported.
