@@ -44,9 +44,7 @@ class EmbedConstructor:
 
         embed.set_author(name=kwargs.get("header", "Solaris"))
         embed.set_footer(
-            text=kwargs.get(
-                "footer", f"Invoked by {ctx.author.display_name}" if ctx else r"\o/"
-            ),
+            text=kwargs.get("footer", f"Invoked by {ctx.author.display_name}" if ctx else r"\o/"),
             icon_url=ctx.author.avatar_url if ctx else self.bot.user.avatar_url,
         )
 
