@@ -6,7 +6,7 @@ I would greatly prefer if you invited Solaris to your server [here](https://disc
 
 Solaris was also not designed with universal compatibility in mind. If you want to include sections of Solaris' code in your own program, you will likely need to make significant modifications. Make sure you abide by the terms of the license, which you can find in LICENSE.
 
-**Note:** As of v1.0.0-beta.3, these instructions haven't been fully tested. If they are wrong, open an issue.
+**Note:** As of v1.0.0-rc.2, these instructions haven't been fully tested. If they are wrong, open an issue.
 
 ## Running with Docker
 **Warning**: Docker functionality in Solaris was designed specifically with Debian 10 Buster in mind. If you are using another OS, you may need to modify the Dockerfile.
