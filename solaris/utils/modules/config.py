@@ -82,6 +82,8 @@ async def system__adminrole(bot, channel, value):
     The role used to denote which members can configure Solaris. Alongside server administrators, only members with this role can use any of Solaris' configuration commands. Upon selecting a new channel, Solaris will delete the one that was created during the first time setup should it still exist."""
     if not isinstance(value, discord.Role):
         await channel.send(f"{bot.cross} The admin role must be a Discord role in this server.")
+    elif any(v.name == "@everyone" for v in values):
+        await channel.send(f"{bot.cross} The everyone role can not be used as the admin role.")
     elif value.position > channel.guild.me.top_role.position:
         await channel.send(
             f"{bot.cross} The given role can not be used as the admin role as it is above Solaris' top role in the role hierarchy."
@@ -142,6 +144,8 @@ async def gateway__blockingrole(bot, channel, value):
         await channel.send(f"{bot.cross} This can not be done as the gateway module is currently active.")
     elif not isinstance(value, discord.Role):
         await channel.send(f"{bot.cross} The blocking role must be a Discord role in this server.")
+    elif any(v.name == "@everyone" for v in values):
+        await channel.send(f"{bot.cross} The everyone role can not be used as the blocking role.")
     elif value.position >= channel.guild.me.top_role.position:
         await channel.send(
             f"{bot.cross} The given role can not be used as the blocking role as it is above Solaris' top role in the role hierarchy."
@@ -171,6 +175,8 @@ async def gateway__memberroles(bot, channel, values):
         await channel.send(f"{bot.cross} You can only set up to {MAX_MEMBER_ROLES} member roles.")
     elif not all(isinstance(v, discord.Role) for v in values):
         await channel.send(f"{bot.cross} All member roles must be Discord roles in this server.")
+    elif any(v.name == "@everyone" for v in values):
+        await channel.send(f"{bot.cross} The everyone role can not be used as a member role.")
     elif any(v == br for v in values):
         await channel.send(f"{bot.cross} No member roles can be the same as the blocking role.")
     elif any(v.position > channel.guild.me.top_role.position for v in values):
@@ -206,6 +212,8 @@ async def gateway__exceptionroles(bot, channel, values):
         await channel.send(f"{bot.cross} You can only set up to {MAX_EXCEPTION_ROLES} exception roles.")
     elif not all(isinstance(v, discord.Role) for v in values):
         await channel.send(f"{bot.cross} All exception roles must be Discord roles in this server.")
+    elif any(v.name == "@everyone" for v in values):
+        await channel.send(f"{bot.cross} The everyone role can not be used as an exception role.")
     elif any(v == br for v in values):
         await channel.send(f"{bot.cross} No exception roles can be the same as the blocking role.")
     else:
