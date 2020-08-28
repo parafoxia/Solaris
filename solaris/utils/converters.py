@@ -17,6 +17,8 @@
 # Ethan Henderson
 # parafoxia@carberra.xyz
 
+import re
+
 import discord
 from discord.ext import commands
 
@@ -25,34 +27,56 @@ from solaris.utils import Search
 
 class User(commands.Converter):
     async def convert(self, ctx, arg):
-        return await ctx.bot.grab_user(arg)
+        if (user := await ctx.bot.grab_user(arg)) is None:
+            raise commands.BadArgument
+        return user
 
 
 class Channel(commands.Converter):
     async def convert(self, ctx, arg):
-        return await ctx.bot.grab_channel(arg)
+        if (channel := await ctx.bot.grab_channel(arg)) is None:
+            raise commands.BadArgument
+        return channel
 
 
 class Guild(commands.Converter):
     async def convert(self, ctx, arg):
-        return await ctx.bot.grab_guild(arg)
+        if (guild := await ctx.bot.grab_guild(arg)) is None:
+            raise commands.BadArgument
+        return guild
 
 
 class Command(commands.Converter):
     async def convert(self, ctx, arg):
-        # False indicates command doesn't exist.
+        # TODO: Re-write this to match the convention above. Will probs need to rework how
+        #       `commands.BadArgument` is handled.
         return ctx.bot.get_command(arg) or False
 
 
 class SearchedMember(commands.Converter):
     async def convert(self, ctx, arg):
-        return discord.utils.get(
-            ctx.guild.members,
-            name=str(Search(arg, [m.display_name for m in ctx.guild.members]).best(min_accuracy=0.75)),
-        )
+        if (
+            member := discord.utils.get(
+                ctx.guild.members,
+                name=str(Search(arg, [m.display_name for m in ctx.guild.members]).best(min_accuracy=0.75)),
+            )
+        ) is None:
+            raise commands.BadArgument
+        return member
 
 
 class BannedUser(commands.Converter):
     async def convert(self, ctx, arg):
         if ctx.guild.me.guild_permissions.ban_members:
-            return next(filter(lambda u: str(u) == arg, [e.user for e in await ctx.guild.bans()]))
+            banned = [e.user for e in await ctx.guild.bans()]
+            if banned:
+                if re.match(r"[0-9]{17,22}", arg) is not None:
+                    if (user := discord.utils.get(banned, id=int(arg))) is None:
+                        raise commands.BadArgument
+                    return user
+                elif (match := re.match(r"([\s\S]{2,32})#([0-9]{4})", arg)) is not None:
+                    if (user := discord.utils.get(banned, name=match.group(1), discriminator=match.group(2))) is None:
+                        raise commands.BadArgument
+                    return user
+                else:
+                    raise commands.BadArgument
