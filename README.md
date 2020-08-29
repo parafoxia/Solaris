@@ -1,5 +1,44 @@
 # Solaris
-A Discord bot designed to make your server a safer and better place.
+## A Discord bot designed to make your server a safer and better place.
+Solaris was built using more than 2 years of bot building experience to be the definitive word in server security. Bundled with plenty of powerful features, and with many more planned for the future, it's been designed to do all the things other moderation bots don't.
+
+## T&Cs just got interesting.
+If you ever wished you could hire a bouncer for your server, Solaris might be just what you're looking for.
+
+- Make spam bots and excuses from rulebreaking members a thing of the past. A powerful gateway / verification system makes sure new members accept the rules before being able to talk in the server, and personally deals with those who don't.
+- Add your own personal touch with tonnes of customisation options. Whether you want customisable messages, including separate messages for humans and bots, or the ability to set multiple member roles, Solaris has you covered.
+- Get that peace of mind you deserve. With 24/7 uptime, and systems in place to make sure nothing goes a miss even if Solaris does go down, no new members will be left out.
+
+## Giving you the power you need.
+Solaris is bundled full of useful moderation commands to give you the power you need, when you need it.
+
+These include some old favourites...
+- `kick`, which kicks all the specified members from the server
+- `ban`, which bans all the specified members from the server
+- `unban`, which unbans all the specified members from the server
+- `clear`, which clears the specified number of messages from a channel
+- `setnickname`, which sets a member's nickname
+- `clearnickname`, which clears all given members' nicknames
+
+...as well as some rarer ones.
+- `clearchannel`, which clears an entire channel of messages, giving you a clean slate
+- `unhoistnicknames`, which sorts out those annoying hoisters
+
+## Shine a light on you and your server.
+There are plenty of detailed information commands to keep you in the know.
+
+Again, the old timers are present:
+- `userinfo`
+- `serverinfo`
+- `botinfo`
+
+...as well as the new guys.
+- `detailedserverinfo`
+- `avater`
+- `icon`
+
+## Plenty to look forward to.
+If you liked the sound of all the above features, well, we're only just getting started. With plans to provide the ability to back up server configurations, include a dynamic warning system, and account for the most urgent situations with a lockdown system, there's a lot to keep your eyes open for!
 
 # Cloning and running
 I would greatly prefer if you invited Solaris to your server [here](https://discordapp.com/oauth2/authorize?client_id=661972684153946122&scope=bot&permissions=8) rather than run your own instance. With that being said, you are able to clone Solaris to your machine in order to test it or contribute.
