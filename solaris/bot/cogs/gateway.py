@@ -455,7 +455,7 @@ class Gateway(commands.Cog):
         name="synchronise",
         aliases=["synchronize", "sync"],
         invoke_without_command=True,
-        help="Synchronise the gateway module. In theory, you should only ever need this as a convenience utility, but it is useful to use if Solaris falls out of sync for whatever reason.",
+        help="Synchronise the gateway module. In theory, you should only ever need this as a convenience utility, but it is useful to use if Solaris falls out of sync for whatever reason. Use the command for information on available subcommands.",
     )
     @checks.module_has_initialised(MODULE_NAME)
     @checks.module_is_active(MODULE_NAME)
@@ -498,7 +498,7 @@ class Gateway(commands.Cog):
         )
 
     @sync_group.command(name="members")
-    @commands.cooldown(1, 86400, commands.BucketType.guild)
+    @commands.cooldown(1, 3600, commands.BucketType.guild)
     @checks.module_has_initialised(MODULE_NAME)
     @checks.module_is_active(MODULE_NAME)
     @checks.author_can_configure()
@@ -523,7 +523,7 @@ class Gateway(commands.Cog):
                 await ctx.send(f"{self.bot.tick} Server members synchronised.")
 
     @sync_group.command(name="roles")
-    @commands.cooldown(1, 86400, commands.BucketType.guild)
+    @commands.cooldown(1, 3600, commands.BucketType.guild)
     @checks.module_has_initialised(MODULE_NAME)
     @checks.module_is_active(MODULE_NAME)
     @checks.author_can_configure()
