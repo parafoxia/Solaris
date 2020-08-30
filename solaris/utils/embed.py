@@ -35,9 +35,9 @@ class EmbedConstructor:
             title=kwargs.get("title"),
             description=kwargs.get("description"),
             colour=(
-                kwargs.get("colour") or ctx.author.colour
-                if ctx and ctx.author.colour.value
-                else None or DEFAULT_EMBED_COLOUR
+                kwargs.get("colour")
+                or (ctx.author.colour if ctx and ctx.author.colour.value else None)
+                or DEFAULT_EMBED_COLOUR
             ),
             timestamp=datetime.utcnow(),
         )
