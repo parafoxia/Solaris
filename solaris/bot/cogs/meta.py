@@ -329,10 +329,11 @@ class Meta(commands.Cog):
                 embed=self.bot.embed.build(
                     ctx=ctx,
                     header="Information",
+                    title=f"User information for {target.name}",
                     description=(
-                        f"This member is known as both **{target.name}** and **{target.display_name}** in this server."
+                        f"This member is also known as {target.display_name} in this server."
                         if target.nick
-                        else f"This member is known as **{target.name}** in this server."
+                        else f"This member does not have a nickname in this server."
                     ),
                     colour=target.colour,
                     thumbnail=target.avatar_url,
@@ -380,29 +381,6 @@ class Meta(commands.Cog):
                 )
             )
 
-        else:
-            await ctx.send(f"{self.bot.cross} Solaris was unable to identify a user with the information provided.")
-
-    @commands.command(
-        name="avatar",
-        aliases=["profile", "pfp"],
-        help="Displays the avatar (profile picture) of a given user. This is not limited to server members.",
-    )
-    async def avatar_command(
-        self, ctx, *, target: t.Optional[t.Union[discord.Member, converters.User, converters.SearchedMember, str]]
-    ):
-        target = target or ctx.author
-
-        if isinstance(target, discord.Member) or isinstance(target, discord.User):
-            name = getattr(target, "display_name", target.name)
-            await ctx.send(
-                embed=self.bot.embed.build(
-                    ctx=ctx,
-                    header="Information",
-                    description=f"Displaying avatar for {name}.",
-                    image=target.avatar_url,
-                )
-            )
         else:
             await ctx.send(f"{self.bot.cross} Solaris was unable to identify a user with the information provided.")
 
@@ -458,6 +436,136 @@ class Meta(commands.Cog):
                 ),
             )
         )
+
+    @commands.command(
+        name="channelinfo",
+        aliases=["categoryinfo", "ci"],
+        help="Displays information on a given channel or category. If no channel or category is provided, Solaris will display information on the channel the command was invoked in.",
+    )
+    async def channelinfo_command(
+        self,
+        ctx,
+        *,
+        target: t.Optional[t.Union[discord.TextChannel, discord.VoiceChannel, discord.CategoryChannel, str]],
+    ):
+        target = target or ctx.channel
+
+        if isinstance(target, discord.TextChannel):
+            await ctx.send(
+                embed=self.bot.embed.build(
+                    ctx=ctx,
+                    header="Information",
+                    title=f"Channel information for {target.name}",
+                    description="This channel is a text channel.",
+                    thumbnail=ctx.guild.icon_url,
+                    fields=(
+                        ("ID", target.id, False),
+                        ("NSFW?", target.is_nsfw(), True),
+                        ("News?", target.is_news(), True),
+                        ("Synced?", target.permissions_synced, True),
+                        ("Category", target.category.name, True),
+                        ("Position", f"{string.ordinal(target.position+1)} / {len(ctx.guild.text_channels):,}", True),
+                        ("Allowed members", f"{len(target.members):,}", True),
+                        ("Overwrites", f"{len(target.overwrites)}", True),
+                        (
+                            "Invites",
+                            f"{len(await target.invites()):,}" if ctx.guild.me.guild_permissions.manage_guild else "-",
+                            True,
+                        ),
+                        ("Pins", f"{len(await target.pins())}", True),
+                        ("Slowmode delay", f"{target.slowmode_delay:,} second(s)", True),
+                        ("Created on", chron.long_date(target.created_at), True),
+                        ("Existed for", chron.short_delta(dt.datetime.utcnow() - target.created_at), True),
+                        ("Topic", target.topic or "This channel does not have a topic.", False),
+                    ),
+                )
+            )
+
+        elif isinstance(target, discord.VoiceChannel):
+            await ctx.send(
+                embed=self.bot.embed.build(
+                    ctx=ctx,
+                    header="Information",
+                    title=f"Channel information for {target.name}",
+                    description="This channel is a voice channel.",
+                    thumbnail=ctx.guild.icon_url,
+                    fields=(
+                        ("ID", target.id, False),
+                        ("Synced?", target.permissions_synced, True),
+                        ("Category", target.category.name, True),
+                        ("Bitrate", f"{target.bitrate//1000:,.0f} kbps", True),
+                        ("Position", f"{string.ordinal(target.position+1)} / {len(ctx.guild.voice_channels):,}", True),
+                        ("Overwrites", f"{len(target.overwrites)}", True),
+                        (
+                            "Invites",
+                            f"{len(await target.invites()):,}" if ctx.guild.me.guild_permissions.manage_guild else "-",
+                            True,
+                        ),
+                        ("Members joined", f"{len(target.members):,} / {target.user_limit or '∞'}", True),
+                        ("Created on", chron.long_date(target.created_at), True),
+                        ("Existed for", chron.short_delta(dt.datetime.utcnow() - target.created_at), True),
+                    ),
+                )
+            )
+
+        elif isinstance(target, discord.CategoryChannel):
+            await ctx.send(
+                embed=self.bot.embed.build(
+                    ctx=ctx,
+                    header="Information",
+                    title=f"Category information for {target.name}",
+                    thumbnail=ctx.guild.icon_url,
+                    fields=(
+                        ("ID", target.id, False),
+                        ("NSFW?", target.is_nsfw(), True),
+                        ("Synced?", target.permissions_synced, True),
+                        ("Position", f"{string.ordinal(target.position+1)} / {len(ctx.guild.categories):,}", True),
+                        ("Channels", f"{len(target.channels):,} / {len(ctx.guild.channels):,}", True),
+                        ("Text / voice", f"{len(target.text_channels):,} / {len(target.voice_channels):,}", True),
+                        ("Synced channels", f"{len([c for c in target.channels if c.permissions_synced])}", True),
+                        ("Overwrites", f"{len(target.overwrites)}", True),
+                        ("Created on", chron.long_date(target.created_at), True),
+                        ("Existed for", chron.short_delta(dt.datetime.utcnow() - target.created_at), True),
+                    ),
+                )
+            )
+
+        else:
+            await ctx.send(f"{self.bot.cross} Solaris was unable to identify a channel with the information provided.")
+
+    @commands.command(
+        name="roleinfo",
+        aliases=["ri"],
+        help="Displays information on a given role. If no role is provided, Solaris will display information on your top role.",
+    )
+    async def roleinfo_command(self, ctx, *, target: t.Optional[t.Union[discord.Role, str]]):
+        target = target or ctx.author.top_role
+
+        if isinstance(target, discord.Role):
+            ngr = len(ctx.guild.roles)
+
+            await ctx.send(
+                embed=self.bot.embed.build(
+                    ctx=ctx,
+                    header="Information",
+                    title=f"Role information for {target.name}",
+                    description=f"You currently{' ' if target in ctx.author.roles else ' do not '}have this role.",
+                    thumbnail=ctx.guild.icon_url,
+                    colour=target.colour,
+                    fields=(
+                        ("ID", target.id, False),
+                        ("Hoisted?", target.hoist, True),
+                        ("Assignable?", not target.managed, True),
+                        ("Mentionable?", target.mentionable, True),
+                        ("Admin?", target.permissions.administrator, True),
+                        ("Position", f"{string.ordinal(ngr - target.position)} / {ngr:,}", True),
+                        ("Colour", f"#{str(target.colour)}", True),
+                        ("Members", f"{len(target.members):,}", True),
+                        ("Created on", chron.long_date(target.created_at), True),
+                        ("Existed for", chron.short_delta(dt.datetime.utcnow() - target.created_at), True),
+                    ),
+                )
+            )
 
     @commands.command(
         name="detailedserverinfo",
@@ -519,6 +627,29 @@ class Meta(commands.Cog):
         }
 
         await DetailedServerInfoMenu(ctx, table_info).start()
+
+    @commands.command(
+        name="avatar",
+        aliases=["profile", "pfp"],
+        help="Displays the avatar (profile picture) of a given user. This is not limited to server members.",
+    )
+    async def avatar_command(
+        self, ctx, *, target: t.Optional[t.Union[discord.Member, converters.User, converters.SearchedMember, str]]
+    ):
+        target = target or ctx.author
+
+        if isinstance(target, discord.Member) or isinstance(target, discord.User):
+            name = getattr(target, "display_name", target.name)
+            await ctx.send(
+                embed=self.bot.embed.build(
+                    ctx=ctx,
+                    header="Information",
+                    description=f"Displaying avatar for {name}.",
+                    image=target.avatar_url,
+                )
+            )
+        else:
+            await ctx.send(f"{self.bot.cross} Solaris was unable to identify a user with the information provided.")
 
     @commands.command(name="icon", help="Displays the icon of your server.")
     async def icon_command(self, ctx):
