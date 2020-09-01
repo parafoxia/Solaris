@@ -313,7 +313,7 @@ class Meta(commands.Cog):
 
     @commands.command(
         name="userinfo",
-        aliases=["ui", "memberinfo", "mi"],
+        aliases=["ui"],
         help="Displays information on a given user. If no user is provided, Solaris will display your information. Note that although Solaris can display information about any user on Discord, the amount of information available is significantly lower for users not in the server the command was invoked in.",
     )
     async def userinfo_command(
@@ -565,6 +565,84 @@ class Meta(commands.Cog):
                         ("Existed for", chron.short_delta(dt.datetime.utcnow() - target.created_at), True),
                     ),
                 )
+            )
+
+        else:
+            await ctx.send(f"{self.bot.cross} Solaris was unable to identify a role with the information provided.")
+
+    @commands.command(
+        name="messageinfo",
+        aliases=["mi"],
+        help='Displays information on a given message. Hint: If you are in developer mode, you can hold SHIFT while clicking on the "Copy ID" option to get a channelid-messageid format. This allows you to get information for messages in different channels.',
+    )
+    async def messageinfo_command(self, ctx, target: t.Union[discord.Message, str]):
+        if isinstance(target, discord.Message):
+            await ctx.send(
+                embed=self.bot.embed.build(
+                    ctx=ctx,
+                    header="Information",
+                    title=f"Message information",
+                    description=f"You can see the original message [here]({target.jump_url}).",
+                    thumbnail=target.author.avatar_url,
+                    colour=target.author.colour,
+                    fields=(
+                        ("ID", target.id, False),
+                        ("System?", target.is_system(), True),
+                        ("Embedded?", bool(target.embeds), True),
+                        ("Pinned?", target.pinned, True),
+                        ("Author", target.author.mention, True),
+                        ("Channel", target.channel.mention, True),
+                        ("Reactions", f"{len(target.reactions):,}", True),
+                        ("Member mentions", f"{len(target.mentions):,}", True),
+                        ("Role mentions", f"{len(target.role_mentions):,}", True),
+                        ("Attachments", f"{len(target.attachments):,}", True),
+                        ("Created on", chron.long_date(target.created_at), True),
+                        ("Existed for", chron.short_delta(dt.datetime.utcnow() - target.created_at), True),
+                        ("Last edited on", chron.long_date(target.created_at), True),
+                        (
+                            "Content",
+                            target.content if len(target.content) <= 1024 else f"{target.content[:1021]}...",
+                            False,
+                        ),
+                    ),
+                )
+            )
+
+        else:
+            await ctx.send(f"{self.bot.cross} Solaris was unable to identify a message with the information provided.")
+
+    @commands.command(
+        name="emojiinfo",
+        aliases=["ei"],
+        help="Displays information on a given emoji. This only works for custom emoji.",
+    )
+    async def emojiinfo_command(self, ctx, target: t.Union[discord.Emoji, str]):
+        if isinstance(target, discord.Emoji):
+            await ctx.send(
+                embed=self.bot.embed.build(
+                    ctx=ctx,
+                    header="Information",
+                    title=f"Emoji information for {target.name}",
+                    thumbnail=target.url,
+                    fields=(
+                        ("ID", target.id, False),
+                        ("Animated?", target.animated, True),
+                        ("Managed?", target.managed, True),
+                        ("Available?", target.available, True),
+                        (
+                            "Created by",
+                            u.mention if (u := target.user) and ctx.guild.me.guild_permissions.manage_emojis else "-",
+                            True,
+                        ),
+                        ("Created on", chron.long_date(target.created_at), True),
+                        ("Existed for", chron.short_delta(dt.datetime.utcnow() - target.created_at), True),
+                    ),
+                )
+            )
+
+        else:
+            await ctx.send(
+                f"{self.bot.cross} Solaris was unable to identify an emoji with the information provided. Are you sure it is a custom emoji?"
             )
 
     @commands.command(
