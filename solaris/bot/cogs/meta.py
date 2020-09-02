@@ -239,6 +239,54 @@ class Meta(commands.Cog):
             )
         )
 
+    @commands.command(
+        name="issue",
+        aliases=["bugreport", "reportbug", "featurerequest", "requestfeature"],
+        help="Provides a link to open an issue on the Solaris repo.",
+    )
+    async def issue_command(self, ctx):
+        await ctx.send(
+            embed=self.bot.embed.build(
+                ctx=ctx,
+                header="Information",
+                description="If you have discovered a bug not already known or want a feature not requested, open an issue using the green button in the top right of the window.",
+                thumbnail=self.bot.user.avatar_url,
+                fields=(
+                    (
+                        "View all known bugs",
+                        "Click [here](https://github.com/parafoxia/Solaris/issues?q=is%3Aissue+is%3Aopen+label%3Abug).",
+                        False,
+                    ),
+                    (
+                        "View all planned features",
+                        "Click [here](https://github.com/parafoxia/Solaris/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement).",
+                        False,
+                    ),
+                ),
+            )
+        )
+
+    @commands.command(
+        name="changelog",
+        aliases=["release"],
+        help="Provides a link to view the changelog for the given version. If no version is provided, a general overview is provided.",
+    )
+    async def changelog_command(self, ctx, version: t.Optional[str]):
+        url = (
+            "https://github.com/parafoxia/Solaris/releases"
+            if not version
+            else f"https://github.com/parafoxia/Solaris/releases/tag/v{version}"
+        )
+        version_info = f"version {version}" if version else "all versions"
+        await ctx.send(
+            embed=self.bot.embed.build(
+                ctx=ctx,
+                header="Information",
+                description=f"Click [here]({url}) to information on {version_info}.",
+                thumbnail=self.bot.user.avatar_url,
+            )
+        )
+
     @commands.command(name="ping", help="Pings Solaris.")
     async def ping_command(self, ctx):
         lat = self.bot.latency * 1000
@@ -659,13 +707,17 @@ class Meta(commands.Cog):
                 (
                     "Default notifications",
                     "Only @mentions" if ctx.guild.default_notifications.value else "All Messages",
-                    True
+                    True,
                 ),
                 ("\u200b", "\u200b", True),
             ),
             "moderation": (
                 ("Verficiation level", str(ctx.guild.verification_level).title(), False),
-                ("Explicit media content filter", str(ctx.guild.explicit_content_filter).replace("_", " ").title(), False),
+                (
+                    "Explicit media content filter",
+                    str(ctx.guild.explicit_content_filter).replace("_", " ").title(),
+                    False,
+                ),
                 ("2FA requirement for moderation?", bool(ctx.guild.mfa_level), False),
             ),
             "numerical": (
@@ -679,18 +731,22 @@ class Meta(commands.Cog):
                 (
                     "Members with top role",
                     f"{len([m for m in ctx.guild.members if ctx.guild.roles[-1] in m.roles]):,}",
-                    True
+                    True,
                 ),
-                ("Bans", f"{len(await ctx.guild.bans()) if ctx.guild.me.guild_permissions.ban_members else None:,}", True),
+                (
+                    "Bans",
+                    f"{len(await ctx.guild.bans()) if ctx.guild.me.guild_permissions.ban_members else None:,}",
+                    True,
+                ),
                 (
                     "Invites",
                     f"{len(await ctx.guild.invites()) if ctx.guild.me.guild_permissions.manage_guild else None:,}",
-                    True
+                    True,
                 ),
                 (
                     "Webhooks",
                     f"{len(await ctx.guild.webhooks()) if ctx.guild.me.guild_permissions.manage_webhooks else None:,}",
-                    True
+                    True,
                 ),
                 ("Emojis", f"{len(ctx.guild.emojis):,}", True),
                 ("Bitrate limit", f"{ctx.guild.bitrate_limit//1000:,.0f} kbps", True),
