@@ -460,33 +460,19 @@ class Gateway(commands.Cog):
     @checks.module_has_initialised(MODULE_NAME)
     @checks.module_is_active(MODULE_NAME)
     @checks.author_can_configure()
-    async def sync_group(self, ctx):
+    async def synchronise_group(self, ctx):
         prefix = await self.bot.prefix(ctx.guild)
+        cmds = tuple(sorted(self.bot.get_command("synchronise").commands, key=lambda c: c.name))
+
         await ctx.send(
             embed=self.bot.embed.build(
                 ctx=ctx,
                 header="Sync",
                 description="There are a few different syncing methods you can use.",
                 fields=(
-                    (
-                        "Member sync",
-                        f"Handles offline arrivals and departures. This is generally not required as Solaris does this on start-up.```{prefix}sync members```",
-                        False,
-                    ),
-                    (
-                        "Role sync",
-                        f"Provides the member roles to those who have accepted the rules. This is good to run after you add a new member role, but Solaris will not remove roles that are no longer member roles. If `accepted_only` is set to `False`, every single member will receive these roles regardless of any other factors.```{prefix}sync roles [accepted_only=True]```",
-                        False,
-                    ),
-                    (
-                        "Reaction sync",
-                        f"Synchronises the reactions on the gate message. This is useful if you only want to view reactions for current members, but as this is an expensive operation in large servers, you can only do this once every 24 hours.```{prefix}sync reactions```",
-                        False,
-                    ),
-                    (
-                        "Full sync",
-                        f"Does all of the above.```{prefix}sync everything [roles_for_accepted_only=True]```",
-                        False,
+                    *(
+                        (cmd.name.title(), f"{cmd.help} For more infomation, use `{prefix}help {cmd.name}`", False)
+                        for cmd in (*cmds[1:], cmds[0])  # Order them properly.
                     ),
                     (
                         "Why does the module need synchronising?",
@@ -497,7 +483,11 @@ class Gateway(commands.Cog):
             )
         )
 
-    @sync_group.command(name="members")
+    @synchronise_group.command(
+        name="members",
+        cooldown_after_parsing=True,
+        help="Handles offline arrivals and departures. This is generally not required as Solaris does this on start-up.",
+    )
     @commands.cooldown(1, 86400, commands.BucketType.guild)
     @checks.module_has_initialised(MODULE_NAME)
     @checks.module_is_active(MODULE_NAME)
@@ -522,7 +512,11 @@ class Gateway(commands.Cog):
                 )
                 await ctx.send(f"{self.bot.tick} Server members synchronised.")
 
-    @sync_group.command(name="roles")
+    @synchronise_group.command(
+        name="roles",
+        cooldown_after_parsing=True,
+        help="Provides the member roles to those who have accepted the rules. This is good to run after you add a new member role, but Solaris will not remove roles that are no longer member roles. If `accepted_only` is set to `False`, every single member will receive these roles regardless of any other factors.",
+    )
     @commands.cooldown(1, 86400, commands.BucketType.guild)
     @checks.module_has_initialised(MODULE_NAME)
     @checks.module_is_active(MODULE_NAME)
@@ -541,7 +535,11 @@ class Gateway(commands.Cog):
             await Synchronise(self.bot).roles(ctx.guild, okay, br_id, mr_ids, accepted, accepted_only)
             await ctx.send(f"{self.bot.tick} Member roles synchronised.")
 
-    @sync_group.command(name="reactions")
+    @synchronise_group.command(
+        name="reactions",
+        cooldown_after_parsing=True,
+        help="Synchronises the reactions on the gate message. This is useful if you only want to view reactions for current members, but as this is an expensive operation in large servers, you can only do this once every 24 hours.",
+    )
     @commands.cooldown(1, 86400, commands.BucketType.guild)
     @checks.module_has_initialised(MODULE_NAME)
     @checks.module_is_active(MODULE_NAME)
@@ -561,7 +559,12 @@ class Gateway(commands.Cog):
                 await Synchronise(self.bot).reactions(ctx.guild, gm, accepted)
                 await ctx.send(f"{self.bot.tick} Gate message reactions synchronised.")
 
-    @sync_group.command(name="everything", aliases=["full", "all"])
+    @synchronise_group.command(
+        name="everything",
+        aliases=["full", "all"],
+        cooldown_after_parsing=True,
+        help="Does all of the above. Read the help descriptions for the other commands in this group for more information.",
+    )
     @commands.cooldown(1, 86400, commands.BucketType.guild)
     @checks.module_has_initialised(MODULE_NAME)
     @checks.module_is_active(MODULE_NAME)
