@@ -17,12 +17,13 @@
 # Ethan Henderson
 # parafoxia@carberra.xyz
 
+import datetime as dt
 import typing as t
 from collections import defaultdict
 
 from discord.ext import commands
 
-from solaris.utils import checks, converters, menu, modules, string
+from solaris.utils import checks, chron, converters, menu, modules, string
 
 
 class HelpMenu(menu.MultiPageMenu):
@@ -96,9 +97,12 @@ class Help(commands.Cog):
             return f"{prefix}{cmd.name} (✗)" if cmd.parent is None else f"  ↳ {cmd.name} (✗)"
 
     @staticmethod
-    async def full_syntax(ctx, cmd, prefix):
+    def full_syntax(ctx, cmd, prefix):
         invokations = "|".join([cmd.name, *cmd.aliases])
-        return f"```{prefix}{invokations} {cmd.signature}```"
+        if (p := cmd.parent) is None:
+            return f"```{prefix}{invokations} {cmd.signature}```"
+        else:
+            return f"```{prefix}|parent| {invokations} {cmd.signature}```"
 
     @staticmethod
     async def required_permissions(ctx, cmd):
@@ -112,7 +116,7 @@ class Help(commands.Cog):
             mp = string.list_of([str(perm.replace("_", " ")).title() for perm in exc.missing_perms])
             return f"No - Solaris is missing the {mp} permission(s)"
         except checks.AuthorCanNotConfigure:
-            return "No - You are not able to configure Solaris."
+            return "No - You are not able to configure Solaris"
         except commands.CommandError:
             return "No - Solaris is not configured properly"
 
@@ -131,10 +135,42 @@ class Help(commands.Cog):
         name="help",
         help="Help with anything Solaris. Passing a command name or alias through will show help with that specific command, while passing no arguments will bring up a general command overview.",
     )
-    async def help_command(self, ctx, cmd: t.Optional[converters.Command]):
+    async def help_command(self, ctx, cmd: t.Optional[t.Union[converters.Command, str]]):
         prefix = await self.bot.prefix(ctx.guild)
 
-        if cmd is None:
+        if isinstance(cmd, str):
+            await ctx.send(f"{self.bot.cross} Solaris has no commands or aliases with that name.")
+
+        elif isinstance(cmd, commands.Command):
+            if cmd.name == "config":
+                await ConfigHelpMenu(ctx).start()
+            else:
+                await ctx.send(
+                    embed=self.bot.embed.build(
+                        ctx=ctx,
+                        header="Help",
+                        description=cmd.help,
+                        thumbnail=self.bot.user.avatar_url,
+                        fields=(
+                            ("Syntax (<required> • [optional])", self.full_syntax(ctx, cmd, prefix), False),
+                            (
+                                "On cooldown?",
+                                f"Yes, for {chron.long_delta(dt.timedelta(seconds=s))}."
+                                if (s := cmd.get_cooldown_retry_after(ctx))
+                                else "No",
+                                False,
+                            ),
+                            ("Can be run?", await self.required_permissions(ctx, cmd), False),
+                            (
+                                "Parent",
+                                self.full_syntax(ctx, p, prefix) if (p := cmd.parent) is not None else "None",
+                                False,
+                            ),
+                        ),
+                    )
+                )
+
+        else:
             pagemaps = []
 
             for cog, cmds in (await self.get_command_mapping(ctx)).items():
@@ -157,26 +193,6 @@ class Help(commands.Cog):
                 )
 
             await HelpMenu(ctx, pagemaps).start()
-
-        else:
-            if not cmd:
-                await ctx.send(f"{self.bot.cross} Solaris has no commands or aliases with that name.")
-            elif cmd.name == "config":
-                await ConfigHelpMenu(ctx).start()
-            else:
-                await ctx.send(
-                    embed=self.bot.embed.build(
-                        ctx=ctx,
-                        header="Help",
-                        description=cmd.help,
-                        thumbnail=self.bot.user.avatar_url,
-                        fields=(
-                            ("Syntax (<required> • [optional])", await self.full_syntax(ctx, cmd, prefix), False),
-                            ("On cooldown?", cmd.is_on_cooldown(ctx), False),
-                            ("Can be run?", await self.required_permissions(ctx, cmd), False),
-                        ),
-                    )
-                )
 
 
 def setup(bot):
