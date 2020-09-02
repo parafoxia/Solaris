@@ -18,6 +18,7 @@
 # parafoxia@carberra.xyz
 
 import typing as t
+from collections import defaultdict
 
 from discord.ext import commands
 
@@ -90,14 +91,13 @@ class Help(commands.Cog):
     async def basic_syntax(ctx, cmd, prefix):
         try:
             await cmd.can_run(ctx)
-            return f"{prefix}{cmd.name}"
+            return f"{prefix}{cmd.name}" if cmd.parent is None else f"  ↳ {cmd.name}"
         except commands.CommandError:
-            return f"{prefix}{cmd.name} (✗)"
+            return f"{prefix}{cmd.name} (✗)" if cmd.parent is None else f"  ↳ {cmd.name} (✗)"
 
     @staticmethod
     async def full_syntax(ctx, cmd, prefix):
         invokations = "|".join([cmd.name, *cmd.aliases])
-
         return f"```{prefix}{invokations} {cmd.signature}```"
 
     @staticmethod
@@ -117,12 +117,13 @@ class Help(commands.Cog):
             return "No - Solaris is not configured properly"
 
     async def get_command_mapping(self, ctx):
-        mapping = {}
+        mapping = defaultdict(list)
 
         for cog in self.bot.cogs.values():
             if cog.__doc__ is not None:
-                if cog_cmds := [cmd for cmd in filter(lambda c: c.help is not None, cog.get_commands())]:
-                    mapping.update({cog: cog_cmds})
+                for cmd in cog.walk_commands():
+                    if cmd.help is not None:
+                        mapping[cog].append(cmd)
 
         return mapping
 
