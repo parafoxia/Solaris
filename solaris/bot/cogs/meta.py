@@ -25,7 +25,6 @@ from time import time
 
 import discord
 import psutil
-from beautifultable import BeautifulTable
 from discord.ext import commands
 
 from solaris.utils import (
@@ -43,23 +42,17 @@ from solaris.utils.modules import deactivate
 
 
 class DetailedServerInfoMenu(menu.MultiPageMenu):
-    def __init__(self, ctx, table_info):
+    def __init__(self, ctx, table):
         pagemaps = []
         base_pm = {
             "header": "Information",
-            "title": f"Server information for {ctx.guild.name}",
+            "title": f"Detailed server information for {ctx.guild.name}",
             "thumbnail": ctx.guild.icon_url,
         }
 
-        for infotype, rows in table_info.items():
-            table = BeautifulTable()
-            table.set_style(BeautifulTable.STYLE_BOX_ROUNDED)
-
-            for row in rows:
-                table.rows.append(row)
-
+        for key, value in table.items():
             pm = base_pm.copy()
-            pm.update(description=f"Showing {infotype} information.\n```{table}```")
+            pm.update({"description": f"Showing {key} information.", "fields": value})
             pagemaps.append(pm)
 
         super().__init__(ctx, pagemaps, timeout=120.0)
@@ -653,58 +646,65 @@ class Meta(commands.Cog):
     )
     @commands.cooldown(1, 300, commands.BucketType.guild)
     async def detailedserverinfo_command(self, ctx):
-        table_info = {
+        table = {
             "overview": (
-                ("ID", ctx.guild.id),
-                ("Name", ctx.guild.name),
-                ("Region", ctx.guild.region),
-                ("Inactive channel", ctx.guild.afk_channel),
-                ("Inactive timeout", f"{ctx.guild.afk_timeout//60:,} mins"),
-                ("System messages channel", ctx.guild.system_channel),
-                ("Send welcome messages?", ctx.guild.system_channel_flags.join_notifications),
-                ("Send boost messages?", ctx.guild.system_channel_flags.premium_subscriptions),
+                ("ID", ctx.guild.id, False),
+                ("Name", ctx.guild.name, True),
+                ("Region", ctx.guild.region, True),
+                ("Inactive channel", ctx.guild.afk_channel, True),
+                ("Inactive timeout", f"{ctx.guild.afk_timeout//60:,} mins", True),
+                ("System messages channel", ctx.guild.system_channel.mention, True),
+                ("Send welcome messages?", ctx.guild.system_channel_flags.join_notifications, True),
+                ("Send boost messages?", ctx.guild.system_channel_flags.premium_subscriptions, True),
                 (
                     "Default notifications",
                     "Only @mentions" if ctx.guild.default_notifications.value else "All Messages",
+                    True
                 ),
+                ("\u200b", "\u200b", True),
             ),
             "moderation": (
-                ("Verficiation level", str(ctx.guild.verification_level).title()),
-                ("Explicit media content filter", str(ctx.guild.explicit_content_filter).replace("_", " ").title()),
-                ("2FA requirement for moderation", ctx.guild.mfa_level),
+                ("Verficiation level", str(ctx.guild.verification_level).title(), False),
+                ("Explicit media content filter", str(ctx.guild.explicit_content_filter).replace("_", " ").title(), False),
+                ("2FA requirement for moderation?", bool(ctx.guild.mfa_level), False),
             ),
             "numerical": (
-                ("Members", f"{ctx.guild.member_count:,}"),
-                ("Humans", f"{(hc := len([m for m in ctx.guild.members if not m.bot])):,}"),
-                ("Bots", f"{ctx.guild.member_count - hc:,}"),
-                ("Est. prune (1d)", f"{await ctx.guild.estimate_pruned_members(days=1):,}"),
-                ("Est. prune (7d)", f"{await ctx.guild.estimate_pruned_members(days=7):,}"),
-                ("Est. prune (30d)", f"{await ctx.guild.estimate_pruned_members(days=30):,}"),
-                ("Roles", f"{len(ctx.guild.roles):,}"),
+                ("Members", f"{ctx.guild.member_count:,}", True),
+                ("Humans", f"{(hc := len([m for m in ctx.guild.members if not m.bot])):,}", True),
+                ("Bots", f"{ctx.guild.member_count - hc:,}", True),
+                ("Est. prune (1d)", f"{await ctx.guild.estimate_pruned_members(days=1):,}", True),
+                ("Est. prune (7d)", f"{await ctx.guild.estimate_pruned_members(days=7):,}", True),
+                ("Est. prune (30d)", f"{await ctx.guild.estimate_pruned_members(days=30):,}", True),
+                ("Roles", f"{len(ctx.guild.roles):,}", True),
                 (
                     "Members with top role",
                     f"{len([m for m in ctx.guild.members if ctx.guild.roles[-1] in m.roles]):,}",
+                    True
                 ),
-                ("Bans", f"{len(await ctx.guild.bans()) if ctx.guild.me.guild_permissions.ban_members else None:,}"),
+                ("Bans", f"{len(await ctx.guild.bans()) if ctx.guild.me.guild_permissions.ban_members else None:,}", True),
                 (
                     "Invites",
                     f"{len(await ctx.guild.invites()) if ctx.guild.me.guild_permissions.manage_guild else None:,}",
+                    True
                 ),
                 (
                     "Webhooks",
                     f"{len(await ctx.guild.webhooks()) if ctx.guild.me.guild_permissions.manage_webhooks else None:,}",
+                    True
                 ),
-                ("Emojis", f"{len(ctx.guild.emojis):,}"),
-                ("Bitrate limit", f"{ctx.guild.bitrate_limit//1000:,.0f} kbps"),
-                ("Filesize limit", f"{ctx.guild.filesize_limit//(1024**2):,.0f} MB"),
-                ("Boosts", f"{ctx.guild.premium_subscription_count:,}"),
-                ("Boosters", f"{len(ctx.guild.premium_subscribers):,}"),
+                ("Emojis", f"{len(ctx.guild.emojis):,}", True),
+                ("Bitrate limit", f"{ctx.guild.bitrate_limit//1000:,.0f} kbps", True),
+                ("Filesize limit", f"{ctx.guild.filesize_limit//(1024**2):,.0f} MB", True),
+                ("Boosts", f"{ctx.guild.premium_subscription_count:,}", True),
+                ("Boosters", f"{len(ctx.guild.premium_subscribers):,}", True),
+                ("\u200b", "\u200b", True),
+                ("\u200b", "\u200b", True),
             ),
             # "miscellaneous": [
             # ]
         }
 
-        await DetailedServerInfoMenu(ctx, table_info).start()
+        await DetailedServerInfoMenu(ctx, table).start()
 
     @commands.command(
         name="avatar",
