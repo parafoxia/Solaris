@@ -488,7 +488,7 @@ class Gateway(commands.Cog):
         cooldown_after_parsing=True,
         help="Handles offline arrivals and departures. This is generally not required as Solaris does this on start-up.",
     )
-    @commands.cooldown(1, 86400, commands.BucketType.guild)
+    @commands.cooldown(1, 3600, commands.BucketType.guild)
     @checks.module_has_initialised(MODULE_NAME)
     @checks.module_is_active(MODULE_NAME)
     @checks.author_can_configure()
@@ -517,7 +517,7 @@ class Gateway(commands.Cog):
         cooldown_after_parsing=True,
         help="Provides the member roles to those who have accepted the rules. This is good to run after you add a new member role, but Solaris will not remove roles that are no longer member roles. If `accepted_only` is set to `False`, every single member will receive these roles regardless of any other factors.",
     )
-    @commands.cooldown(1, 86400, commands.BucketType.guild)
+    @commands.cooldown(1, 3600, commands.BucketType.guild)
     @checks.module_has_initialised(MODULE_NAME)
     @checks.module_is_active(MODULE_NAME)
     @checks.author_can_configure()
