@@ -48,9 +48,14 @@ class Guild(commands.Converter):
 
 class Command(commands.Converter):
     async def convert(self, ctx, arg):
-        # TODO: Re-write this to match the convention above. Will probs need to rework how
-        #       `commands.BadArgument` is handled.
-        return ctx.bot.get_command(arg) or False
+        if (c := ctx.bot.get_command(arg)) is not None:
+            return c
+        else:
+            # Check for subcommands.
+            for cmd in ctx.bot.walk_commands():
+                if cmd.name == arg:
+                    return cmd
+        raise commands.BadArgument
 
 
 class SearchedMember(commands.Converter):
