@@ -262,3 +262,4 @@ secrets/
 *.db3-wal
 TODO
 DESCRIPTION.md
+copy-db.txt
