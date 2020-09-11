@@ -517,7 +517,7 @@ class Meta(commands.Cog):
                         ("Slowmode delay", f"{target.slowmode_delay:,} second(s)", True),
                         ("Created on", chron.long_date(target.created_at), True),
                         ("Existed for", chron.short_delta(dt.datetime.utcnow() - target.created_at), True),
-                        ("Topic", target.topic or "This channel does not have a topic.", False),
+                        ("Topic", target.topic or "-", False),
                     ),
                 )
             )
@@ -600,7 +600,7 @@ class Meta(commands.Cog):
                         ("Mentionable?", target.mentionable, True),
                         ("Admin?", target.permissions.administrator, True),
                         ("Position", f"{string.ordinal(ngr - target.position)} / {ngr:,}", True),
-                        ("Colour", f"#{str(target.colour)}", True),
+                        ("Colour", f"{str(target.colour)}", True),
                         ("Members", f"{len(target.members):,}", True),
                         ("Created on", chron.long_date(target.created_at), True),
                         ("Existed for", chron.short_delta(dt.datetime.utcnow() - target.created_at), True),
@@ -642,7 +642,7 @@ class Meta(commands.Cog):
                         ("Last edited on", chron.long_date(target.created_at), True),
                         (
                             "Content",
-                            target.content if len(target.content) <= 1024 else f"{target.content[:1021]}...",
+                            (target.content if len(target.content) <= 1024 else f"{target.content[:1021]}...") or "-",
                             False,
                         ),
                     ),

@@ -135,7 +135,7 @@ class Help(commands.Cog):
         name="help",
         help="Help with anything Solaris. Passing a command name or alias through will show help with that specific command, while passing no arguments will bring up a general command overview.",
     )
-    async def help_command(self, ctx, cmd: t.Optional[t.Union[converters.Command, str]]):
+    async def help_command(self, ctx, *, cmd: t.Optional[t.Union[converters.Command, str]]):
         prefix = await self.bot.prefix(ctx.guild)
 
         if isinstance(cmd, str):
