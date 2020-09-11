@@ -266,9 +266,9 @@ class Gateway(commands.Cog):
     async def on_member_join(self, member):
         if self.bot.ready.gateway:
             okay = Okay(self.bot, member.guild)
-            active, rc_id, gm_id, br_id, wc_id, timeout, wbt = (
+            active, br_id, wc_id, timeout, wbt = (
                 await self.bot.db.record(
-                    "SELECT Active, RulesChannelID, GateMessageID, BlockingRoleID, WelcomeChannelID, Timeout, WelcomeBotText FROM gateway WHERE GuildID = ?",
+                    "SELECT Active, BlockingRoleID, WelcomeChannelID, Timeout, WelcomeBotText FROM gateway WHERE GuildID = ?",
                     member.guild.id,
                 )
                 or [None] * 7
@@ -291,21 +291,13 @@ class Gateway(commands.Cog):
                             chron.to_iso(member.joined_at + dt.timedelta(seconds=timeout or 300)),
                         )
 
-                    if (gm := await okay.gate_message(rc_id, gm_id)) :
-                        for emoji in self.bot.emoji.get_many("confirm", "cancel"):
-                            try:
-                                await gm.remove_reaction(emoji, member)
-                            except discord.NotFound:
-                                # In the rare instance the module trips while attempting to remove a reaction.
-                                pass
-
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         if self.bot.ready.gateway:
             okay = Okay(self.bot, member.guild)
-            active, gc_id, gt, gbt = (
+            active, rc_id, gm_id, gc_id, gt, gbt = (
                 await self.bot.db.record(
-                    "SELECT Active, GoodbyeChannelID, GoodbyeText, GoodbyeBotText FROM gateway WHERE GuildID = ?",
+                    "SELECT Active, RulesChannelID, GateMessageID, GoodbyeChannelID, GoodbyeText, GoodbyeBotText FROM gateway WHERE GuildID = ?",
                     member.guild.id,
                 )
                 or [None] * 4
@@ -334,6 +326,14 @@ class Gateway(commands.Cog):
                     await self.bot.db.execute(
                         "DELETE FROM accepted WHERE GuildID = ? AND UserID = ?", member.guild.id, member.id
                     )
+
+                    if (gm := await okay.gate_message(rc_id, gm_id)) :
+                        for emoji in self.bot.emoji.get_many("confirm", "cancel"):
+                            try:
+                                await gm.remove_reaction(emoji, member)
+                            except discord.NotFound:
+                                # In the rare instance the module trips while attempting to remove a reaction.
+                                pass
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
