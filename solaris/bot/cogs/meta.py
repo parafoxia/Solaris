@@ -659,6 +659,7 @@ class Meta(commands.Cog):
     )
     async def emojiinfo_command(self, ctx, target: t.Union[discord.Emoji, str]):
         if isinstance(target, discord.Emoji):
+            target = await ctx.guild.fetch_emoji(target.id)
             await ctx.send(
                 embed=self.bot.embed.build(
                     ctx=ctx,
