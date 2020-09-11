@@ -600,7 +600,7 @@ class Meta(commands.Cog):
                         ("Mentionable?", target.mentionable, True),
                         ("Admin?", target.permissions.administrator, True),
                         ("Position", f"{string.ordinal(ngr - target.position)} / {ngr:,}", True),
-                        ("Colour", f"#{str(target.colour)}", True),
+                        ("Colour", f"{str(target.colour)}", True),
                         ("Members", f"{len(target.members):,}", True),
                         ("Created on", chron.long_date(target.created_at), True),
                         ("Existed for", chron.short_delta(dt.datetime.utcnow() - target.created_at), True),
