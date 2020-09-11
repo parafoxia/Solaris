@@ -53,7 +53,7 @@ class Command(commands.Converter):
         else:
             # Check for subcommands.
             for cmd in ctx.bot.walk_commands():
-                if cmd.name == arg:
+                if arg == f"{cmd.parent.name} {cmd.name}":
                     return cmd
         raise commands.BadArgument
 
