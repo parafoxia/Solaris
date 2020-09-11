@@ -34,7 +34,7 @@ class MessageFormatter(Formatter):
 
 
 def safe_format(text, *args, **kwargs):
-    formatter = Formatter()
+    formatter = MessageFormatter()
     return formatter.format(text, *args, **kwargs)
 
 
