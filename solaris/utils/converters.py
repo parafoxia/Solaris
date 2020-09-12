@@ -73,15 +73,15 @@ class SearchedMember(commands.Converter):
 class BannedUser(commands.Converter):
     async def convert(self, ctx, arg):
         if ctx.guild.me.guild_permissions.ban_members:
+            if arg.isdigit():
+                try:
+                    return await ctx.guild.fetch_ban(discord.Object(id=int(arg)))
+                except discord.NotFound:
+                    raise commands.BadArgument
+
             banned = [e.user for e in await ctx.guild.bans()]
             if banned:
-                if re.match(r"[0-9]{17,22}", arg) is not None:
-                    if (user := discord.utils.get(banned, id=int(arg))) is None:
-                        raise commands.BadArgument
-                    return user
-                elif (match := re.match(r"([\s\S]{2,32})#([0-9]{4})", arg)) is not None:
-                    if (user := discord.utils.get(banned, name=match.group(1), discriminator=match.group(2))) is None:
-                        raise commands.BadArgument
+                if (user := discord.utils.find(lambda u: str(u) == arg, banned)) is not None:
                     return user
                 else:
                     raise commands.BadArgument
