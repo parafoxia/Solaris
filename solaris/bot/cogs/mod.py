@@ -67,7 +67,10 @@ class Mod(commands.Cog):
                 else:
                     await ctx.send(f"{self.bot.cross} No members were kicked.")
 
-    @commands.command(name="ban", help="Bans one or more members from your server.")
+    @commands.command(
+        name="ban",
+        help="Bans one or more members from your server. If you have a user's ID, you can ban them regardless of whether or not they are currently in the server.",
+    )
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(send_messages=True, ban_members=True)
     async def ban_command(
@@ -96,7 +99,10 @@ class Mod(commands.Cog):
                         await ctx.guild.ban(
                             target,
                             delete_message_days=delete_message_days,
-                            reason=f"{reason} - Actioned by {ctx.author.name}",
+                            reason=(
+                                (f"{reason}" if target in ctx.guild.members else f"{reason} (Hackban)")
+                                + f" - Actioned by {ctx.author.name}"
+                            ),
                         )
                         count += 1
                     except discord.Forbidden:
