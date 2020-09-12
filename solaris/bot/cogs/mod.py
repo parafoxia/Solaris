@@ -73,7 +73,7 @@ class Mod(commands.Cog):
     async def ban_command(
         self,
         ctx,
-        targets: commands.Greedy[discord.Member],
+        targets: commands.Greedy[t.Union[discord.Member, converters.User]],
         delete_message_days: t.Optional[int] = 1,
         *,
         reason: t.Optional[str] = "No reason provided.",
@@ -93,8 +93,10 @@ class Mod(commands.Cog):
             async with ctx.typing():
                 for target in targets:
                     try:
-                        await target.ban(
-                            delete_message_days=delete_message_days, reason=f"{reason} - Actioned by {ctx.author.name}"
+                        await ctx.guild.ban(
+                            target,
+                            delete_message_days=delete_message_days,
+                            reason=f"{reason} - Actioned by {ctx.author.name}",
                         )
                         count += 1
                     except discord.Forbidden:
