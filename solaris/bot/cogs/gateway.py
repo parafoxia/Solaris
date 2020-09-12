@@ -266,9 +266,9 @@ class Gateway(commands.Cog):
     async def on_member_join(self, member):
         if self.bot.ready.gateway:
             okay = Okay(self.bot, member.guild)
-            active, rc_id, gm_id, br_id, wc_id, timeout, wbt = (
+            active, br_id, wc_id, timeout, wbt = (
                 await self.bot.db.record(
-                    "SELECT Active, RulesChannelID, GateMessageID, BlockingRoleID, WelcomeChannelID, Timeout, WelcomeBotText FROM gateway WHERE GuildID = ?",
+                    "SELECT Active, BlockingRoleID, WelcomeChannelID, Timeout, WelcomeBotText FROM gateway WHERE GuildID = ?",
                     member.guild.id,
                 )
                 or [None] * 7
@@ -279,7 +279,7 @@ class Gateway(commands.Cog):
                     if wc := await okay.welcome_channel(wc_id):
                         await wc.send(
                             self.format_custom_message(wbt, member)
-                            or f'The bot "{member.mention}" was added to the server.'
+                            or f"‎The bot {member.mention} was added to the server."
                         )
                 else:
                     if br := await okay.blocking_role(br_id):
@@ -291,21 +291,13 @@ class Gateway(commands.Cog):
                             chron.to_iso(member.joined_at + dt.timedelta(seconds=timeout or 300)),
                         )
 
-                    if (gm := await okay.gate_message(rc_id, gm_id)) :
-                        for emoji in self.bot.emoji.get_many("confirm", "cancel"):
-                            try:
-                                await gm.remove_reaction(emoji, member)
-                            except discord.NotFound:
-                                # In the rare instance the module trips while attempting to remove a reaction.
-                                pass
-
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         if self.bot.ready.gateway:
             okay = Okay(self.bot, member.guild)
-            active, gc_id, gt, gbt = (
+            active, rc_id, gm_id, gc_id, gt, gbt = (
                 await self.bot.db.record(
-                    "SELECT Active, GoodbyeChannelID, GoodbyeText, GoodbyeBotText FROM gateway WHERE GuildID = ?",
+                    "SELECT Active, RulesChannelID, GateMessageID, GoodbyeChannelID, GoodbyeText, GoodbyeBotText FROM gateway WHERE GuildID = ?",
                     member.guild.id,
                 )
                 or [None] * 4
@@ -316,7 +308,7 @@ class Gateway(commands.Cog):
                     if gc := okay.goodbye_channel(gc_id):
                         await gc.send(
                             self.format_custom_message(gbt, member)
-                            or f'The bot "{member.display_name}" was removed from the server.'
+                            or f'‎The bot "{member.display_name}" was removed from the server.'
                         )
                 else:
                     if await self.bot.db.field(
@@ -328,12 +320,20 @@ class Gateway(commands.Cog):
                     elif gc := await okay.goodbye_channel(gc_id):
                         await gc.send(
                             self.format_custom_message(gt, member)
-                            or f"{member.display_name} is no longer in the server."
+                            or f"‎{member.display_name} is no longer in the server."
                         )
 
                     await self.bot.db.execute(
                         "DELETE FROM accepted WHERE GuildID = ? AND UserID = ?", member.guild.id, member.id
                     )
+
+                    if (gm := await okay.gate_message(rc_id, gm_id)) :
+                        for emoji in self.bot.emoji.get_many("confirm", "cancel"):
+                            try:
+                                await gm.remove_reaction(emoji, member)
+                            except discord.NotFound:
+                                # In the rare instance the module trips while attempting to remove a reaction.
+                                pass
 
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
@@ -378,7 +378,8 @@ class Gateway(commands.Cog):
             bot_count = len([m for m in member.guild.members if m.bot])
             human_count = member.guild.member_count - bot_count
 
-            return string.safe_format(
+            # Contains U+200E character.
+            return "‎" + string.safe_format(
                 text,
                 membername=member.name,
                 username=member.name,
@@ -409,7 +410,7 @@ class Gateway(commands.Cog):
             if wc := await okay.welcome_channel(wc_id):
                 await wc.send(
                     self.format_custom_message(wt, member)
-                    or f"{member.mention} joined the server and accepted the rules. Welcome!"
+                    or f"‎{member.mention} joined the server and accepted the rules. Welcome!"
                 )
 
             await self.bot.db.execute(
