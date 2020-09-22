@@ -23,6 +23,7 @@ from solaris.utils import string
 from solaris.utils.modules import retrieve
 
 MAX_PREFIX_LEN = 5
+
 MAX_MEMBER_ROLES = 3
 MAX_EXCEPTION_ROLES = 3
 MIN_TIMEOUT = 1
@@ -30,6 +31,11 @@ MAX_TIMEOUT = 60
 MAX_GATETEXT_LEN = 250
 MAX_WGTEXT_LEN = 1000
 MAX_WGBOTTEXT_LEN = 500
+
+MIN_POINTS = 5
+MAX_POINTS = 99
+MIN_STRIKES = 1
+MAX_STRIKES = 9
 
 
 async def _system__runfts(bot, channel, value):
@@ -42,7 +48,9 @@ async def system__prefix(bot, channel, value):
     if not isinstance(value, str):
         await channel.send(f"{bot.cross} The server prefix must be a string.")
     elif len(value) > MAX_PREFIX_LEN:
-        await channel.send(f"{bot.cross} The server prefix must be no longer than 5 characters in length.")
+        await channel.send(
+            f"{bot.cross} The server prefix must be no longer than {MAX_PREFIX_LEN} characters in length."
+        )
     else:
         await bot.db.execute("UPDATE system SET Prefix = ? WHERE GuildID = ?", value, channel.guild.id)
         await channel.send(f"{bot.tick} The server prefix has been set to {value}.")
@@ -296,7 +304,9 @@ async def gateway__timeout(bot, channel, value):
     elif not isinstance(value, int):
         await channel.send(f"{bot.cross} The timeout must be an integer number.")
     elif not MIN_TIMEOUT <= value <= MAX_TIMEOUT:
-        await channel.send(f"{bot.cross} The timeout must be between 1 and 60 minutes inclusive.")
+        await channel.send(
+            f"{bot.cross} The timeout must be between {MIN_TIMEOUT} and {MAX_TIMEOUT} minutes inclusive."
+        )
     else:
         await bot.db.execute("UPDATE gateway SET Timeout = ? WHERE GuildID = ?", value * 60, channel.guild.id)
         await channel.send(
@@ -423,3 +433,68 @@ async def gateway__goodbyebottext(bot, channel, value):
         await channel.send(f"{bot.tick} The goodbye bot message text has been set.")
         lc = await retrieve.log_channel(bot, channel.guild)
         await lc.send(f"{bot.info} The goodbye bot message text has been set to the following: {value}")
+
+
+async def warn__warnrole(bot, channel, value):
+    """The warn role
+    The role that members need to have in order to warn other members, typically a moderator or staff role. If this is not set, only server administrators will be able to warn members. This can be reset at any time by passing no arguments to the command below."""
+    if value is None:
+        await bot.db.execute("UPDATE warn SET WarnRoleID = NULL WHERE GuildID = ?", channel.guild.id)
+        await channel.send(f"{bot.tick} The warn role has been reset.")
+        lc = await retrieve.log_channel(bot, channel.guild)
+        await lc.send(f"{bot.info} The warn role has been reset.")
+    elif not isinstance(value, discord.Role):
+        await channel.send(f"{bot.cross} The warn role must be a Discord role in this server.")
+    elif value.name == "@everyone":
+        await channel.send(f"{bot.cross} The everyone role can not be used as the warn role.")
+    else:
+        await bot.db.execute("UPDATE warn SET WarnRoleID = ? WHERE GuildID = ?", value.id, channel.guild.id)
+        await channel.send(f"{bot.tick} The warn role has been set to {value.mention}.")
+        lc = await retrieve.log_channel(bot, channel.guild)
+        await lc.send(f"{bot.info} The warn role has been set to {value.mention}.")
+
+
+async def warn__maxpoints(bot, channel, value):
+    """The max points total
+    The number of points a member needs in total to get banned from a warning. This can be set to any value between 5 and 99 inclusive. If no value is set, the default is 12. This can be reset at any time by passing no arguments to the command below."""
+    if value is None:
+        await bot.db.execute("UPDATE warn SET MaxPoints = NULL WHERE GuildID = ?", channel.guild.id)
+        await channel.send(f"{bot.tick} The max points total has been reset.")
+        lc = await retrieve.log_channel(bot, channel.guild)
+        await lc.send(f"{bot.info} The max points total has been reset.")
+    elif not isinstance(value, int):
+        await channel.send(f"{bot.cross} The max points total must be an integer number.")
+    elif not MIN_POINTS <= value <= MAX_POINTS:
+        await channel.send(
+            f"{bot.cross} The max points total must be between {MIN_POINTS} and {MAX_POINTS} inclusive."
+        )
+    else:
+        await bot.db.execute("UPDATE warn SET MaxPoints = ? WHERE GuildID = ?", value, channel.guild.id)
+        await channel.send(
+            f"{bot.tick} The max points total has been set to {value}. Members currently at or exceeding this total will not be retroactively banned."
+        )
+        lc = await retrieve.log_channel(bot, channel.guild)
+        await lc.send(f"{bot.info} The max points total has been set to {value}.")
+
+
+async def warn__maxstrikes(bot, channel, value):
+    """The max strikes per offence
+    The number of times a member needs to be warned of a particular offence to get banned from a warning. This is per offence, and not a total number of strikes. This can be set to any value between 1 and 9 inclusive. If no value is set, the default is 3. This can be reset at any time by passing no arguments to the command below."""
+    if value is None:
+        await bot.db.execute("UPDATE warn SET MaxStrikes = NULL WHERE GuildID = ?", channel.guild.id)
+        await channel.send(f"{bot.tick} The max strikes per offence has been reset.")
+        lc = await retrieve.log_channel(bot, channel.guild)
+        await lc.send(f"{bot.info} The max strikes per offence has been reset.")
+    elif not isinstance(value, int):
+        await channel.send(f"{bot.cross} The max strikes per offence must be an integer number.")
+    elif not MIN_STRIKES <= value <= MAX_STRIKES:
+        await channel.send(
+            f"{bot.cross} The max strikes per offence must be between {MIN_STRIKES} and {MAX_STRIKES} inclusive."
+        )
+    else:
+        await bot.db.execute("UPDATE warn SET MaxStrikes = ? WHERE GuildID = ?", value, channel.guild.id)
+        await channel.send(
+            f"{bot.tick} The max strikes per offence has been set to {value}. Members currently at or exceeding this total will not be retroactively banned."
+        )
+        lc = await retrieve.log_channel(bot, channel.guild)
+        await lc.send(f"{bot.info} The max strikes per offence has been set to {value}.")
