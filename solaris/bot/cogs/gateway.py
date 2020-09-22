@@ -468,11 +468,15 @@ class Gateway(commands.Cog):
         await ctx.send(
             embed=self.bot.embed.build(
                 ctx=ctx,
-                header="Sync",
+                header="Synchronise",
                 description="There are a few different syncing methods you can use.",
                 fields=(
                     *(
-                        (cmd.name.title(), f"{cmd.help} For more infomation, use `{prefix}help {cmd.name}`", False)
+                        (
+                            cmd.name.title(),
+                            f"{cmd.help} For more infomation, use `{prefix}help synchronise {cmd.name}`",
+                            False,
+                        )
                         for cmd in (*cmds[1:], cmds[0])  # Order them properly.
                     ),
                     (
@@ -493,7 +497,7 @@ class Gateway(commands.Cog):
     @checks.module_has_initialised(MODULE_NAME)
     @checks.module_is_active(MODULE_NAME)
     @checks.author_can_configure()
-    async def sync_members_command(self, ctx):
+    async def synchronise_members_command(self, ctx):
         async with ctx.typing():
             okay = Okay(self.bot, ctx.guild)
             rc_id, gm_id, br_id, mr_ids, er_ids = (
@@ -522,7 +526,7 @@ class Gateway(commands.Cog):
     @checks.module_has_initialised(MODULE_NAME)
     @checks.module_is_active(MODULE_NAME)
     @checks.author_can_configure()
-    async def sync_roles_command(self, ctx, accepted_only: t.Optional[bool] = True):
+    async def synchronise_roles_command(self, ctx, accepted_only: t.Optional[bool] = True):
         async with ctx.typing():
             okay = Okay(self.bot, ctx.guild)
             br_id, mr_ids = (
@@ -545,7 +549,7 @@ class Gateway(commands.Cog):
     @checks.module_has_initialised(MODULE_NAME)
     @checks.module_is_active(MODULE_NAME)
     @checks.author_can_configure()
-    async def sync_reactions_command(self, ctx):
+    async def synchronise_reactions_command(self, ctx):
         async with ctx.typing():
             okay = Okay(self.bot, ctx.guild)
             rc_id, gm_id = (
@@ -570,7 +574,7 @@ class Gateway(commands.Cog):
     @checks.module_has_initialised(MODULE_NAME)
     @checks.module_is_active(MODULE_NAME)
     @checks.author_can_configure()
-    async def sync_everything_command(self, ctx, roles_for_accepted_only: t.Optional[bool] = True):
+    async def synchronise_everything_command(self, ctx, roles_for_accepted_only: t.Optional[bool] = True):
         async with ctx.typing():
             okay = Okay(self.bot, ctx.guild)
             rc_id, gm_id, br_id, mr_ids, er_ids = (
