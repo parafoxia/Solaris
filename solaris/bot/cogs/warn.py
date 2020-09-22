@@ -256,6 +256,11 @@ class Warn(commands.Cog):
                 f"{self.bot.cross} The number of points for this warn type must be between {MIN_POINTS} and {MAX_POINTS} inclusive."
             )
 
+        warn_types = await self.bot.db.column("SELECT WarnType FROM warntypes WHERE GuildID = ?", ctx.guild.id)
+
+        if new_name in warn_types:
+            return await ctx.send(f"{self.bot.cross} That warn type already exists.")
+
         modified = await self.bot.db.execute(
             "UPDATE warntypes SET WarnType = ?, Points = ? WHERE GuildID = ? AND WarnType = ?",
             new_name,
@@ -268,7 +273,7 @@ class Warn(commands.Cog):
             return await ctx.send(f"{self.bot.cross} That warn type does not exist.")
 
         if warn_type != new_name:
-            await self.bot.db.execute("UPDATE warns SET WarnType = ? WHERE GuildID = ?", new_name, ctx.guild.id)
+            await self.bot.db.execute("UPDATE warns SET WarnType = ? WHERE GuildID = ? AND WarnType = ?", new_name, ctx.guild.id, warn_type)
         await ctx.send(
             f'{self.bot.tick} The warn type "{new_name}" (formerly "{warn_type}") is now worth {points} points.'
         )
@@ -302,7 +307,7 @@ class Warn(commands.Cog):
                 header="Warn",
                 title="Warn types",
                 thumbnail=ctx.guild.icon_url,
-                fields=((warn_type, f"{points} points", True) for warn_type, points in records),
+                fields=((warn_type, f"{points} point(s)", True) for warn_type, points in records),
             )
         )
 
