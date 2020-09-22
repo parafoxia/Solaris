@@ -20,7 +20,6 @@
 import datetime as dt
 import json
 from os import path
-from time import time
 from traceback import format_exc
 
 import aiofiles
@@ -153,7 +152,7 @@ class Error(commands.Cog):
         else:
             cause = f"{obj!r}"
 
-        ref = hex(int(time() * 1e7))[2:]
+        ref = self.bot.generate_id()
         await self.bot.db.execute(
             "INSERT INTO errors (Ref, Cause, Traceback) VALUES (?, ?, ?)", ref, cause, format_exc()
         )
