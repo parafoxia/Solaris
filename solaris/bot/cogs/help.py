@@ -102,7 +102,8 @@ class Help(commands.Cog):
         if (p := cmd.parent) is None:
             return f"```{prefix}{invokations} {cmd.signature}```"
         else:
-            return f"```{prefix}|parent| {invokations} {cmd.signature}```"
+            p_invokations = "|".join([p.name, *p.aliases])
+            return f"```{prefix}{p_invokations} {invokations} {cmd.signature}```"
 
     @staticmethod
     async def required_permissions(ctx, cmd):
