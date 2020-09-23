@@ -19,6 +19,7 @@
 
 import os
 import subprocess as sp
+import time
 from pathlib import Path
 
 import discord
@@ -191,6 +192,10 @@ class Bot(commands.Bot):
     @property
     def info(self):
         return self.emoji.mention("info")
+
+    @staticmethod
+    def generate_id():
+        return hex(int(time.time() * 1e7))[2:]
 
     async def grab_user(self, arg):
         # A convenience method that initially calls get, and falls back to fetch.

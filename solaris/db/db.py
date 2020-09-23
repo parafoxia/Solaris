@@ -60,6 +60,7 @@ class Database:
         await self.executemany(
             "INSERT OR IGNORE INTO gateway (GuildID) VALUES (?)", [(g.id,) for g in self.bot.guilds]
         )
+        await self.executemany("INSERT OR IGNORE INTO warn (GuildID) VALUES (?)", [(g.id,) for g in self.bot.guilds])
 
         # Remove.
         stored = await self.column("SELECT GuildID FROM system")
@@ -67,6 +68,7 @@ class Database:
         removals = [(g_id,) for g_id in set(stored) - set(member_of)]
         await self.executemany("DELETE FROM system WHERE GuildID = ?", removals)
         await self.executemany("DELETE FROM gateway WHERE GuildID = ?", removals)
+        await self.executemany("DELETE FROM warn WHERE GuildID = ?", removals)
 
         # Commit.
         await self.commit()
@@ -100,12 +102,15 @@ class Database:
         cur = await self.cxn.execute(sql, tuple(values))
         self._calls += 1
 
+        return cur.rowcount
+
     async def executemany(self, sql, valueset):
-        await self.cxn.executemany(sql, valueset)
+        cur = await self.cxn.executemany(sql, valueset)
         self._calls += 1  # NOTE: Should this be `len(valueset)`?
+
+        return cur.rowcount
 
     async def executescript(self, path):
         with open(path, "r", encoding="utf-8") as script:
             await self.cxn.executescript(script.read())
-
         self._calls += 1  # NOTE: Should this be different?

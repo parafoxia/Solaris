@@ -277,7 +277,11 @@ class Mod(commands.Cog):
                 description="There are a few different deletion methods you can use.",
                 fields=(
                     *(
-                        (cmd.name.title(), f"{cmd.help} For more infomation, use `{prefix}help {cmd.name}`", False)
+                        (
+                            cmd.name.title(),
+                            f"{cmd.help} For more infomation, use `{prefix}help delete {cmd.name}`",
+                            False,
+                        )
                         for cmd in cmds
                     ),
                 ),
