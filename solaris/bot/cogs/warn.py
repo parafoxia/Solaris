@@ -258,10 +258,13 @@ class Warn(commands.Cog):
 
         warn_types = await self.bot.db.column("SELECT WarnType FROM warntypes WHERE GuildID = ?", ctx.guild.id)
 
-        if new_name in warn_types:
-            return await ctx.send(f"{self.bot.cross} That warn type already exists.")
+        if warn_type not in warn_types:
+            return await ctx.send(f'{self.bot.cross} The warn type "{warn_type}" does not exist.')
 
-        modified = await self.bot.db.execute(
+        if new_name in warn_types:
+            return await ctx.send(f'{self.bot.cross} That warn type "{new_name}" already exists.')
+
+        await self.bot.db.execute(
             "UPDATE warntypes SET WarnType = ?, Points = ? WHERE GuildID = ? AND WarnType = ?",
             new_name,
             points,
@@ -269,11 +272,10 @@ class Warn(commands.Cog):
             warn_type,
         )
 
-        if not modified:
-            return await ctx.send(f"{self.bot.cross} That warn type does not exist.")
-
         if warn_type != new_name:
-            await self.bot.db.execute("UPDATE warns SET WarnType = ? WHERE GuildID = ? AND WarnType = ?", new_name, ctx.guild.id, warn_type)
+            await self.bot.db.execute(
+                "UPDATE warns SET WarnType = ? WHERE GuildID = ? AND WarnType = ?", new_name, ctx.guild.id, warn_type
+            )
         await ctx.send(
             f'{self.bot.tick} The warn type "{new_name}" (formerly "{warn_type}") is now worth {points} points.'
         )
