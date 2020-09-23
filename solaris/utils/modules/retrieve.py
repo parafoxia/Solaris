@@ -115,3 +115,15 @@ async def gateway__welcomebottext(bot, guild):
 
 async def gateway__goodbyebottext(bot, guild):
     return await bot.db.field("SELECT GoodbyeBotText FROM gateway WHERE GuildID = ?", guild.id)
+
+
+async def warn__warnrole(bot, guild):
+    return guild.get_role(await bot.db.field("SELECT WarnRoleID FROM warn WHERE GuildID = ?", guild.id))
+
+
+async def warn__maxpoints(bot, guild):
+    return await bot.db.field("SELECT MaxPoints FROM warn WHERE GuildID = ?", guild.id)
+
+
+async def warn__maxstrikes(bot, guild):
+    return await bot.db.field("SELECT MaxStrikes FROM warn WHERE GuildID = ?", guild.id)

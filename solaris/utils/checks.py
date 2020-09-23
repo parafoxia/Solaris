@@ -99,23 +99,6 @@ def first_time_setup_has_not_run():
     return commands.check(predicate)
 
 
-class AuthorCanNotConfigure(CustomCheckFailure):
-    def __init__(self):
-        super().__init__("You are not able to configure Solaris.")
-
-
-def author_can_configure():
-    async def predicate(ctx):
-        if not (
-            ctx.author.guild_permissions.administrator
-            or await modules.retrieve.system__adminrole(ctx.bot, ctx.guild) in ctx.author.roles
-        ):
-            raise AuthorCanNotConfigure()
-        return True
-
-    return commands.check(predicate)
-
-
 class LogChannelNotSet(CustomCheckFailure):
     def __init__(self):
         super().__init__("The log channel has not been set.")
@@ -139,6 +122,40 @@ def admin_role_is_set():
     async def predicate(ctx):
         if not await modules.retrieve.system__adminrole(ctx.bot, ctx.guild):
             raise AdminRoleNotSet()
+        return True
+
+    return commands.check(predicate)
+
+
+class AuthorCanNotConfigure(CustomCheckFailure):
+    def __init__(self):
+        super().__init__("You are not able to configure Solaris.")
+
+
+def author_can_configure():
+    async def predicate(ctx):
+        if not (
+            ctx.author.guild_permissions.administrator
+            or await modules.retrieve.system__adminrole(ctx.bot, ctx.guild) in ctx.author.roles
+        ):
+            raise AuthorCanNotConfigure()
+        return True
+
+    return commands.check(predicate)
+
+
+class AuthorCanNotWarn(CustomCheckFailure):
+    def __init__(self):
+        super().__init__("You are not able to warn other members.")
+
+
+def author_can_warn():
+    async def predicate(ctx):
+        if not (
+            ctx.author.guild_permissions.administrator
+            or await modules.retrieve.warn__warnrole(ctx.bot, ctx.guild) in ctx.author.roles
+        ):
+            raise AuthorCanNotWarn()
         return True
 
     return commands.check(predicate)

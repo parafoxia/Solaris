@@ -41,6 +41,8 @@ CREATE TABLE IF NOT EXISTS system (
     AdminRoleID integer
 );
 
+-- gateway
+
 CREATE TABLE IF NOT EXISTS gateway (
 	GuildID integer PRIMARY KEY,
 	Active integer DEFAULT 0,
@@ -70,4 +72,30 @@ CREATE TABLE IF NOT EXISTS accepted (
 	GuildID integer,
 	UserID integer,
 	PRIMARY KEY (GuildID, UserID)
+);
+
+-- warn
+
+CREATE TABLE IF NOT EXISTS warn (
+	GuildID integer PRIMARY KEY,
+	WarnRoleID integer,
+	MaxPoints integer,
+	MaxStrikes interger
+);
+
+CREATE TABLE IF NOT EXISTS warntypes (
+	GuildID integer,
+	WarnType text,
+	Points integer,
+	PRIMARY KEY (GuildID, WarnType)
+);
+
+CREATE TABLE IF NOT EXISTS warns (
+	WarnID text PRIMARY KEY,
+	GuildID integer,
+	UserID integer,
+	ModID integer,
+	WarnTime text DEFAULT CURRENT_TIMESTAMP,
+	WarnType text,
+	Comment text
 );
