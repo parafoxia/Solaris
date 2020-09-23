@@ -46,7 +46,7 @@ class Warn(commands.Cog):
         if not self.bot.ready.booted:
             self.bot.ready.up(self)
 
-    @commands.group(name="warn", invoke_without_command=True)
+    @commands.group(name="warn", invoke_without_command=True, help="Warns one or more members in your server.")
     @checks.module_has_initialised(MODULE_NAME)
     @checks.author_can_warn()
     async def warn_group(
@@ -119,7 +119,7 @@ class Warn(commands.Cog):
                 f"{target.mention}, you have been warned for {warn_type} for the {string.ordinal(wc)} of {max_strikes or 3} times. You now have {points} of your allowed {max_points or 12} points."
             )
 
-    @warn_group.command(name="remove", aliases=["rm"])
+    @warn_group.command(name="remove", aliases=["rm"], help="Removes a warning.")
     @checks.module_has_initialised(MODULE_NAME)
     @checks.author_can_warn()
     async def warn_remove_command(self, ctx, warn_id: str):
@@ -130,7 +130,7 @@ class Warn(commands.Cog):
 
         await ctx.send(f"{self.bot.tick} Warn {warn_id} removed.")
 
-    @warn_group.command(name="reset")
+    @warn_group.command(name="reset", help="Resets a member's warnings.")
     @checks.module_has_initialised(MODULE_NAME)
     @commands.has_permissions(administrator=True)
     async def warn_reset_command(self, ctx, target: discord.Member):
@@ -143,7 +143,7 @@ class Warn(commands.Cog):
 
         await ctx.send(f"{self.bot.tick} Warnings for {target.display_name} reset.")
 
-    @warn_group.command(name="list")
+    @warn_group.command(name="list", help="Lists a member's warnings.")
     @checks.module_has_initialised(MODULE_NAME)
     @checks.author_can_warn()
     async def warn_list_command(self, ctx, target: t.Optional[t.Union[discord.Member, str]]):
@@ -186,7 +186,7 @@ class Warn(commands.Cog):
             )
         )
 
-    @commands.group(name="warntype", invoke_without_command=True)
+    @commands.group(name="warntype", invoke_without_command=True, help="Manages warn types. Use the command for information on available subcommands.")
     @checks.module_has_initialised(MODULE_NAME)
     @checks.author_can_configure()
     async def warntype_group(self, ctx):
@@ -211,7 +211,7 @@ class Warn(commands.Cog):
             )
         )
 
-    @warntype_group.command(name="new")
+    @warntype_group.command(name="new", help="Creates a new warn type.")
     @checks.module_has_initialised(MODULE_NAME)
     @checks.author_can_configure()
     async def warntype_new_command(self, ctx, warn_type: str, points: int):
@@ -244,7 +244,7 @@ class Warn(commands.Cog):
         )
         await ctx.send(f'{self.bot.tick} The warn type "{warn_type}" has been created, and is worth {points} points.')
 
-    @warntype_group.command(name="edit")
+    @warntype_group.command(name="edit", help="Edits an existing warn type. Existing warn records are updated to reflect the changes, but action is not retroactively taken based on point values.")
     @checks.module_has_initialised(MODULE_NAME)
     @checks.author_can_configure()
     async def warntype_edit_command(self, ctx, warn_type: str, new_name: str, points: int):
@@ -280,7 +280,7 @@ class Warn(commands.Cog):
             f'{self.bot.tick} The warn type "{new_name}" (formerly "{warn_type}") is now worth {points} points.'
         )
 
-    @warntype_group.command(name="delete", aliases=["del"])
+    @warntype_group.command(name="delete", aliases=["del"], help="Deletes a warn type. Existing warn records are updated to reflect the changes, but action is not retroactively taken based on point values.")
     @checks.module_has_initialised(MODULE_NAME)
     @checks.author_can_configure()
     async def warntype_delete_command(self, ctx, warn_type: str):
@@ -297,7 +297,7 @@ class Warn(commands.Cog):
         await self.bot.db.execute("DELETE FROM warns WHERE GuildID = ? AND WarnType = ?", ctx.guild.id, warn_type)
         await ctx.send(f'{self.bot.tick} Warn type "{warn_type}" deleted.')
 
-    @warntype_group.group(name="list")
+    @warntype_group.group(name="list", help="Lists the server's warn types.")
     @checks.module_has_initialised(MODULE_NAME)
     @checks.author_can_configure()
     async def warntype_list_command(self, ctx):
