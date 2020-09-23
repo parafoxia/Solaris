@@ -186,7 +186,11 @@ class Warn(commands.Cog):
             )
         )
 
-    @commands.group(name="warntype", invoke_without_command=True, help="Manages warn types. Use the command for information on available subcommands.")
+    @commands.group(
+        name="warntype",
+        invoke_without_command=True,
+        help="Manages warn types. Use the command for information on available subcommands.",
+    )
     @checks.module_has_initialised(MODULE_NAME)
     @checks.author_can_configure()
     async def warntype_group(self, ctx):
@@ -244,7 +248,10 @@ class Warn(commands.Cog):
         )
         await ctx.send(f'{self.bot.tick} The warn type "{warn_type}" has been created, and is worth {points} points.')
 
-    @warntype_group.command(name="edit", help="Edits an existing warn type. Existing warn records are updated to reflect the changes, but action is not retroactively taken based on point values.")
+    @warntype_group.command(
+        name="edit",
+        help="Edits an existing warn type. Existing warn records are updated to reflect the changes, but action is not retroactively taken based on point values.",
+    )
     @checks.module_has_initialised(MODULE_NAME)
     @checks.author_can_configure()
     async def warntype_edit_command(self, ctx, warn_type: str, new_name: str, points: int):
@@ -280,7 +287,11 @@ class Warn(commands.Cog):
             f'{self.bot.tick} The warn type "{new_name}" (formerly "{warn_type}") is now worth {points} points.'
         )
 
-    @warntype_group.command(name="delete", aliases=["del"], help="Deletes a warn type. Existing warn records are updated to reflect the changes, but action is not retroactively taken based on point values.")
+    @warntype_group.command(
+        name="delete",
+        aliases=["del"],
+        help="Deletes a warn type. Existing warn records are updated to reflect the changes, but action is not retroactively taken based on point values.",
+    )
     @checks.module_has_initialised(MODULE_NAME)
     @checks.author_can_configure()
     async def warntype_delete_command(self, ctx, warn_type: str):
