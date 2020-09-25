@@ -92,6 +92,8 @@ async def system__adminrole(bot, channel, value):
         await channel.send(f"{bot.cross} The admin role must be a Discord role in this server.")
     elif value.name == "@everyone":
         await channel.send(f"{bot.cross} The everyone role can not be used as the admin role.")
+    elif value.name == "@here":
+        await channel.send(f"{bot.cross} The here role can not be used as the admin role.")
     elif value.position > channel.guild.me.top_role.position:
         await channel.send(
             f"{bot.cross} The given role can not be used as the admin role as it is above Solaris' top role in the role hierarchy."
@@ -154,6 +156,8 @@ async def gateway__blockingrole(bot, channel, value):
         await channel.send(f"{bot.cross} The blocking role must be a Discord role in this server.")
     elif value.name == "@everyone":
         await channel.send(f"{bot.cross} The everyone role can not be used as the blocking role.")
+    elif value.name == "@here":
+        await channel.send(f"{bot.cross} The here role can not be used as the blocking role.")
     elif value.position >= channel.guild.me.top_role.position:
         await channel.send(
             f"{bot.cross} The given role can not be used as the blocking role as it is above Solaris' top role in the role hierarchy."
@@ -185,6 +189,8 @@ async def gateway__memberroles(bot, channel, values):
         await channel.send(f"{bot.cross} All member roles must be Discord roles in this server.")
     elif any(v.name == "@everyone" for v in values):
         await channel.send(f"{bot.cross} The everyone role can not be used as a member role.")
+    elif any(v.name == "@here" for v in values):
+        await channel.send(f"{bot.cross} The here role can not be used as a member role.")
     elif any(v == br for v in values):
         await channel.send(f"{bot.cross} No member roles can be the same as the blocking role.")
     elif any(v.position > channel.guild.me.top_role.position for v in values):
@@ -222,6 +228,8 @@ async def gateway__exceptionroles(bot, channel, values):
         await channel.send(f"{bot.cross} All exception roles must be Discord roles in this server.")
     elif any(v.name == "@everyone" for v in values):
         await channel.send(f"{bot.cross} The everyone role can not be used as an exception role.")
+    elif any(v.name == "@here" for v in values):
+        await channel.send(f"{bot.cross} The here role can not be used as an exception role.")
     elif any(v == br for v in values):
         await channel.send(f"{bot.cross} No exception roles can be the same as the blocking role.")
     else:
@@ -447,6 +455,8 @@ async def warn__warnrole(bot, channel, value):
         await channel.send(f"{bot.cross} The warn role must be a Discord role in this server.")
     elif value.name == "@everyone":
         await channel.send(f"{bot.cross} The everyone role can not be used as the warn role.")
+    elif value.name == "@here":
+        await channel.send(f"{bot.cross} The here role can not be used as the warn role.")
     else:
         await bot.db.execute("UPDATE warn SET WarnRoleID = ? WHERE GuildID = ?", value.id, channel.guild.id)
         await channel.send(f"{bot.tick} The warn role has been set to {value.mention}.")
