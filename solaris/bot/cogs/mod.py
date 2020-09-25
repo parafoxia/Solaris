@@ -117,7 +117,7 @@ class Mod(commands.Cog):
 
     @commands.command(
         name="unban",
-        help="Unbans one or more users from your server. You can provide either an ID or a username and discriminator or users you wish to unban - attempting to mention users will not work.",
+        help="Unbans one or more users from your server. You can provide either the IDs or usernames and discriminators of users you wish to unban - attempting to mention users will not work.",
     )
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(send_messages=True, ban_members=True)
