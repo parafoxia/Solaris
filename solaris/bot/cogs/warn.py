@@ -310,7 +310,7 @@ class Warn(commands.Cog):
 
     @warntype_group.group(name="list", help="Lists the server's warn types.")
     @checks.module_has_initialised(MODULE_NAME)
-    @checks.author_can_configure()
+    @checks.author_can_warn()
     async def warntype_list_command(self, ctx):
         records = await self.bot.db.records("SELECT WarnType, Points FROM warntypes WHERE GuildID = ?", ctx.guild.id)
 
