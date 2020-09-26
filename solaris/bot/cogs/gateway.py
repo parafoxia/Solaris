@@ -305,7 +305,7 @@ class Gateway(commands.Cog):
 
             if active:
                 if member.bot:
-                    if gc := okay.goodbye_channel(gc_id):
+                    if gc := await okay.goodbye_channel(gc_id):
                         await gc.send(
                             self.format_custom_message(gbt, member)
                             or f'‎The bot "{member.display_name}" was removed from the server.'
