@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "Solaris-Bot"
-version = "1.2.1"
+version = "1.2.2"
 description = "A Discord bot designed to make your server a safer and better place."
 
 license = "GPLv3"
