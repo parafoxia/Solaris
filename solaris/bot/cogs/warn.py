@@ -145,7 +145,6 @@ class Warn(commands.Cog):
 
     @warn_group.command(name="list", help="Lists a member's warnings.")
     @checks.module_has_initialised(MODULE_NAME)
-    @checks.author_can_warn()
     async def warn_list_command(self, ctx, target: t.Optional[t.Union[discord.Member, str]]):
         target = target or ctx.author
 
