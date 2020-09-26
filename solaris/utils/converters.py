@@ -75,7 +75,7 @@ class BannedUser(commands.Converter):
         if ctx.guild.me.guild_permissions.ban_members:
             if arg.isdigit():
                 try:
-                    return await ctx.guild.fetch_ban(discord.Object(id=int(arg)))
+                    return (await ctx.guild.fetch_ban(discord.Object(id=int(arg)))).user
                 except discord.NotFound:
                     raise commands.BadArgument
 
