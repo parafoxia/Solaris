@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS errors (
 CREATE TABLE IF NOT EXISTS system (
     GuildID integer PRIMARY KEY,
     RunFTS integer DEFAULT 0,
-    Prefix text DEFAULT ">>",
+    Prefix text DEFAULT "?",
     DefaultLogChannelID integer,
     LogChannelID integer,
     DefaultAdminRoleID interger,
@@ -97,5 +97,7 @@ CREATE TABLE IF NOT EXISTS warns (
 	ModID integer,
 	WarnTime text DEFAULT CURRENT_TIMESTAMP,
 	WarnType text,
+	WarnPoints integer,
+	WarnPointsDefault integer,
 	Comment text
 );

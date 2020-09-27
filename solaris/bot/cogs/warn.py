@@ -54,9 +54,11 @@ class Warn(commands.Cog):
         ctx,
         targets: commands.Greedy[discord.Member],
         warn_type: str,
+        warn_points: t.Optional[int] = None,  #Defining the warn_points variable and making it optional
         *,
         comment: str = "No additional comment was made.",
     ):
+
         if not targets:
             return await ctx.send(f"{self.bot.cross} No valid targets were passed.")
 
@@ -68,6 +70,24 @@ class Warn(commands.Cog):
 
         warn_types = await self.bot.db.column("SELECT WarnType FROM warntypes WHERE GuildID = ?", ctx.guild.id)
 
+        # Checking to make sure optional warn_points don't
+        # exceed the min and max values
+        if not MIN_POINTS <= warn_points <= MAX_POINTS:
+            return await ctx.send(
+                f"{self.bot.cross} The number of points entered must be between {MIN_POINTS} and {MAX_POINTS} inclusive."
+            )
+
+        # Used to check if a points value within the warns table
+        # is default/preset value
+        warn_points_default = 0
+
+        # Assigning default value to warn_points if no option value 
+        # is given
+        if warn_points is None:
+            warn_points = await self.bot.db.column("SELECT Points FROM warntypes WHERE GuildID = ? And WarnType = ?", ctx.guild.id, warn_type)
+            warn_points = warn_points[0]
+            warn_points_default = 1
+
         if warn_type not in warn_types:
             return await ctx.send(f"{self.bot.cross} That warn type does not exist.")
 
@@ -77,18 +97,27 @@ class Warn(commands.Cog):
                 continue
 
             await self.bot.db.execute(
-                "INSERT INTO warns (WarnID, GuildID, UserID, ModID, WarnType, Comment) VALUES (?, ?, ?, ?, ?, ?)",
+                "INSERT INTO warns (WarnID, GuildID, UserID, ModID, WarnType, WarnPoints, WarnPointsDefault, Comment) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                 self.bot.generate_id(),
                 ctx.guild.id,
                 target.id,
                 ctx.author.id,
                 warn_type,
+                warn_points,
+                warn_points_default,
                 comment,
             )
 
             warns = await self.bot.db.column(
                 "SELECT WarnType FROM warns WHERE GuildID = ? AND UserID = ?", ctx.guild.id, target.id
             )
+
+            # A list of all a user's points
+            # used to create points sum
+            user_warn_points = await self.bot.db.column(
+                "SELECT WarnPoints FROM warns WHERE GuildID = ? AND UserID = ?", ctx.guild.id, target.id
+            ) 
+
             max_points, max_strikes = (
                 await self.bot.db.record("SELECT MaxPoints, MaxStrikes FROM warn WHERE GuildID = ?", ctx.guild.id)
                 or [None] * 2
@@ -101,13 +130,7 @@ class Warn(commands.Cog):
                     f"{self.bot.info} {target.display_name} was banned because they received a {string.ordinal(wc)} warning for the same offence."
                 )
 
-            point_map = {
-                warn_type: points
-                for warn_type, points in await self.bot.db.records(
-                    "SELECT WarnType, Points FROM warntypes WHERE GuildID = ?", ctx.guild.id
-                )
-            }
-            points = sum(point_map[warn] for warn in warns)
+            points = sum(user_warn_points)
 
             if points >= (max_points or 12):
                 await target.ban(reason=f"Received equal to or more than the maximum allowed number of points.")
@@ -159,13 +182,10 @@ class Warn(commands.Cog):
             ctx.guild.id,
             target.id,
         )
-        point_map = {
-            warn_type: points
-            for warn_type, points in await self.bot.db.records(
-                "SELECT WarnType, Points FROM warntypes WHERE GuildID = ?", ctx.guild.id
-            )
-        }
-        points = sum(point_map[record[3]] for record in records)
+        user_warn_points = await self.bot.db.column(
+                "SELECT WarnPoints FROM warns WHERE GuildID = ? AND UserID = ?", ctx.guild.id, target.id
+        )
+        points = sum(user_warn_points)
 
         await ctx.send(
             embed=self.bot.embed.build(
@@ -254,11 +274,11 @@ class Warn(commands.Cog):
     )
     @checks.module_has_initialised(MODULE_NAME)
     @checks.author_can_configure()
-    async def warntype_edit_command(self, ctx, warn_type: str, new_name: str, points: int):
+    async def warntype_edit_command(self, ctx, warn_type: str, new_name: str, new_points: int):
         if any(c not in ascii_lowercase for c in new_name):
             return await ctx.send(f"{self.bot.cross} Warn type identifiers can only contain lower case letters.")
 
-        if not MIN_POINTS <= points <= MAX_POINTS:
+        if not MIN_POINTS <= new_points <= MAX_POINTS:
             return await ctx.send(
                 f"{self.bot.cross} The number of points for this warn type must be between {MIN_POINTS} and {MAX_POINTS} inclusive."
             )
@@ -268,13 +288,19 @@ class Warn(commands.Cog):
         if warn_type not in warn_types:
             return await ctx.send(f'{self.bot.cross} The warn type "{warn_type}" does not exist.')
 
-        if new_name in warn_types:
-            return await ctx.send(f'{self.bot.cross} That warn type "{new_name}" already exists.')
+        # introduce a default points value to use in function
+        points = await self.bot.db.column("SELECT Points From warntypes WHERE GuildID = ? AND WarnType = ?", ctx.guild.id, warn_type)
+        points = points[0]
+
+        # checks to see if the new entered warn type is the 
+        # exact same as the original
+        if new_name == warn_type and points == new_points:
+            return await ctx.send(f'{self.bot.cross} Entered warn type is not different from the original. No changes were made')
 
         await self.bot.db.execute(
             "UPDATE warntypes SET WarnType = ?, Points = ? WHERE GuildID = ? AND WarnType = ?",
             new_name,
-            points,
+            new_points,
             ctx.guild.id,
             warn_type,
         )
@@ -283,8 +309,14 @@ class Warn(commands.Cog):
             await self.bot.db.execute(
                 "UPDATE warns SET WarnType = ? WHERE GuildID = ? AND WarnType = ?", new_name, ctx.guild.id, warn_type
             )
+
+        if points != new_points:
+            await self.bot.db.execute(
+                "UPDATE warns SET WarnPoints = ? WHERE GuildID = ? AND WarnType = ? AND WarnPointsDefault = ?", new_points, ctx.guild.id, new_name, 1
+            )
+
         await ctx.send(
-            f'{self.bot.tick} The warn type "{new_name}" (formerly "{warn_type}") is now worth {points} points.'
+            f'{self.bot.tick} The original warn type "{warn_type}", worth "{points}" points, has now been changed to the warn type "{new_name}, worth "{new_points}" points.'
         )
 
     @warntype_group.command(
