@@ -70,13 +70,6 @@ class Warn(commands.Cog):
 
         warn_types = await self.bot.db.column("SELECT WarnType FROM warntypes WHERE GuildID = ?", ctx.guild.id)
 
-        # Checking to make sure optional warn_points don't
-        # exceed the min and max values
-        if not MIN_POINTS <= warn_points <= MAX_POINTS:
-            return await ctx.send(
-                f"{self.bot.cross} The number of points entered must be between {MIN_POINTS} and {MAX_POINTS} inclusive."
-            )
-
         # Used to check if a points value within the warns table
         # is default/preset value
         warn_points_default = 0
@@ -87,6 +80,13 @@ class Warn(commands.Cog):
             warn_points = await self.bot.db.column("SELECT Points FROM warntypes WHERE GuildID = ? And WarnType = ?", ctx.guild.id, warn_type)
             warn_points = warn_points[0]
             warn_points_default = 1
+
+        # Checking to make sure optional warn_points don't
+        # exceed the min and max values
+        if not MIN_POINTS <= warn_points <= MAX_POINTS:
+            return await ctx.send(
+                f"{self.bot.cross} The number of points entered must be between {MIN_POINTS} and {MAX_POINTS} inclusive."
+            )
 
         if warn_type not in warn_types:
             return await ctx.send(f"{self.bot.cross} That warn type does not exist.")
