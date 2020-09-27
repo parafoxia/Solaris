@@ -54,8 +54,9 @@ class Warn(commands.Cog):
         ctx,
         targets: commands.Greedy[discord.Member],
         warn_type: str,
+        points_override: t.Optional[int],
         *,
-        comment: str = "No additional comment was made.",
+        comment: t.Optional[str],
     ):
         if not targets:
             return await ctx.send(f"{self.bot.cross} No valid targets were passed.")
@@ -63,7 +64,12 @@ class Warn(commands.Cog):
         if any(c not in ascii_lowercase for c in warn_type):
             return await ctx.send(f"{self.bot.cross} Warn type identifiers can only contain lower case letters.")
 
-        if len(comment) > 255:
+        if (points_override is not None) and (not MIN_POINTS <= points_override <= MAX_POINTS):
+            return await ctx.send(
+                f"{self.bot.cross} The specified points override must be between {MIN_POINTS} and {MAX_POINTS} inclusive."
+            )
+
+        if (comment is not None) and len(comment) > 255:
             return await ctx.send(f"{self.bot.cross} The comment must not exceed 255 characters in length.")
 
         warn_types = await self.bot.db.column("SELECT WarnType FROM warntypes WHERE GuildID = ?", ctx.guild.id)
@@ -77,24 +83,25 @@ class Warn(commands.Cog):
                 continue
 
             await self.bot.db.execute(
-                "INSERT INTO warns (WarnID, GuildID, UserID, ModID, WarnType, Comment) VALUES (?, ?, ?, ?, ?, ?)",
+                "INSERT INTO warns (WarnID, GuildID, UserID, ModID, WarnType, PointsOverride, Comment) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 self.bot.generate_id(),
                 ctx.guild.id,
                 target.id,
                 ctx.author.id,
                 warn_type,
+                points_override,
                 comment,
             )
 
-            warns = await self.bot.db.column(
-                "SELECT WarnType FROM warns WHERE GuildID = ? AND UserID = ?", ctx.guild.id, target.id
+            records = await self.bot.db.records(
+                "SELECT WarnType, PointsOverride FROM warns WHERE GuildID = ? AND UserID = ?", ctx.guild.id, target.id
             )
             max_points, max_strikes = (
                 await self.bot.db.record("SELECT MaxPoints, MaxStrikes FROM warn WHERE GuildID = ?", ctx.guild.id)
                 or [None] * 2
             )
 
-            if (wc := warns.count(warn_type)) >= (max_strikes or 3):
+            if (wc := [r[0] for r in records].count(warn_type)) >= (max_strikes or 3):
                 # Account for unbans.
                 await target.ban(reason=f"Received {string.ordinal(wc)} warning for {warn_type}.")
                 return await ctx.send(
@@ -107,7 +114,7 @@ class Warn(commands.Cog):
                     "SELECT WarnType, Points FROM warntypes WHERE GuildID = ?", ctx.guild.id
                 )
             }
-            points = sum(point_map[warn] for warn in warns)
+            points = sum(override or point_map[warn] for warn, override in records)
 
             if points >= (max_points or 12):
                 await target.ban(reason=f"Received equal to or more than the maximum allowed number of points.")
@@ -154,7 +161,7 @@ class Warn(commands.Cog):
             )
 
         records = await self.bot.db.records(
-            "SELECT WarnID, ModID, WarnTime, WarnType, Comment FROM warns WHERE GuildID = ? AND UserID = ? ORDER BY WarnTime DESC",
+            "SELECT WarnID, ModID, WarnTime, WarnType, PointsOverride, Comment FROM warns WHERE GuildID = ? AND UserID = ? ORDER BY WarnTime DESC",
             ctx.guild.id,
             target.id,
         )
@@ -164,7 +171,7 @@ class Warn(commands.Cog):
                 "SELECT WarnType, Points FROM warntypes WHERE GuildID = ?", ctx.guild.id
             )
         }
-        points = sum(point_map[record[3]] for record in records)
+        points = sum(record[4] or point_map[record[3]] for record in records)
 
         await ctx.send(
             embed=self.bot.embed.build(
@@ -177,7 +184,8 @@ class Warn(commands.Cog):
                 fields=(
                     (
                         record[0],
-                        f"**{record[3]}**: {record[4]}\n{getattr(ctx.guild.get_member(record[1]), 'mention', 'Unknown')} - {chron.short_date_and_time(chron.from_iso(record[2]))}",
+                        f"**{record[3]}**: {record[5] or 'No additional comment was made.'} ({record[4] or point_map[record[3]]} point(s))\n"
+                        f"{getattr(ctx.guild.get_member(record[1]), 'mention', 'Unknown')} - {chron.short_date_and_time(chron.from_iso(record[2]))}",
                         False,
                     )
                     for record in records[-10:]
@@ -245,7 +253,9 @@ class Warn(commands.Cog):
         await self.bot.db.execute(
             "INSERT INTO warntypes (GuildID, WarnType, Points) VALUES (?, ?, ?)", ctx.guild.id, warn_type, points
         )
-        await ctx.send(f'{self.bot.tick} The warn type "{warn_type}" has been created, and is worth {points} point(s).')
+        await ctx.send(
+            f'{self.bot.tick} The warn type "{warn_type}" has been created, and is worth {points} point(s).'
+        )
 
     @warntype_group.command(
         name="edit",
@@ -284,7 +294,7 @@ class Warn(commands.Cog):
 
         if new_name and new_points:
             await self.bot.db.execute(
-                "UPDATE warntypes SET WarnType = ?, Points = ? WHERE GuildID = ? AND WarnType = ?",
+                "UPDATE warntypes SET WarnType = ?, Points = ? WHERE GuildID = ? AND WarnType = ? AND PointsOverride IS NOT NULL",
                 new_name,
                 new_points,
                 ctx.guild.id,

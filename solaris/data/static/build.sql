@@ -97,5 +97,6 @@ CREATE TABLE IF NOT EXISTS warns (
 	ModID integer,
 	WarnTime text DEFAULT CURRENT_TIMESTAMP,
 	WarnType text,
+	PointsOverride integer,
 	Comment text
 );
