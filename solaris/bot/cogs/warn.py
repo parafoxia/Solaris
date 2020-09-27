@@ -245,7 +245,7 @@ class Warn(commands.Cog):
         await self.bot.db.execute(
             "INSERT INTO warntypes (GuildID, WarnType, Points) VALUES (?, ?, ?)", ctx.guild.id, warn_type, points
         )
-        await ctx.send(f'{self.bot.tick} The warn type "{warn_type}" has been created, and is worth {points} points.')
+        await ctx.send(f'{self.bot.tick} The warn type "{warn_type}" has been created, and is worth {points} point(s).')
 
     @warntype_group.command(
         name="edit",
@@ -253,38 +253,62 @@ class Warn(commands.Cog):
     )
     @checks.module_has_initialised(MODULE_NAME)
     @checks.author_can_configure()
-    async def warntype_edit_command(self, ctx, warn_type: str, new_name: str, points: int):
-        if any(c not in ascii_lowercase for c in new_name):
-            return await ctx.send(f"{self.bot.cross} Warn type identifiers can only contain lower case letters.")
+    async def warntype_edit_command(self, ctx, warn_type: str, new_points: t.Optional[int], new_name: t.Optional[str]):
+        if new_name is None and new_points is None:
+            await ctx.send(f"{self.bot.cross} Nothing to modify.")
 
-        if not MIN_POINTS <= points <= MAX_POINTS:
-            return await ctx.send(
-                f"{self.bot.cross} The number of points for this warn type must be between {MIN_POINTS} and {MAX_POINTS} inclusive."
-            )
+        if new_points is not None:
+            if not MIN_POINTS <= new_points <= MAX_POINTS:
+                return await ctx.send(
+                    f"{self.bot.cross} The number of points for this warn type must be between {MIN_POINTS} and {MAX_POINTS} inclusive."
+                )
 
-        warn_types = await self.bot.db.column("SELECT WarnType FROM warntypes WHERE GuildID = ?", ctx.guild.id)
+        if new_name is not None:
+            if any(c not in ascii_lowercase for c in new_name):
+                return await ctx.send(f"{self.bot.cross} Warn type identifiers can only contain lower case letters.")
 
-        if warn_type not in warn_types:
-            return await ctx.send(f'{self.bot.cross} The warn type "{warn_type}" does not exist.')
+            if new_name == warn_type:
+                return await ctx.send(f'{self.bot.cross} That warn type "{new_name}" already exists.')
 
-        if new_name in warn_types:
-            return await ctx.send(f'{self.bot.cross} That warn type "{new_name}" already exists.')
+            warn_types = await self.bot.db.column("SELECT WarnType FROM warntypes WHERE GuildID = ?", ctx.guild.id)
 
-        await self.bot.db.execute(
-            "UPDATE warntypes SET WarnType = ?, Points = ? WHERE GuildID = ? AND WarnType = ?",
-            new_name,
-            points,
-            ctx.guild.id,
-            warn_type,
-        )
+            if warn_type not in warn_types:
+                return await ctx.send(f'{self.bot.cross} The warn type "{warn_type}" does not exist.')
 
-        if warn_type != new_name:
+            if new_name in warn_types:
+                return await ctx.send(f'{self.bot.cross} That warn type "{new_name}" already exists.')
+
             await self.bot.db.execute(
                 "UPDATE warns SET WarnType = ? WHERE GuildID = ? AND WarnType = ?", new_name, ctx.guild.id, warn_type
             )
-        await ctx.send(
-            f'{self.bot.tick} The warn type "{new_name}" (formerly "{warn_type}") is now worth {points} points.'
-        )
+
+        if new_name and new_points:
+            await self.bot.db.execute(
+                "UPDATE warntypes SET WarnType = ?, Points = ? WHERE GuildID = ? AND WarnType = ?",
+                new_name,
+                new_points,
+                ctx.guild.id,
+                warn_type,
+            )
+            await ctx.send(
+                f'{self.bot.tick} The warn type "{warn_type}" has been renamed to "{new_name}", and is now worth {new_points} point(s).'
+            )
+        elif new_name:
+            await self.bot.db.execute(
+                "UPDATE warntypes SET WarnType = ? WHERE GuildID = ? AND WarnType = ?",
+                new_name,
+                ctx.guild.id,
+                warn_type,
+            )
+            await ctx.send(f'{self.bot.tick} The warn type "{warn_type}" has been renamed to "{new_name}".')
+        elif new_points:
+            await self.bot.db.execute(
+                "UPDATE warntypes SET Points = ? WHERE GuildID = ? AND WarnType = ?",
+                new_points,
+                ctx.guild.id,
+                warn_type,
+            )
+            await ctx.send(f'{self.bot.tick} The warn type "{warn_type}" is now worth {new_points} point(s).')
 
     @warntype_group.command(
         name="delete",
@@ -318,6 +342,7 @@ class Warn(commands.Cog):
                 ctx=ctx,
                 header="Warn",
                 title="Warn types",
+                description=f"Using {len(records)} of this server's allowed {MAX_WARNTYPES} warn types.",
                 thumbnail=ctx.guild.icon_url,
                 fields=((warn_type, f"{points} point(s)", True) for warn_type, points in records),
             )
