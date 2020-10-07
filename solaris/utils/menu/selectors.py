@@ -19,6 +19,8 @@
 
 from asyncio import TimeoutError
 from datetime import timedelta
+from solaris.utils.emoji import ALTERNATIVES
+from solaris.utils import emoji
 
 from solaris.utils import chron
 
@@ -40,11 +42,23 @@ class Selector:
     def selection(self, value):
         self._base_selection = value
 
+    def get_emoji_name(self, emoji):
+        emoji_name = None
+        if isinstance(emoji, str):
+            for name, value in ALTERNATIVES.items():
+                if value == emoji:
+                    emoji_name = name
+                    break
+        elif hasattr(emoji, "name"):
+            emoji_name = emoji.name
+        return emoji_name
+
     def _default_check(self, reaction, user):
+        emoji_name = self.get_emoji_name(reaction.emoji)
         return (
             reaction.message.id == self.menu.message.id
             and user == self.menu.ctx.author
-            and reaction.emoji.name in self.selection
+            and emoji_name in self.selection
         )
 
     async def _serve(self):
@@ -61,7 +75,8 @@ class Selector:
         except TimeoutError:
             await self.menu.timeout(chron.long_delta(timedelta(seconds=self.timeout)))
         else:
-            if (r := reaction.emoji.name) == "exit" and self.auto_exit:
+            emoji_name = self.get_emoji_name(reaction.emoji)
+            if (r := emoji_name) == "exit" and self.auto_exit:
                 await self.menu.stop()
             else:
                 return r
@@ -150,7 +165,8 @@ class NumericalSelector(Selector):
         except TimeoutError:
             await self.menu.timeout(chron.long_delta(timedelta(seconds=self.timeout)))
         else:
-            if (r := reaction.emoji.name) == "exit":
+            emoji_name = self.get_emoji_name(reaction.emoji)
+            if (r := emoji_name) == "exit":
                 if self.auto_exit:
                     await self.menu.stop()
                 return
@@ -243,7 +259,8 @@ class PageControls(Selector):
         except TimeoutError:
             await self.menu.timeout(chron.long_delta(timedelta(seconds=self.timeout)))
         else:
-            if (r := reaction.emoji.name) == "exit":
+            emoji_name = self.get_emoji_name(reaction.emoji)
+            if (r := emoji_name) == "exit":
                 if self.auto_exit:
                     await self.menu.stop()
                 return
