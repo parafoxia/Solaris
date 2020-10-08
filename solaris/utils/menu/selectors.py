@@ -42,7 +42,7 @@ class Selector:
     def selection(self, value):
         self._base_selection = value
 
-    def get_emoji_name(self, emoji):
+    def _resolve_selection(self, emoji):
         emoji_name = None
         if isinstance(emoji, str):
             for name, value in ALTERNATIVES.items():
