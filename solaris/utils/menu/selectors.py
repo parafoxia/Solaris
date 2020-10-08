@@ -19,10 +19,9 @@
 
 from asyncio import TimeoutError
 from datetime import timedelta
-from solaris.utils.emoji import ALTERNATIVES
-from solaris.utils import emoji
 
-from solaris.utils import chron
+from solaris.utils import chron, emoji
+from solaris.utils.emoji import ALTERNATIVES
 
 
 class Selector:
