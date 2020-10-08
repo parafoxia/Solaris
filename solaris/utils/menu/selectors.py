@@ -54,7 +54,7 @@ class Selector:
         return emoji_name
 
     def _default_check(self, reaction, user):
-        emoji_name = self.get_emoji_name(reaction.emoji)
+        emoji_name = self._resolve_selection(reaction.emoji)
         return (
             reaction.message.id == self.menu.message.id
             and user == self.menu.ctx.author
