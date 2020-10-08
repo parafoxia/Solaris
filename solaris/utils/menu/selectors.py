@@ -75,8 +75,8 @@ class Selector:
         except TimeoutError:
             await self.menu.timeout(chron.long_delta(timedelta(seconds=self.timeout)))
         else:
-            emoji_name = self.get_emoji_name(reaction.emoji)
-            if (r := emoji_name) == "exit" and self.auto_exit:
+            r = self._resolve_selection(reaction.emoji)
+            if r == "exit" and self.auto_exit:
                 await self.menu.stop()
             else:
                 return r
