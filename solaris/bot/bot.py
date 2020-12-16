@@ -48,7 +48,12 @@ class Bot(commands.Bot):
 
         self.loc.count()
 
-        super().__init__(command_prefix=self.command_prefix, case_insensitive=True, status=discord.Status.dnd)
+        super().__init__(
+            command_prefix=self.command_prefix,
+            case_insensitive=True,
+            status=discord.Status.dnd,
+            intents=discord.Intents.all(),
+        )
 
     def setup(self):
         print("Running setup...")
