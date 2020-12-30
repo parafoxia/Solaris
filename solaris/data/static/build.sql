@@ -80,7 +80,8 @@ CREATE TABLE IF NOT EXISTS warn (
 	GuildID integer PRIMARY KEY,
 	WarnRoleID integer,
 	MaxPoints integer,
-	MaxStrikes interger
+	MaxStrikes integer,
+	RetroUpdates integer DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS warntypes (
@@ -97,6 +98,6 @@ CREATE TABLE IF NOT EXISTS warns (
 	ModID integer,
 	WarnTime text DEFAULT CURRENT_TIMESTAMP,
 	WarnType text,
-	PointsOverride integer,
+	Points integer,
 	Comment text
 );

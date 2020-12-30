@@ -127,3 +127,7 @@ async def warn__maxpoints(bot, guild):
 
 async def warn__maxstrikes(bot, guild):
     return await bot.db.field("SELECT MaxStrikes FROM warn WHERE GuildID = ?", guild.id)
+
+
+async def warn__retroupdates(bot, guild):
+    return await bot.db.field("SELECT RetroUpdates FROM warn WHERE GuildID = ?", guild.id)

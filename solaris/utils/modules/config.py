@@ -508,3 +508,17 @@ async def warn__maxstrikes(bot, channel, value):
         )
         lc = await retrieve.log_channel(bot, channel.guild)
         await lc.send(f"{bot.info} The max strikes per offence has been set to {value}.")
+
+
+async def warn__retroupdates(bot, channel, value):
+    """Retroactive updates
+    Whether to update already instated warns that did not receive a points override with new points values when warn types are modified with the `warntype edit` command. This can be set to either 0 (OFF) or 1 (ON). Defaults to 0 (OFF)."""
+    if not isinstance(value, int):
+        await channel.send(f"{bot.cross} The retroactive updates toggle must be an integer number.")
+    elif not 0 <= value <= 1:
+        await channel.send(f"{bot.cross} The retroactive updates toggle must be either 0 or 1.")
+    else:
+        await bot.db.execute("UPDATE warn SET RetroUpdates = ? WHERE GuildID = ?", value, channel.guild.id)
+        await channel.send(f"{bot.tick} The retroactive updates toggle has been set to {value}.")
+        lc = await retrieve.log_channel(bot, channel.guild)
+        await lc.send(f"{bot.info} The retroactive updates toggle has been set to {value}.")
