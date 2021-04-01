@@ -363,6 +363,7 @@ class Meta(commands.Cog):
         target = target or ctx.author
 
         if isinstance(target, discord.Member):
+            join_position = sorted(ctx.guild.members, key=lambda m: m.joined_at).index(target) + 1
             ps = target.premium_since
             ngr = len(target.guild.roles)
 
@@ -396,6 +397,7 @@ class Meta(commands.Cog):
                             True,
                         ),
                         ("Activity name", target.activity.name if target.activity else "-", True),
+                        ("Join position", join_position, True),
                         ("Nº of roles", f"{len(target.roles)-1:,}", True),
                         ("Top role", target.top_role.mention, True),
                         ("Top role position", f"{string.ordinal(ngr - target.top_role.position)} / {ngr:,}", True),
