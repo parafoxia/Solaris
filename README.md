@@ -7,7 +7,7 @@ If you ever wished you could hire a bouncer for your server, Solaris might be ju
 
 - Make spam bots and excuses from rulebreaking members a thing of the past. A powerful gateway / verification system makes sure new members accept the rules before being able to talk in the server, and personally deals with those who don't.
 - Add your own personal touch with tonnes of customisation options. Whether you want customisable messages, including separate messages for humans and bots, or the ability to set multiple member roles, Solaris has you covered.
-- Get that peace of mind you deserve. With 24/7 uptime, and systems in place to make sure nothing goes a miss even if Solaris does go down, no new members will be left out.
+- Get that peace of mind you deserve. With 24/7 uptime, and systems in place to make sure nothing goes amiss even if Solaris does go down, no new members will be left out.
 
 ## Giving you the power you need.
 Solaris is bundled full of useful moderation commands to give you the power you need, when you need it.
@@ -34,7 +34,7 @@ Again, the old timers are present:
 
 ...as well as the new guys.
 - `detailedserverinfo`
-- `avater`
+- `avatar`
 - `icon`
 
 ## Plenty to look forward to.
