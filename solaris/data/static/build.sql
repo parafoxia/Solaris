@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS system (
     Prefix text DEFAULT ">>",
     DefaultLogChannelID integer,
     LogChannelID integer,
-    DefaultAdminRoleID interger,
+    DefaultAdminRoleID integer,
     AdminRoleID integer
 );
 
