@@ -389,6 +389,7 @@ class Tags(commands.Cog):
 
 
     @stags_group.command(name = "new", help = "Creates a new global tag.")
+    @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(send_messages = True, manage_channels = True)
     async def stag_create(self, ctx, stag_name: str, *, scontent):
         if any(c not in ascii_lowercase for c in stag_name):
@@ -424,6 +425,7 @@ class Tags(commands.Cog):
         name="edit",
         help="Edits an existing global tag.",
     )
+    @commands.has_permissions(manage_guild=True)
     @commands.bot_has_permissions(send_messages = True, manage_channels = True)
     async def stag_edit(self, ctx, stag_name: str, *, scontent):
         if any(c not in ascii_lowercase for c in stag_name):
@@ -460,6 +462,7 @@ class Tags(commands.Cog):
         aliases=["del"],
         help="Deletes an existing global tag.",
     )
+    @commands.has_permissions(manage_guild=True)
     async def stag_delete_command(self, ctx, stag_name: str):
         if any(c not in ascii_lowercase for c in stag_name):
             return await ctx.send(f"{self.bot.cross} S-Tag identifiers can only contain lower case letters.")
