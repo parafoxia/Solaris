@@ -101,3 +101,22 @@ CREATE TABLE IF NOT EXISTS warns (
 	Points integer,
 	Comment text
 );
+
+CREATE TABLE IF NOT EXISTS tags (
+	GuildID integer,
+	UserID integer,
+	TagID text,
+	TagName text,
+	TagContent text,
+	TagAliases text,
+	TagTime text DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS stags (
+	UserID integer,
+	STagID text,
+	STagName text,
+	STagContent text,
+	STagAliases text,
+	STagTime text DEFAULT CURRENT_TIMESTAMP
+);
