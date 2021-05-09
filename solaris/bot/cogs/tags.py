@@ -467,7 +467,7 @@ class Tags(commands.Cog):
         if any(c not in ascii_lowercase for c in stag_name):
             return await ctx.send(f"{self.bot.cross} S-Tag identifiers can only contain lower case letters.")
 
-        user_id, stag_id = await self.bot.db.record("SELECT UserID, STagID FROM stags WHERE AND STagName = ?", stag_name)
+        user_id, stag_id = await self.bot.db.record("SELECT UserID, STagID FROM stags WHERE STagName = ?", stag_name)
 
         if user_id != ctx.author.id:
             return await ctx.send(f"{self.bot.cross} You can't delete others s-tags. You can only delete your own s-tags.")
