@@ -42,7 +42,7 @@ class Tags(commands.Cog):
 
 
     @commands.command(name = "tag", help = "Shows the content of an existing tag.")
-    @commands.bot_has_permissions(send_messages = True, manage_channels = True)
+    @commands.bot_has_permissions(send_messages = True)
     async def tag_command(self, ctx, tag_name: str):
         if any(c not in ascii_lowercase for c in tag_name):
             return await ctx.send(f"{self.bot.cross} Tag identifiers can only contain lower case letters.")
@@ -70,7 +70,7 @@ class Tags(commands.Cog):
         invoke_without_command=True,
         help="Commands to create tags in the server.",
         )
-    @commands.bot_has_permissions(send_messages = True, manage_channels = True)
+    @commands.bot_has_permissions(send_messages = True)
     async def tags_group(self, ctx):
         prefix = await self.bot.prefix(ctx.guild)
         cmds = tuple(sorted(self.bot.get_command("tags").commands, key=lambda c: c.name))
@@ -96,7 +96,7 @@ class Tags(commands.Cog):
 
 
     @tags_group.command(name = "new", help = "Creates a new tag.")
-    @commands.bot_has_permissions(send_messages = True, manage_channels = True)
+    @commands.bot_has_permissions(send_messages = True)
     async def tag_create(self, ctx, tag_name: str, *, content):
         if any(c not in ascii_lowercase for c in tag_name):
             return await ctx.send(f"{self.bot.cross} Tag identifiers can only contain lower case letters.")
@@ -132,7 +132,7 @@ class Tags(commands.Cog):
         name="edit",
         help="Edits an existing tag.",
     )
-    @commands.bot_has_permissions(send_messages = True, manage_channels = True)
+    @commands.bot_has_permissions(send_messages = True)
     async def tag_edit(self, ctx, tag_name: str, *, content):
         if any(c not in ascii_lowercase for c in tag_name):
             return await ctx.send(f"{self.bot.cross} Tag identifiers can only contain lower case letters.")
@@ -169,6 +169,7 @@ class Tags(commands.Cog):
         aliases=["del"],
         help="Deletes an existing tag.",
     )
+    @commands.bot_has_permissions(send_messages = True)
     async def tag_delete_command(self, ctx, tag_name: str):
         if any(c not in ascii_lowercase for c in tag_name):
             return await ctx.send(f"{self.bot.cross} Tag identifiers can only contain lower case letters.")
@@ -189,7 +190,7 @@ class Tags(commands.Cog):
 
 
     @tags_group.command(name = "info", help = "Shows information about an existing tag.")
-    @commands.bot_has_permissions(send_messages = True, manage_channels = True)
+    @commands.bot_has_permissions(send_messages = True)
     async def tag_info_command(self, ctx, tag_name: str):
         if any(c not in ascii_lowercase for c in tag_name):
             return await ctx.send(f"{self.bot.cross} Tag identifiers can only contain lower case letters.")
@@ -218,7 +219,7 @@ class Tags(commands.Cog):
 
 
     @tags_group.command(name = "all", help = "Shows the tag list of a tag owner.")
-    @commands.bot_has_permissions(send_messages = True, manage_channels = True)
+    @commands.bot_has_permissions(send_messages = True)
     async def member_tag_list_command(self, ctx, target: t.Optional[t.Union[discord.Member, converters.User, converters.SearchedMember, str]]):
         target = target or ctx.author
         prefix = await self.bot.prefix(ctx.guild)
@@ -271,7 +272,7 @@ class Tags(commands.Cog):
   
 
     @tags_group.command(name = "raw", help = "Gets the raw content of the tag.This is with markdown escaped. Useful for editing.", pass_context=True)
-    @commands.bot_has_permissions(send_messages = True, manage_channels = True)
+    @commands.bot_has_permissions(send_messages = True)
     async def raw_command(self, ctx, tag_name: str):
         if any(c not in ascii_lowercase for c in tag_name):
             return await ctx.send(f"{self.bot.cross} Tag identifiers can only contain lower case letters.")
@@ -292,6 +293,7 @@ class Tags(commands.Cog):
         name="list",
         help="Lists the server's tags.",
     )
+    @commands.bot_has_permissions(send_messages = True)
     async def tags_list_command(self, ctx):
         prefix = await self.bot.prefix(ctx.guild)
         tag_names = await self.bot.db.column("SELECT TagName FROM tags WHERE GuildID = ?", ctx.guild.id)
@@ -335,7 +337,7 @@ class Tags(commands.Cog):
 
 
     @commands.command(name = "stag", help = "Shows the content of an existing global tag.")
-    @commands.bot_has_permissions(send_messages = True, manage_channels = True)
+    @commands.bot_has_permissions(send_messages = True)
     async def stag_command(self, ctx, stag_name: str):
         if any(c not in ascii_lowercase for c in stag_name):
             return await ctx.send(f"{self.bot.cross} Tag identifiers can only contain lower case letters.")
@@ -363,7 +365,7 @@ class Tags(commands.Cog):
         invoke_without_command=True,
         help="Commands to create global tags.",
         )
-    @commands.bot_has_permissions(send_messages = True, manage_channels = True)
+    @commands.bot_has_permissions(send_messages = True)
     async def stags_group(self, ctx):
         prefix = await self.bot.prefix(ctx.guild)
         cmds = tuple(sorted(self.bot.get_command("stags").commands, key=lambda c: c.name))
@@ -390,7 +392,7 @@ class Tags(commands.Cog):
 
     @stags_group.command(name = "new", help = "Creates a new global tag.")
     @commands.has_permissions(manage_guild=True)
-    @commands.bot_has_permissions(send_messages = True, manage_channels = True)
+    @commands.bot_has_permissions(send_messages = True)
     async def stag_create(self, ctx, stag_name: str, *, scontent):
         if any(c not in ascii_lowercase for c in stag_name):
             return await ctx.send(f"{self.bot.cross} S-Tag identifiers can only contain lower case letters.")
@@ -426,7 +428,7 @@ class Tags(commands.Cog):
         help="Edits an existing global tag.",
     )
     @commands.has_permissions(manage_guild=True)
-    @commands.bot_has_permissions(send_messages = True, manage_channels = True)
+    @commands.bot_has_permissions(send_messages = True)
     async def stag_edit(self, ctx, stag_name: str, *, scontent):
         if any(c not in ascii_lowercase for c in stag_name):
             return await ctx.send(f"{self.bot.cross} S-Tag identifiers can only contain lower case letters.")
@@ -463,6 +465,7 @@ class Tags(commands.Cog):
         help="Deletes an existing global tag.",
     )
     @commands.has_permissions(manage_guild=True)
+    @commands.bot_has_permissions(send_messages = True)
     async def stag_delete_command(self, ctx, stag_name: str):
         if any(c not in ascii_lowercase for c in stag_name):
             return await ctx.send(f"{self.bot.cross} S-Tag identifiers can only contain lower case letters.")
@@ -483,7 +486,7 @@ class Tags(commands.Cog):
 
 
     @stags_group.command(name = "info", help = "Shows information about an existing global tag.")
-    @commands.bot_has_permissions(send_messages = True, manage_channels = True)
+    @commands.bot_has_permissions(send_messages = True)
     async def stag_info_command(self, ctx, stag_name: str):
         if any(c not in ascii_lowercase for c in stag_name):
             return await ctx.send(f"{self.bot.cross} S-Tag identifiers can only contain lower case letters.")
@@ -493,7 +496,7 @@ class Tags(commands.Cog):
         if stag_name not in stag_names:
             return await ctx.send(f'{self.bot.cross} The S-Tag `{stag_name}` does not exist.')
 
-        user_id, stag_id, stag_time = await self.bot.db.record("SELECT UserID, STagID, STagTime FROM stags WHERE AND STagName = ?", stag_name)
+        user_id, stag_id, stag_time = await self.bot.db.record("SELECT UserID, STagID, STagTime FROM stags WHERE STagName = ?", stag_name)
 
         try:
             user = await self.bot.get_user(user_id)
@@ -512,7 +515,7 @@ class Tags(commands.Cog):
 
 
     @stags_group.command(name = "all", help = "Shows the global tag list of a global tag owner.")
-    @commands.bot_has_permissions(send_messages = True, manage_channels = True)
+    @commands.bot_has_permissions(send_messages = True)
     async def member_stag_list_command(self, ctx, target: t.Optional[t.Union[discord.Member, converters.User, converters.SearchedMember, str]]):
         target = target or ctx.author
         prefix = await self.bot.prefix(ctx.guild)
@@ -565,7 +568,7 @@ class Tags(commands.Cog):
   
 
     @stags_group.command(name = "raw", help = "Gets the raw content of the global tag. This is with markdown escaped. Useful for editing.")
-    @commands.bot_has_permissions(send_messages = True, manage_channels = True)
+    @commands.bot_has_permissions(send_messages = True)
     async def sraw_command(self, ctx, stag_name: str):
         if any(c not in ascii_lowercase for c in stag_name):
             return await ctx.send(f"{self.bot.cross} Tag identifiers can only contain lower case letters.")
@@ -586,6 +589,7 @@ class Tags(commands.Cog):
         name="list",
         help="Lists the global tags.",
     )
+    @commands.bot_has_permissions(send_messages = True)
     async def stags_list_command(self, ctx):
         prefix = await self.bot.prefix(ctx.guild)
         stag_names = await self.bot.db.column("SELECT STagName FROM stags")
